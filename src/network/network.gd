@@ -10,9 +10,7 @@ var _self := { name = '' }
 
 
 func _ready():
-# warning-ignore:return_value_discarded
 	get_tree().connect('network_peer_connected', self, '_player_entered')
-# warning-ignore:return_value_discarded
 	get_tree().connect('network_peer_disconnected', self, '_player_left')
 
 func get_players() -> Array:

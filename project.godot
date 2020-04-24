@@ -22,6 +22,11 @@ config/icon="res://icon.png"
 
 Network="*res://src/network/network.tscn"
 
+[debug]
+
+gdscript/warnings/unused_argument=false
+gdscript/warnings/return_value_discarded=false
+
 [rendering]
 
 quality/driver/driver_name="GLES2"
