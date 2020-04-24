@@ -17,6 +17,9 @@ var _phases := []
 var _phase := -1
 
 
+func init(players : Array) -> void:
+	assert(players.size() == 2)
+
 remote func set_word(id_from : int, word : String) -> bool:
 	if _phase == -1 || _phase >= _phases.size(): return false
 	if _phases[_phase] != Phase_ChooseWord: return false
