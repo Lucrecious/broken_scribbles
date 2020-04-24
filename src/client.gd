@@ -9,8 +9,11 @@ func _ready():
 	print('Creating Client...')
 	Network.enter_lobby('luca')
 
+var stop := false
 func _input(_event) -> void:
+	if stop: return
 	if not Input.is_action_just_pressed('ui_accept'): return
+	stop = true
 
 	var players := Network.get_players()
 	var game := preload("res://src/game/game.tscn").instance()
