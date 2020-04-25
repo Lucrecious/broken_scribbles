@@ -17,7 +17,7 @@ func _input(_event) -> void:
 
 	var players := Network.get_players()
 	var game := preload("res://src/game/game.tscn").instance()
-	game.init(players)
+	game.init(get_tree().get_network_unique_id(), players)
 
 	call_deferred('add_child', game)
 

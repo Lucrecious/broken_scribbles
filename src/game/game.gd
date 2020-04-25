@@ -16,32 +16,33 @@ var _words := {}
 var _phases := []
 var _phase := -1
 
+onready var header := $Header
 
-func init(players : Array) -> void:
-    assert(players.size() == 2)
-    print('init')
-    _add_players(players)
-
-func _add_players(players : Array) -> void:
-    for id in players:
-        _add_player(id)
+func init(id : int, players : Array) -> void:
+	assert(players.size() == 2)
+	_add_player(id)
+	_players = players
+	connect('game_began', self, '_game_began')
 
 func _add_player(id : int) -> void:
-    var player := preload('res://src/game/player.tscn').instance()
-    player.name = str(id)
-    player.set_network_master(id)
-    player.connect('picked_word', self, '_picked_word')
-    call_deferred('add_child', player)
+	var player := preload('res://src/game/player.tscn').instance()
+	player.name = str(id)
+	player.set_network_master(id)
+	player.connect('picked_word', self, '_picked_word')
+	call_deferred('add_child', player)
 
 func _picked_word(word : String) -> void:
-    rpc('set_word', get_tree().get_network_unique_id(), word)
-    print(_words)
+	rpc('set_word', get_tree().get_network_unique_id(), word)
 
 remotesync func set_word(id_from : int, word : String) -> bool:
-	#_phase == -1 || _phase >= _phases.size(): return false
-	#if _phases[_phase] != Phase_ChooseWord: return false
+	if not _valid_phase(): return false
+	if _phases[_phase] != Phase_ChooseWord: return false
 	_words[id_from] = word;
+	print(word)
 	return true
+
+func _valid_phase():
+	return _phase >= 0 && _phase < _phases.size()
 
 func _game_began() -> void:
 	_reset_game()
