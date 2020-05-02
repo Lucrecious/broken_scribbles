@@ -1,0 +1,50 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://src/ui/start_menu.gd" type="Script" id=1]
+
+[node name="StartMenu" type="CenterContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_min_size = Vector2( 1026, 600 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBox" type="VBoxContainer" parent="."]
+margin_left = 466.0
+margin_top = 250.0
+margin_right = 560.0
+margin_bottom = 350.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Username" type="LineEdit" parent="VBox"]
+margin_right = 94.0
+margin_bottom = 24.0
+placeholder_text = "Username"
+caret_blink = true
+caret_blink_speed = 0.5
+
+[node name="CreateRoom" type="Button" parent="VBox"]
+margin_top = 28.0
+margin_right = 94.0
+margin_bottom = 48.0
+text = "Create Room"
+
+[node name="EnterRoom" type="Button" parent="VBox"]
+margin_top = 52.0
+margin_right = 94.0
+margin_bottom = 72.0
+text = "Enter Room"
+
+[node name="RoomName" type="LineEdit" parent="VBox"]
+margin_top = 76.0
+margin_right = 94.0
+margin_bottom = 100.0
+placeholder_text = "Room Name"
+caret_blink = true
+caret_blink_speed = 0.5
+[connection signal="pressed" from="VBox/CreateRoom" to="." method="_on_CreateRoom_pressed"]
+[connection signal="pressed" from="VBox/EnterRoom" to="." method="_on_EnterRoom_pressed"]
