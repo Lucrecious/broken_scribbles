@@ -7,6 +7,10 @@ onready var _room_name_edit := $VBox/RoomName as LineEdit
 
 func _ready() -> void:
 	Network.connect('entered_room_callback', self, '_entered_room')
+	Network.connect('room_added', self, '_room_added')
+
+func _room_added(room_id : String) -> void:
+	pass
 
 func _disable_ui():
 	_username_edit.editable = false
