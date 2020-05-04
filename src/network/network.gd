@@ -4,7 +4,7 @@ const DEFAULT_IP := '127.0.0.1'
 const DEFAULT_PORT := 31400
 const MAX_PLAYERS := 10
 
-signal entered_room_callback(success, room_id, reason)
+signal entered_room_callback(success, room_id, reason, is_local)
 signal room_added(room_id)
 
 enum {
@@ -45,10 +45,7 @@ func create_room(room_name : String) -> void:
 	if not _local_peer: return
 
 	var local_id := get_tree().get_network_unique_id()
-	var in_room := _get_room_for_id(local_id)
-	if in_room != '':
-		_signal_entered_room(false, in_room, Error_client_already_in_room)
-		return
+	if _abort_create_room(local_id): return
 
 	rpc('_attempt_add_room', local_id, room_name)
 
@@ -56,18 +53,35 @@ func enter_room(room_id : String) -> void:
 	assert(_local_peer)
 	if not _local_peer: return
 	
-	if not room_id in _rooms:
-		_signal_entered_room(false, room_id, Error_room_does_not_exist)
-		return
-	
 	var local_id := get_tree().get_network_unique_id()
-	var in_room := _get_room_for_id(local_id)
-	if in_room != '':
-		_signal_entered_room(false, in_room, Error_client_already_in_room)
-		return
+	if _abort_enter_room(local_id, room_id): return
 	
 	rpc('_attempt_enter_room', local_id, room_id)
 	
+func _abort_enter_room(client_id : int, room_id : String) -> bool:
+	var is_local := client_id == get_tree().get_network_unique_id()
+
+	if not room_id in _rooms:
+		rpc_id(client_id, '_signal_entered_room', false, room_id, Error_room_does_not_exist, is_local)
+		return true
+	
+	var in_room := _get_room_for_id(client_id)
+	if in_room != '':
+		rpc_id(client_id, '_signal_entered_room', false, in_room, Error_client_already_in_room, is_local)
+		return true
+	
+	return false
+
+func _abort_create_room(client_id : int) -> bool:
+	var is_local := client_id == get_tree().get_network_unique_id()
+
+	var in_room := _get_room_for_id(client_id)
+	if in_room != '':
+		rpc_id(client_id, '_signal_entered_room', false, in_room, Error_client_already_in_room, is_local)
+		return true
+	
+	return false
+
 func _client_entered(id : int) -> void:
 	_clients[id] = true
 
@@ -99,14 +113,18 @@ func _get_room_for_id(id : int) -> String:
 	return ''
 
 master func _attempt_enter_room(from_id : int, room_id : String) -> void:
+	if _abort_enter_room(from_id, room_id): return
+
 	rpc('_enter_room', from_id, room_id)
-	rpc_id(from_id, '_signal_entered_room', true, room_id, Error_none)
+	rpc_id(from_id, '_signal_entered_room', true, room_id, Error_none, from_id == get_tree().get_network_unique_id())
 
 master func _attempt_add_room(from_id : int, room_name : String) -> void:
+	if _abort_create_room(from_id): return
+
 	var room_id := UUID.v4()
 	rpc('_add_room', room_id, room_name)
 	(_rooms[room_id] as Room).add_client(from_id)
-	rpc_id(from_id, '_signal_entered_room', true, room_id, Error_none)
+	rpc_id(from_id, '_signal_entered_room', true, room_id, Error_none, from_id == get_tree().get_network_unique_id())
 
 remotesync func _add_room(room_id : String, nickname : String) -> void:
 	var room = preload('res://src/network/room.tscn').instance()
@@ -119,8 +137,8 @@ remotesync func _enter_room(id : int, room_id : String) -> void:
 	(_rooms[room_id] as Room).add_client(id)
 
 
-remotesync func _signal_entered_room(success : bool, room_id : String, reason : int) -> void:
-	emit_signal('entered_room_callback', success, room_id, reason)
+remotesync func _signal_entered_room(success : bool, room_id : String, reason : int, is_local : bool) -> void:
+	emit_signal('entered_room_callback', success, room_id, reason, is_local)
 		
 func _create_server_or_client() -> int:
 	var peer = NetworkedMultiplayerENet.new()

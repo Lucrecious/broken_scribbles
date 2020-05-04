@@ -20,10 +20,11 @@ func _enable_ui():
 	_enter_room_button.disabled = false
 	_room_name_edit.editable = true
 
-func _entered_room(success : bool, room_id : String, reason : int) -> void:
+func _entered_room(success : bool, room_id : String, reason : int, is_local: bool) -> void:
 	call_deferred('_enable_ui')
 	if not success:
-		prints('Error when trying to enter room:', Network.error_2_string(reason), '[' + room_id + ']')
+		var error := "[error: %s] [room id: '%s'] [is_local: %s]" % [Network.error_2_string(reason), room_id, is_local]
+		print(error)
 		return
 	
 	prints('Entered room:', room_id)
