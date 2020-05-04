@@ -8,9 +8,20 @@
 
 config_version=4
 
-_global_script_classes=[  ]
+_global_script_classes=[ {
+"base": "Node2D",
+"class": "Room",
+"language": "GDScript",
+"path": "res://src/network/room.gd"
+}, {
+"base": "Reference",
+"class": "UUID",
+"language": "GDScript",
+"path": "res://src/network/uuid.gd"
+} ]
 _global_script_class_icons={
-
+"Room": "",
+"UUID": ""
 }
 
 [application]

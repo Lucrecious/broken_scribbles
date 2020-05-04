@@ -4,8 +4,8 @@ const DEFAULT_IP := '127.0.0.1'
 const DEFAULT_PORT := 31400
 const MAX_PLAYERS := 10
 
-signal create_room_attempted(room_name)
-signal enter_room_attempted(room_name)
+signal entered_room_callback(success, room_id, reason)
+signal room_added(room_id)
 
 enum {
 	Error_none = 0,
@@ -23,61 +23,93 @@ func _ready():
 	get_tree().connect('network_peer_connected', self, '_client_entered')
 	get_tree().connect('network_peer_disconnected', self, '_client_left')
 
-func _client_entered(id : int) -> void:
-	_clients[id] = name
-
-func _client_left(id : int) -> void:
-	_clients.erase(id)
+func print_rooms() -> void:
+	for id in _rooms:
+		var r = _rooms[id]
+		prints(r.nickname(), r.id(), r.clients())
 
 func init_local_peer() -> int:
 	return _create_server_or_client()
 
 func create_room(room_name : String) -> void:
 	assert(_local_peer)
+	if not _local_peer: return
 
-	rpc('_attempt_add_room', get_tree().get_network_unique_id(), room_name)
+	var local_id := get_tree().get_network_unique_id()
+	if _get_room_for_id(local_id) != '':
+		_signal_entered_room(false, '', Error_client_already_in_room)
+		return
 
-func enter_room(room_name : String) -> void:
+	rpc('_attempt_add_room', local_id, room_name)
+
+func enter_room(room_id : String) -> void:
 	assert(_local_peer)
-
-	rpc('_attempt_enter_room', get_tree().get_network_unique_id(), room_name)
-
-master func _attempt_enter_room(from_id : int, room_name : String) -> void:
-	if not room_name in _rooms:
-		rpc_id(from_id, '_signal_enter_room_attempted', '')
+	if not _local_peer: return
+	
+	if not room_id in _rooms:
+		_signal_entered_room(false, '', Error_room_does_not_exist)
 		return
 	
-	rpc('_enter_room', from_id, room_name)
-	rpc_id(from_id, '_signal_enter_room_attempted', room_name)
+	var local_id := get_tree().get_network_unique_id()
+	if _get_room_for_id(local_id) != '':
+		_signal_entered_room(false, '', Error_client_already_in_room)
+		return
+	
+	rpc('_attempt_enter_room', local_id, room_id)
+	
+func _client_entered(id : int) -> void:
+	_clients[id] = true
+
+	if not is_network_master(): return
+	
+	_sync(id)
+
+func _client_left(id : int) -> void:
+	_clients.erase(id)
+
+func _sync(id : int) -> void:
+	var room_states := {}
+	for id in _rooms:
+		var r = _rooms[id] as Room
+		room_states[id] = { nickname = r.nickname(), clients = r.clients() }
+	
+	rpc_id(id, '_sync_rooms', room_states)
+	
+remotesync func _sync_rooms(room_states : Dictionary) -> void:
+	for id in room_states:
+		_add_room(id, room_states[id].nickname)
+		_rooms[id]._clients = room_states[id].clients
+
+func _get_room_for_id(id : int) -> String:
+	for room_id in _rooms:
+		var room := _rooms[room_id] as Room
+		if id in room.clients(): return room_id
+	
+	return ''
+
+master func _attempt_enter_room(from_id : int, room_id : String) -> void:
+	rpc('_enter_room', from_id, room_id)
+	rpc_id(from_id, '_signal_entered_room', true, room_id, Error_none)
 
 master func _attempt_add_room(from_id : int, room_name : String) -> void:
-	if room_name in _rooms:
-		rpc_id(from_id, '_signal_create_room_attempted', '')
-		return
-	
-	rpc('_add_room', get_tree().get_rpc_sender_id(), room_name)
-	rpc_id(from_id, '_signal_create_room_attempted', room_name)
+	var room_id := UUID.v4()
+	rpc('_add_room', room_id, room_name)
+	(_rooms[room_id] as Room).add_client(from_id)
+	rpc_id(from_id, '_signal_entered_room', true, room_id, Error_none)
 
-remotesync func _add_room(id : int, name : String) -> void:
-	var game = preload('res://src/game/game.tscn').instance()
-	game.name = name
-	game.init(id)
-	add_child(game)
-	_rooms[name] = game
+remotesync func _add_room(room_id : String, nickname : String) -> void:
+	var room = preload('res://src/network/room.tscn').instance()
+	room.init(room_id, nickname)
+	add_child(room)
+	_rooms[room_id] = room
+	emit_signal('room_added', room_id)
 
-remotesync func _enter_room(id : int, room_name : String) -> void:
-	if not room_name in _rooms:
-		assert(false)
-		return
-	
-	var game = _rooms[room_name]
-	game.add_player(id)
+remotesync func _enter_room(id : int, room_id : String) -> void:
+	(_rooms[room_id] as Room).add_client(id)
 
-remotesync func _signal_create_room_attempted(room_name : String) -> void:
-	emit_signal('create_room_attempted', room_name)
 
-remotesync func _signal_enter_room_attempted(room_name : String) -> void:
-	emit_signal('enter_room_attempted', room_name)
+remotesync func _signal_entered_room(success : bool, room_id : String, reason : int) -> void:
+	emit_signal('entered_room_callback', success, room_id, reason)
 		
 func _create_server_or_client() -> int:
 	var peer = NetworkedMultiplayerENet.new()

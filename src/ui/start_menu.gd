@@ -6,8 +6,7 @@ onready var _enter_room_button := $VBox/EnterRoom as Button
 onready var _room_name_edit := $VBox/RoomName as LineEdit
 
 func _ready() -> void:
-	Network.connect('create_room_attempted', self, '_create_room_attempted')
-	Network.connect('enter_room_attempted', self, '_enter_room_attempted')
+	Network.connect('entered_room_callback', self, '_entered_room')
 
 func _disable_ui():
 	_username_edit.editable = false
@@ -21,21 +20,13 @@ func _enable_ui():
 	_enter_room_button.disabled = false
 	_room_name_edit.editable = true
 
-func _create_room_attempted(room_name : String) -> void:
+func _entered_room(success : bool, room_id : String, reason : int) -> void:
 	call_deferred('_enable_ui')
-	if room_name == '':
-		print('Error creating room...')	
+	if not success:
+		printt('Error when trying to enter room', reason)
 		return
 	
-	prints('Created room: ', room_name)
-
-func _enter_room_attempted(room_name : String) -> void:
-	call_deferred('_enable_ui')
-	if room_name == '':
-		print('Room does not exist')
-		return
-	
-	prints('Entered room: ', room_name)
+	prints('Entered room:', room_id)
 
 func _on_CreateRoom_pressed() -> void:
 	Network.create_room(_room_name_edit.text)
@@ -44,3 +35,6 @@ func _on_CreateRoom_pressed() -> void:
 func _on_EnterRoom_pressed() -> void:
 	Network.enter_room(_room_name_edit.text)
 	_disable_ui()
+
+func _on_Debug_pressed() -> void:
+	Network.print_rooms()
