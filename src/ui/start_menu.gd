@@ -23,7 +23,7 @@ func _enable_ui():
 func _entered_room(success : bool, room_id : String, reason : int) -> void:
 	call_deferred('_enable_ui')
 	if not success:
-		printt('Error when trying to enter room', reason)
+		prints('Error when trying to enter room:', Network.error_2_string(reason), '[' + room_id + ']')
 		return
 	
 	prints('Entered room:', room_id)

@@ -9,10 +9,19 @@ signal room_added(room_id)
 
 enum {
 	Error_none = 0,
-	Error_general,
+	Error_unknown,
 	Error_room_does_not_exist,
 	Error_client_already_in_room
 }
+
+func error_2_string(error : int) -> String:
+	match error:
+		Error_none: return "None"
+		Error_unknown: return "Unknown"
+		Error_room_does_not_exist: return "Room does not exist"
+		Error_client_already_in_room: return "Client already in room"
+	
+	return str(error)
 
 var _local_peer : NetworkedMultiplayerENet = null
 
@@ -36,8 +45,9 @@ func create_room(room_name : String) -> void:
 	if not _local_peer: return
 
 	var local_id := get_tree().get_network_unique_id()
-	if _get_room_for_id(local_id) != '':
-		_signal_entered_room(false, '', Error_client_already_in_room)
+	var in_room := _get_room_for_id(local_id)
+	if in_room != '':
+		_signal_entered_room(false, in_room, Error_client_already_in_room)
 		return
 
 	rpc('_attempt_add_room', local_id, room_name)
@@ -47,12 +57,13 @@ func enter_room(room_id : String) -> void:
 	if not _local_peer: return
 	
 	if not room_id in _rooms:
-		_signal_entered_room(false, '', Error_room_does_not_exist)
+		_signal_entered_room(false, room_id, Error_room_does_not_exist)
 		return
 	
 	var local_id := get_tree().get_network_unique_id()
-	if _get_room_for_id(local_id) != '':
-		_signal_entered_room(false, '', Error_client_already_in_room)
+	var in_room := _get_room_for_id(local_id)
+	if in_room != '':
+		_signal_entered_room(false, in_room, Error_client_already_in_room)
 		return
 	
 	rpc('_attempt_enter_room', local_id, room_id)
