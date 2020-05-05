@@ -2,6 +2,8 @@ extends Node2D
 
 class_name Room
 
+signal client_added(id)
+
 # State
 var _id := ''
 var _nickname := ''
@@ -25,6 +27,10 @@ func clients() -> Array:
 	return _clients.duplicate()
 
 func add_client(id : int) -> void:
+	_clients.append(id)
+	emit_signal('client_added', id)
+
+master func _add_client(id : int) -> void:
 	_clients.append(id)
 
 func _client_disconnected(id : int) -> void:

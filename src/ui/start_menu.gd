@@ -26,12 +26,6 @@ func _enable_ui():
 
 func _entered_room(success : bool, room_id : String, reason : int, is_local: bool) -> void:
 	call_deferred('_enable_ui')
-	if not success:
-		var error := "[error: %s] [room id: '%s'] [is_local: %s]" % [Network.error_2_string(reason), room_id, is_local]
-		print(error)
-		return
-	
-	prints('Entered room:', room_id)
 
 func _on_CreateRoom_pressed() -> void:
 	Network.create_room(_room_name_edit.text)

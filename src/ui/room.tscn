@@ -1,0 +1,65 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://src/ui/room.gd" type="Script" id=1]
+
+[node name="Room" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_min_size = Vector2( 1024, 600 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Panel" type="Panel" parent="."]
+margin_left = 10.0
+margin_top = 10.0
+margin_right = 310.0
+margin_bottom = 210.0
+rect_min_size = Vector2( 300, 200 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Nickname" type="Label" parent="Panel"]
+margin_left = 10.0
+margin_top = 10.0
+margin_right = 62.0
+margin_bottom = 14.0
+text = "nickname"
+max_lines_visible = 1
+
+[node name="Players" type="VBoxContainer" parent="Panel"]
+margin_left = 10.0
+margin_top = 40.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Username" type="Label" parent="Panel/Players"]
+margin_right = 36.0
+margin_bottom = 14.0
+text = "name"
+max_lines_visible = 1
+
+[node name="Buttons" type="VBoxContainer" parent="Panel"]
+margin_left = 220.0
+margin_top = 10.0
+margin_right = 282.0
+margin_bottom = 54.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CopyID" type="Button" parent="Panel/Buttons"]
+margin_right = 62.0
+margin_bottom = 20.0
+text = "Copy ID"
+
+[node name="Play" type="Button" parent="Panel/Buttons"]
+margin_top = 24.0
+margin_right = 62.0
+margin_bottom = 44.0
+text = "Play"
+[connection signal="pressed" from="Panel/Buttons/CopyID" to="." method="_on_CopyID_pressed"]
+[connection signal="pressed" from="Panel/Buttons/Play" to="." method="_on_CopyID_pressed"]

@@ -57,6 +57,10 @@ func enter_room(room_id : String) -> void:
 	if _abort_enter_room(local_id, room_id): return
 	
 	rpc('_attempt_enter_room', local_id, room_id)
+
+func get_room(room_id : String) -> Room:
+	if not room_id in _rooms: return null
+	return _rooms[room_id] as Room
 	
 func _abort_enter_room(client_id : int, room_id : String) -> bool:
 	var is_local := client_id == get_tree().get_network_unique_id()
