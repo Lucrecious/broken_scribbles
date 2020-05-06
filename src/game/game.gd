@@ -18,19 +18,26 @@ var _players := []
 var _drawing_books := {}
 var _words := {}
 
+var _word_choices := []
+
 var _phases := []
 var _phase := 0
 
 func init(room_settings : Dictionary) -> void:
 	for id in room_settings.players:
 		_players.push_back(id)
+	
+	_word_choices = room_settings.words
 
 func _ready():
 	#_phases = _build_phases()
 	_phases = _test_phases()
 
-func local_word_choices() -> PoolStringArray:
-	return 'choice1 choice2 choice3 choice4'.split(' ')
+func local_word_choices() -> Array:
+	var index := _players.find(get_tree().get_network_unique_id()) as int
+	assert(index >= 0)
+	if index < 0: return ['default']
+	return _word_choices[index] as Array
 
 remotesync func start_game() -> void:
 	_reset_game()
