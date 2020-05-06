@@ -29,7 +29,6 @@ func init(room_settings : Dictionary) -> void:
 	for i in range(room_settings.players.size()):
 		var id := room_settings.players[i] as int
 		_players.push_back(id)
-		_word_choices[id] = room_settings.words[i]
 
 func _ready():
 	get_tree().connect('network_peer_disconnected', self, '_player_left')
@@ -41,7 +40,7 @@ func _player_left(id : int) -> void:
 	_disconnected[id] = true
 	emit_signal('player_left', id)
 
-func rpc_players(method : String, args : Array) -> void:
+func rpc_players(method : String, args := []) -> void:
 	if not is_network_master(): return
 	if not get_tree().get_network_unique_id() in _players:
 		callv(method, args)
@@ -52,29 +51,64 @@ func rpc_players(method : String, args : Array) -> void:
 func local_word_choices() -> Array:
 	return _word_choices.get(get_tree().get_network_unique_id(), ['default'])
 
-remotesync func start_game() -> void:
-	_reset_game()
-	_next_phase()
+master func start_game() -> void:
+	rpc_players('_set_word_choices', [_get_word_choices()])
+	rpc_players('_reset_game')
+	rpc_players('_next_phase')
 
 mastersync func pick_word(from_id : int, index : int) -> void:
 	if not _valid_phase(): return
 	if _phases[_phase] != Phase_ChooseWord: return
 	if not from_id in _players: return
 	if from_id in _words: return
-	_words[from_id] = _word_choices[from_id][index]
+	rpc_players('_set_word_choice', [from_id, _word_choices[from_id][index]])
 
 	if _words.size() < _players.size(): return
-	rpc_players('_next_phase', [])
+	rpc_players('_next_phase')
+
+remotesync func _set_word_choice(id : int, word : String) -> void:
+	_words[id] = word
+
+func _get_word_choices(words_per_player := 3) -> Dictionary:
+	var choices := Constants.Words.duplicate().keys()
+	var words := []
+
+	var total_word_num := words_per_player * _players.size()
+
+	# Only a safe guard if there not enough words
+	while choices.size() < total_word_num:
+		choices += choices
+	
+	# Try to never repeat words
+	var step := choices.size() / total_word_num
+	assert(step >= 1)
+
+	for i in range(0, choices.size(), step):
+		words.append(choices[min(i + randi() % step, choices.size() - 1)])
+	
+	words.shuffle()
+	
+	var word_choices := {}
+	for id in _players:
+		word_choices[id] = []
+		for _i in range(words_per_player):
+			word_choices[id].append(words.pop_back())
+
+	return word_choices
+
 
 func _valid_phase():
 	return _phase >= 0 && _phase < _phases.size()
 
-func _reset_game() -> void:
+remotesync func _reset_game() -> void:
 	_phase = 0
 
 remotesync func _next_phase() -> void:
 	_phase += 1
 	emit_signal('phase_changed', _phases[_phase - 1], _phases[_phase])
+
+remotesync func _set_word_choices(word_choices : Dictionary) -> void:
+	_word_choices = word_choices
 	
 func _build_phases() -> Array:
 	var phases := []

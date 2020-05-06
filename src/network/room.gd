@@ -25,19 +25,19 @@ func init(id : String, nickname : String) -> void:
 	_nickname = nickname
 
 master func add_game() -> void:
-	var words := ['my set of words'.split(' '), 'your s3t 0f w0rds'.split(' ')]
-	_add_game(_clients, words)
+	_add_game(_clients)
 	for client in _clients:
-		rpc_id(client, '_add_game', _clients, words)
+		rpc_id(client, '_add_game', _clients)
 
-remotesync func _add_game(clients : Array, words : Array) -> void:
+	_game_instance.rpc('start_game')
+
+remotesync func _add_game(clients : Array) -> void:
 	if _game_instance: return
 	var game := _game.instance() as Game
-	game.init({ players = clients, words = words })
+	game.init({ players = clients })
 	add_child(game)
 	_game_instance = game
 	emit_signal('game_created')
-	_game_instance.start_game()
 
 func game() -> Game:
 	return _game_instance
