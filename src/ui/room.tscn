@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://src/ui/room.gd" type="Script" id=1]
+[ext_resource path="res://assets/drawing_background.png" type="Texture" id=2]
+[ext_resource path="res://src/ui/game.gd" type="Script" id=3]
 
 [node name="Room" type="Control"]
 anchor_right = 1.0
@@ -11,17 +13,16 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Panel" type="Panel" parent="."]
+[node name="InfoPanel" type="Panel" parent="."]
 margin_left = 10.0
 margin_top = 10.0
-margin_right = 310.0
+margin_right = 190.0
 margin_bottom = 210.0
-rect_min_size = Vector2( 300, 200 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Nickname" type="Label" parent="Panel"]
+[node name="Nickname" type="Label" parent="InfoPanel"]
 margin_left = 10.0
 margin_top = 10.0
 margin_right = 62.0
@@ -29,37 +30,83 @@ margin_bottom = 14.0
 text = "nickname"
 max_lines_visible = 1
 
-[node name="Players" type="VBoxContainer" parent="Panel"]
+[node name="Players" type="VBoxContainer" parent="InfoPanel"]
 margin_left = 10.0
 margin_top = 40.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Username" type="Label" parent="Panel/Players"]
+[node name="Username" type="Label" parent="InfoPanel/Players"]
 margin_right = 36.0
 margin_bottom = 14.0
 text = "name"
 max_lines_visible = 1
 
-[node name="Buttons" type="VBoxContainer" parent="Panel"]
-margin_left = 220.0
+[node name="Buttons" type="VBoxContainer" parent="InfoPanel"]
+margin_left = 100.0
 margin_top = 10.0
-margin_right = 282.0
-margin_bottom = 54.0
+margin_right = 165.45
+margin_bottom = 55.2015
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="CopyID" type="Button" parent="Panel/Buttons"]
-margin_right = 62.0
+[node name="CopyID" type="Button" parent="InfoPanel/Buttons"]
+margin_right = 65.0
 margin_bottom = 20.0
 text = "Copy ID"
 
-[node name="Play" type="Button" parent="Panel/Buttons"]
+[node name="Play" type="Button" parent="InfoPanel/Buttons"]
 margin_top = 24.0
-margin_right = 62.0
+margin_right = 65.0
 margin_bottom = 44.0
 text = "Play"
-[connection signal="pressed" from="Panel/Buttons/CopyID" to="." method="_on_CopyID_pressed"]
-[connection signal="pressed" from="Panel/Buttons/Play" to="." method="_on_CopyID_pressed"]
+
+[node name="Game" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Center" type="CenterContainer" parent="Game"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 192.0
+margin_top = 132.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="DrawingPanel" type="Panel" parent="Game/Center"]
+margin_left = 65.0
+margin_top = 33.0
+margin_right = 765.0
+margin_bottom = 433.0
+rect_min_size = Vector2( 700, 400 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Center" type="CenterContainer" parent="Game/Center/DrawingPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="DrawingBoard" type="TextureRect" parent="Game/Center/DrawingPanel/Center"]
+margin_left = 25.0
+margin_top = 25.0
+margin_right = 675.0
+margin_bottom = 375.0
+rect_min_size = Vector2( 650, 350 )
+texture = ExtResource( 2 )
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+[connection signal="pressed" from="InfoPanel/Buttons/CopyID" to="." method="_on_CopyID_pressed"]
+[connection signal="pressed" from="InfoPanel/Buttons/Play" to="." method="_on_Play_pressed"]

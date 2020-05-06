@@ -10,6 +10,11 @@ config_version=4
 
 _global_script_classes=[ {
 "base": "Node2D",
+"class": "Game",
+"language": "GDScript",
+"path": "res://src/game/game.gd"
+}, {
+"base": "Node2D",
 "class": "Room",
 "language": "GDScript",
 "path": "res://src/network/room.gd"
@@ -20,6 +25,7 @@ _global_script_classes=[ {
 "path": "res://src/network/uuid.gd"
 } ]
 _global_script_class_icons={
+"Game": "",
 "Room": "",
 "UUID": ""
 }

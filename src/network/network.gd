@@ -61,7 +61,15 @@ func enter_room(room_id : String) -> void:
 func get_room(room_id : String) -> Room:
 	if not room_id in _rooms: return null
 	return _rooms[room_id] as Room
+
+func play_game(room_id : String) -> void:
+	rpc('_play_game', get_tree().get_network_unique_id(), room_id)
 	
+master func _play_game(id : int, room_id : String) -> void:
+	if not room_id in _rooms: return
+	if not id in _rooms[room_id].clients(): return
+	_rooms[room_id].add_game()
+
 func _abort_enter_room(client_id : int, room_id : String) -> bool:
 	var is_local := client_id == get_tree().get_network_unique_id()
 
