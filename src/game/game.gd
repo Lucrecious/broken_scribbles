@@ -41,6 +41,14 @@ func _player_left(id : int) -> void:
 	_disconnected[id] = true
 	emit_signal('player_left', id)
 
+func rpc_players(method : String, args : Array) -> void:
+	if not is_network_master(): return
+	if not get_tree().get_network_unique_id() in _players:
+		callv(method, args)
+
+	for id in _players:
+		callv('rpc_id', [id, method] + args)
+
 func local_word_choices() -> Array:
 	return _word_choices.get(get_tree().get_network_unique_id(), ['default'])
 
@@ -48,11 +56,15 @@ remotesync func start_game() -> void:
 	_reset_game()
 	_next_phase()
 
-mastersync func pick_word(index : int) -> void:
+mastersync func pick_word(from_id : int, index : int) -> void:
 	if not _valid_phase(): return
 	if _phases[_phase] != Phase_ChooseWord: return
-	var sender_id := get_tree().get_rpc_sender_id()
-	_words[sender_id] = _word_choices[sender_id][index]
+	if not from_id in _players: return
+	if from_id in _words: return
+	_words[from_id] = _word_choices[from_id][index]
+
+	if _words.size() < _players.size(): return
+	rpc_players('_next_phase', [])
 
 func _valid_phase():
 	return _phase >= 0 && _phase < _phases.size()
@@ -60,7 +72,7 @@ func _valid_phase():
 func _reset_game() -> void:
 	_phase = 0
 
-func _next_phase() -> void:
+remotesync func _next_phase() -> void:
 	_phase += 1
 	emit_signal('phase_changed', _phases[_phase - 1], _phases[_phase])
 	
