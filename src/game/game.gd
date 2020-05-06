@@ -40,7 +40,6 @@ func _player_left(id : int) -> void:
 	if not id in _players: return
 	_disconnected[id] = true
 	emit_signal('player_left', id)
-	print(_disconnected)
 
 func local_word_choices() -> Array:
 	return _word_choices.get(get_tree().get_network_unique_id(), ['default'])

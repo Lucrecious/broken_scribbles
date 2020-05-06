@@ -158,8 +158,6 @@ remotesync func _remove_room(room_id : String) -> void:
 	remove_child(room)
 	room.queue_free()
 
-	print(_rooms)
-
 remotesync func _add_room(room_id : String, nickname : String, creator_id : int) -> void:
 	var room = preload('res://src/network/room.tscn').instance()
 	room.init(room_id, nickname)
