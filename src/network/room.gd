@@ -4,6 +4,7 @@ class_name Room
 
 signal client_added(id)
 signal client_left(id)
+signal just_emptied(room_id)
 signal game_created
 
 # State
@@ -62,3 +63,6 @@ func _client_disconnected(id : int) -> void:
 	
 	_clients.erase(id)
 	emit_signal('client_left', id)
+
+	if _clients.size(): return
+	emit_signal('just_emptied', _id)

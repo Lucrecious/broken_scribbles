@@ -114,8 +114,11 @@ func _sync(id : int) -> void:
 	
 remotesync func _sync_rooms(room_states : Dictionary) -> void:
 	for id in room_states:
-		_add_room(id, room_states[id].nickname)
-		_rooms[id]._clients = room_states[id].clients
+		var clients := room_states[id].clients as Array
+		if not clients.size(): continue
+
+		_add_room(id, room_states[id].nickname, clients[0])
+		_rooms[id]._clients = clients
 
 func _get_room_for_id(id : int) -> String:
 	for room_id in _rooms:
@@ -134,13 +137,34 @@ master func _attempt_add_room(from_id : int, room_name : String) -> void:
 	if _abort_create_room(from_id): return
 
 	var room_id := UUID.v4()
-	rpc('_add_room', room_id, room_name)
-	(_rooms[room_id] as Room).add_client(from_id)
+	rpc('_add_room', room_id, room_name, from_id)
+	_rooms[room_id].connect('just_emptied', self, '_room_just_emptied')
+
 	rpc_id(from_id, '_signal_entered_room', true, room_id, Error_none, from_id == get_tree().get_network_unique_id())
 
-remotesync func _add_room(room_id : String, nickname : String) -> void:
+func _room_just_emptied(room_id : String) -> void:
+	assert(is_network_master())
+	if not is_network_master(): return
+	
+	rpc('_remove_room', room_id)
+
+remotesync func _remove_room(room_id : String) -> void:
+	if not room_id in _rooms: return
+
+	var room := _rooms[room_id] as Room
+	if room.clients().size(): return
+	
+	_rooms.erase(room_id)
+	remove_child(room)
+	room.queue_free()
+
+	print(_rooms)
+
+remotesync func _add_room(room_id : String, nickname : String, creator_id : int) -> void:
 	var room = preload('res://src/network/room.tscn').instance()
 	room.init(room_id, nickname)
+	room.add_client(creator_id)
+
 	add_child(room)
 	_rooms[room_id] = room
 	emit_signal('room_added', room_id)

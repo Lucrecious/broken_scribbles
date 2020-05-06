@@ -22,7 +22,7 @@ func _ready() -> void:
 	_game_ui.visible = false
 	
 	_room.connect('client_added', self, '_update_usernames')
-	_room.connect('client_left', self, '_update_usernames')
+	_room.connect('client_left', self, '_on_client_left')
 	_room.connect('game_created', self, '_on_game_created')
 	
 	_nickname.text = _room.nickname()
@@ -36,12 +36,17 @@ func _ready() -> void:
 
 	_setup_leader()
 
+func _on_client_left(_id : int) -> void:
+	_update_usernames()
+	_setup_leader()
+
 func _setup_leader() -> void:
+	_play_button.disabled = true
+	if not _room.clients().size(): return
+	
 	var leader_id := _room.clients()[0] as int
-	if get_tree().get_network_unique_id() == leader_id:
-		_play_button.disabled = false
-	else:
-		_play_button.disabled = true
+	if get_tree().get_network_unique_id() != leader_id: return
+	_play_button.disabled = false
 
 func _update_usernames(_id := 0) -> void:
 	for c in _players.get_children():
