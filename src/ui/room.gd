@@ -21,7 +21,8 @@ func _ready() -> void:
 	
 	_game_ui.visible = false
 	
-	_room.connect('client_added', self, '_client_added')
+	_room.connect('client_added', self, '_update_usernames')
+	_room.connect('client_left', self, '_update_usernames')
 	_room.connect('game_created', self, '_on_game_created')
 	
 	_nickname.text = _room.nickname()
@@ -42,10 +43,7 @@ func _setup_leader() -> void:
 	else:
 		_play_button.disabled = true
 
-func _client_added(id : int) -> void:
-	_update_usernames()
-
-func _update_usernames() -> void:
+func _update_usernames(_id := 0) -> void:
 	for c in _players.get_children():
 		_players.remove_child(c)
 		c.queue_free()

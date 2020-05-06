@@ -3,6 +3,7 @@ extends Node2D
 class_name Room
 
 signal client_added(id)
+signal client_left(id)
 signal game_created
 
 # State
@@ -60,3 +61,4 @@ func _client_disconnected(id : int) -> void:
 	if not id in _clients: return
 	
 	_clients.erase(id)
+	emit_signal('client_left', id)

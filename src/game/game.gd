@@ -10,34 +10,40 @@ const Phase_Guess := 4
 const Phase_End := 5
 const Phase_ShowWord := 6
 
+signal player_left(id)
 signal phase_changed(old_phase, new_phase)
 
 var _room_id := ''
 
+var _disconnected := {}
 var _players := []
 var _drawing_books := {}
 var _words := {}
 
-var _word_choices := []
+var _word_choices := {}
 
 var _phases := []
 var _phase := 0
 
 func init(room_settings : Dictionary) -> void:
-	for id in room_settings.players:
+	for i in range(room_settings.players.size()):
+		var id := room_settings.players[i] as int
 		_players.push_back(id)
-	
-	_word_choices = room_settings.words
+		_word_choices[id] = room_settings.words[i]
 
 func _ready():
+	get_tree().connect('network_peer_disconnected', self, '_player_left')
 	#_phases = _build_phases()
 	_phases = _test_phases()
 
+func _player_left(id : int) -> void:
+	if not id in _players: return
+	_disconnected[id] = true
+	emit_signal('player_left', id)
+	print(_disconnected)
+
 func local_word_choices() -> Array:
-	var index := _players.find(get_tree().get_network_unique_id()) as int
-	assert(index >= 0)
-	if index < 0: return ['default']
-	return _word_choices[index] as Array
+	return _word_choices.get(get_tree().get_network_unique_id(), ['default'])
 
 remotesync func start_game() -> void:
 	_reset_game()
@@ -46,7 +52,8 @@ remotesync func start_game() -> void:
 mastersync func pick_word(index : int) -> void:
 	if not _valid_phase(): return
 	if _phases[_phase] != Phase_ChooseWord: return
-	prints(index, get_parent().get_child_count())
+	var sender_id := get_tree().get_rpc_sender_id()
+	_words[sender_id] = _word_choices[sender_id][index]
 
 func _valid_phase():
 	return _phase >= 0 && _phase < _phases.size()
