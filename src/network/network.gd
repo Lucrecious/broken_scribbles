@@ -1,6 +1,7 @@
 extends Node2D
 
-const DEFAULT_IP := '127.0.0.1'
+#const DEFAULT_IP := '127.0.0.1'
+const DEFAULT_IP := '18.222.136.215'
 const DEFAULT_PORT := 31400
 const MAX_PLAYERS := 10
 
@@ -25,7 +26,7 @@ func error_2_string(error : int) -> String:
 	
 	return str(error)
 
-var _local_peer : NetworkedMultiplayerENet = null
+var _local_peer : WebSocketMultiplayerPeer = null
 
 var _clients := { }
 var _rooms := { }
@@ -34,13 +35,44 @@ func _ready():
 	get_tree().connect('network_peer_connected', self, '_client_entered')
 	get_tree().connect('network_peer_disconnected', self, '_client_left')
 
+func _process(delta: float) -> void:
+	if _local_peer is WebSocketServer:
+		_listen_server(_local_peer as WebSocketServer)
+	elif _local_peer is WebSocketClient:
+		_listen_client(_local_peer as WebSocketClient)
+
+func _listen_server(server : WebSocketServer) -> void:
+	if not server.is_listening(): return
+	server.poll()
+
+func _listen_client(client : WebSocketClient) -> void:
+	if client.get_connection_status() != NetworkedMultiplayerPeer.CONNECTION_CONNECTED &&\
+		client.get_connection_status() != NetworkedMultiplayerPeer.CONNECTION_CONNECTING: return
+	
+	client.poll()
+
 func print_rooms() -> void:
 	for id in _rooms:
 		var r = _rooms[id]
 		prints(r.nickname(), r.id(), r.clients())
 
-func init_local_peer(as_server : bool) -> int:
-	return _create_server_or_client(as_server)
+func init_client() -> int:
+	var client := WebSocketClient.new()
+	var url := 'ws://' + DEFAULT_IP + ':' + str(DEFAULT_PORT)
+
+	var success := client.connect_to_url(url, PoolStringArray(), true)
+	if success != OK: return success
+	get_tree().set_network_peer(client)
+	_local_peer = client
+	return OK
+
+func init_server() -> int:
+	var server := WebSocketServer.new()
+	var success := server.listen(DEFAULT_PORT, PoolStringArray(), true)
+	if success != OK: return success
+	get_tree().set_network_peer(server)
+	_local_peer = server
+	return OK
 
 master func create_room(room_name : String) -> void:
 	assert(_local_peer)
@@ -143,23 +175,6 @@ func _room_just_emptied(room_id : String) -> void:
 	if not is_network_master(): return
 	
 	rpc('_remove_room', room_id)
-	
-func _create_server_or_client(as_server : bool) -> int:
-	var peer = NetworkedMultiplayerENet.new()
-	
-	var success := OK
-	if as_server:
-		success = peer.create_server(DEFAULT_PORT, MAX_PLAYERS)
-	else:
-		success = peer.create_client(DEFAULT_IP, DEFAULT_PORT)
-	
-	if success != OK: return success
-	
-	get_tree().set_network_peer(peer)
-
-	_local_peer = peer
-
-	return OK
 
 func _client_entered(id : int) -> void:
 	_clients[id] = true
