@@ -17,18 +17,29 @@ var _room_id := ''
 
 var _disconnected := {}
 var _players := []
-var _drawing_books := {}
+var _drawings := {}
+var _guesses := {}
 var _words := {}
+
+var _holding_map := {}
 
 var _word_choices := {}
 
 var _phases := []
 var _phase := 0
 
+var _guess_num := 0
+var _draw_num := 0
+
 func init(room_settings : Dictionary) -> void:
 	for i in range(room_settings.players.size()):
 		var id := room_settings.players[i] as int
 		_players.push_back(id)
+
+		_drawings[id] = []
+		_guesses[id] = []
+
+		_holding_map[id] = id
 
 func _ready():
 	get_tree().connect('network_peer_disconnected', self, '_player_left')
@@ -39,6 +50,10 @@ func _player_left(id : int) -> void:
 	if not id in _players: return
 	_disconnected[id] = true
 	emit_signal('player_left', id)
+
+func get_phase() -> int:
+	if not _valid_phase(): Phase_None
+	return _phases[_phase]
 
 func rpc_players(method : String, args := []) -> void:
 	if not is_network_master(): return
@@ -56,15 +71,57 @@ master func start_game() -> void:
 	rpc_players('_reset_game')
 	rpc_players('_next_phase')
 
+func _is_valid_request(sender_id : int, valid_phase : int) -> bool:
+	if not _valid_phase(): return false
+	if _phases[_phase] != valid_phase: return false
+	if not sender_id in _players: return false
+	return true
+
 mastersync func pick_word(from_id : int, index : int) -> void:
-	if not _valid_phase(): return
-	if _phases[_phase] != Phase_ChooseWord: return
-	if not from_id in _players: return
+	if not _is_valid_request(from_id, Phase_ChooseWord): return
 	if from_id in _words: return
 	rpc_players('_set_word_choice', [from_id, _word_choices[from_id][index]])
 
 	if _words.size() < _players.size(): return
+	rpc_players('_init_guesses')
 	rpc_players('_next_phase')
+
+mastersync func done_drawing(image_info : Dictionary) -> void:
+	var sender_id := get_tree().get_rpc_sender_id()
+	if not _is_valid_request(sender_id, Phase_Draw): return
+
+	var holding_id := _holding_map[sender_id] as int
+	_drawings[holding_id].append(image_info)
+	
+	if not _drawings_ready(): return
+	rpc_players('_pass')
+	
+	for id in _players:
+		holding_id = _holding_map[id] as int
+		rpc_id(id, '_on_done_drawing', _drawings[holding_id][-1])
+	
+	rpc_players('_next_phase')
+
+
+mastersync func done_guess(guess : String) -> void:
+	var sender_id := get_tree().get_rpc_sender_id()
+	if not _is_valid_request(sender_id, Phase_Guess): return
+	
+	var holding_id := _holding_map[sender_id] as int
+	_guesses[holding_id].append(guess)
+
+	if not _guesses_ready(): return
+	rpc_players('_pass')
+
+	for id in _players:
+		holding_id = _holding_map[id] as int
+		rpc_id(id, '_on_done_guessing', _guesses[holding_id][-1])
+	
+	rpc_players('_next_phase')
+
+remotesync func _init_guesses() -> void:
+	for id in _words: _guesses[id].append(_words[id])
+	_guess_num = 1
 
 remotesync func _set_word_choice(id : int, word : String) -> void:
 	_words[id] = word
@@ -80,6 +137,7 @@ func _get_word_choices(words_per_player := 3) -> Dictionary:
 		choices += choices
 	
 	# Try to never repeat words
+# warning-ignore:integer_division
 	var step := choices.size() / total_word_num
 	assert(step >= 1)
 
@@ -96,6 +154,65 @@ func _get_word_choices(words_per_player := 3) -> Dictionary:
 
 	return word_choices
 
+remotesync func _pass() -> void:
+	if not _valid_phase(): return
+	
+	if get_phase() == Phase_Guess:
+		_guess_num += 1
+	elif get_phase() == Phase_Draw:
+		_draw_num += 1
+
+	var ids := _holding_map.keys()
+	var vs := []
+	for id in ids:
+		vs.append(_holding_map[id])
+	
+	var back := vs.pop_back() as int
+	vs.push_front(back)
+
+	for i in range(ids.size()):
+		_holding_map[ids[i]] = vs[i]
+
+remotesync func _on_done_drawing(image_info : Dictionary) -> void:
+	var id := get_tree().get_network_unique_id()
+	var holding_id := _holding_map[id] as int
+	_drawings[holding_id].append(image_info)
+
+func get_local_image() -> Image:
+	var image := Image.new()
+	var holding_id := _holding_map[get_tree().get_network_unique_id()] as int
+	if _drawings[holding_id].empty(): return image
+
+	var info := _drawings[holding_id][-1] as Dictionary
+
+	var size := info.size as Vector2
+	var uncompressed_size := info.uncompressed_size as int
+	var format := info.format as int
+	var bytes := (info.bytes as PoolByteArray).decompress(uncompressed_size, File.COMPRESSION_FASTLZ)
+
+	image.create_from_data(int(size.x), int(size.y), false, format, bytes)
+
+	return image
+
+remotesync func _on_done_guessing(guess : String) -> void:
+	var id := get_tree().get_network_unique_id()
+	var holding_id := _holding_map[id] as int
+	_guesses[holding_id].append(guess)
+
+func get_local_guess() -> String:
+	var holding_id := _holding_map[get_tree().get_network_unique_id()] as int
+	if _guesses[holding_id].empty(): return ''
+	return _guesses[holding_id][-1]
+
+func _drawings_ready() -> bool:
+	for id in _drawings:
+		if _drawings[id].size() <= _draw_num: return false
+	return true
+
+func _guesses_ready() -> bool:
+	for id in _guesses:
+		if _guesses[id].size() <= _guess_num: return false
+	return true
 
 func _valid_phase():
 	return _phase >= 0 && _phase < _phases.size()
@@ -131,5 +248,9 @@ func _build_phases() -> Array:
 	return phases
 
 func _test_phases() -> Array:
-	var phases := [ Phase_None, Phase_ChooseWord, Phase_ShowWord ]
+	var phases := [ Phase_None, Phase_ChooseWord]
+	for _i in range(5):
+		phases += [Phase_Draw, Phase_Guess]
+	
+	phases += [Phase_End]
 	return phases

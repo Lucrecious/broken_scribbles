@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://src/ui/room.gd" type="Script" id=1]
 [ext_resource path="res://assets/drawing_background.png" type="Texture" id=2]
 [ext_resource path="res://src/ui/game.gd" type="Script" id=3]
+[ext_resource path="res://src/ui/drawing_canvas.tscn" type="PackedScene" id=4]
 
 [node name="Room" type="Control"]
 anchor_right = 1.0
@@ -71,6 +72,15 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="Header" type="TextEdit" parent="Game"]
+margin_left = 426.787
+margin_top = 77.2926
+margin_right = 772.787
+margin_bottom = 139.293
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="Center" type="CenterContainer" parent="Game"]
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -97,7 +107,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="DrawingBoard" type="TextureRect" parent="Game/Center/DrawingPanel/Center"]
+[node name="Background" type="TextureRect" parent="Game/Center/DrawingPanel/Center"]
 margin_left = 25.0
 margin_top = 25.0
 margin_right = 675.0
@@ -108,5 +118,15 @@ expand = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="DrawingCanvas" parent="Game/Center/DrawingPanel/Center/Background" instance=ExtResource( 4 )]
+
+[node name="Done" type="Button" parent="Game"]
+margin_left = 789.0
+margin_top = 86.0
+margin_right = 880.0
+margin_bottom = 128.0
+text = "Done"
 [connection signal="pressed" from="InfoPanel/Buttons/CopyID" to="." method="_on_CopyID_pressed"]
 [connection signal="pressed" from="InfoPanel/Buttons/Play" to="." method="_on_Play_pressed"]
+[connection signal="pressed" from="Game/Done" to="Game" method="_on_Done_pressed"]
