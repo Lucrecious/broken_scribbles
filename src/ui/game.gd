@@ -15,7 +15,6 @@ func init(game : Game) -> void:
 	_game.connect('phase_changed', self, '_phase_changed')
 
 func _phase_changed(_old_phase : int, new_phase : int) -> void:
-	print('phase changed')
 	if new_phase == Game.Phase_ChooseWord:
 		_on_choose_word()
 	if new_phase == Game.Phase_Guess:
