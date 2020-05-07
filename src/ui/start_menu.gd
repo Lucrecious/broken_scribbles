@@ -7,10 +7,6 @@ onready var _room_name_edit := $VBox/RoomName as LineEdit
 
 func _ready() -> void:
 	Network.connect('entered_room_callback', self, '_entered_room')
-	Network.connect('room_added', self, '_room_added')
-
-func _room_added(room_id : String) -> void:
-	pass
 
 func _disable_ui():
 	_username_edit.editable = false
@@ -28,11 +24,11 @@ func _entered_room(success : bool, room_id : String, reason : int, is_local: boo
 	call_deferred('_enable_ui')
 
 func _on_CreateRoom_pressed() -> void:
-	Network.create_room(_room_name_edit.text)
+	Network.rpc_id(Network.server_id, 'create_room', _room_name_edit.text)
 	_disable_ui()
 	
 func _on_EnterRoom_pressed() -> void:
-	Network.enter_room(_room_name_edit.text)
+	Network.rpc_id(Network.server_id, 'enter_room', _room_name_edit.text)
 	_disable_ui()
 
 func _on_Debug_pressed() -> void:

@@ -72,5 +72,5 @@ func _on_Play_pressed() -> void:
 	var leader_id := _room.clients()[0] as int
 	if leader_id != get_tree().get_network_unique_id(): return
 	
-	Network.play_game(_room_id)
+	Network.rpc_id(Network.server_id, 'play_game', _room_id)
 	_play_button.disabled = true
