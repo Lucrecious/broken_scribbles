@@ -29,7 +29,7 @@ master func add_game() -> void:
 	for client in _clients:
 		rpc_id(client, '_add_game', _clients)
 
-	_game_instance.rpc('start_game')
+	_game_instance.start_game()
 
 remotesync func _add_game(clients : Array) -> void:
 	if _game_instance: return

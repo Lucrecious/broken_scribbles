@@ -47,10 +47,7 @@ func _on_choose_word() -> void:
 	_pick_a_word_instance.connect('word_picked', self, '_word_picked')
 
 func _word_picked(index : int) -> void:
-	if is_network_master():
-		_game.pick_word(get_tree().get_network_unique_id(), index)
-	else:
-		_game.rpc('pick_word', get_tree().get_network_unique_id(), index)
+	_game.rpc_id(Network.server_id, 'pick_word', get_tree().get_network_unique_id(), index)
 
 	if not _pick_a_word_instance: return
 	remove_child(_pick_a_word_instance)
@@ -79,10 +76,10 @@ func _on_done_phase_draw() -> void:
 	}
 	image.unlock()
 	
-	_game.rpc('done_drawing', image_info)
+	_game.rpc_id(Network.server_id, 'done_drawing', image_info)
 
 func _on_done_phase_guess() -> void:
-	_game.rpc('done_guess', _header.text)
+	_game.rpc_id(Network.server_id, 'done_guess', _header.text)
 
 
 

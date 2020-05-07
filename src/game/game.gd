@@ -56,8 +56,7 @@ func get_phase() -> int:
 
 func rpc_players(method : String, args := []) -> void:
 	if not is_network_master(): return
-	if not get_tree().get_network_unique_id() in _players:
-		callv(method, args)
+	callv(method, args)
 
 	for id in _players:
 		callv('rpc_id', [id, method] + args)
@@ -76,7 +75,7 @@ func _is_valid_request(sender_id : int, valid_phase : int) -> bool:
 	if not sender_id in _players: return false
 	return true
 
-mastersync func pick_word(from_id : int, index : int) -> void:
+master func pick_word(from_id : int, index : int) -> void:
 	if not _is_valid_request(from_id, Phase_ChooseWord): return
 	if from_id in _words: return
 	rpc_players('_set_word_choice', [from_id, _word_choices[from_id][index]])
@@ -85,7 +84,7 @@ mastersync func pick_word(from_id : int, index : int) -> void:
 	rpc_players('_init_guesses')
 	rpc_players('_next_phase')
 
-mastersync func done_drawing(image_info : Dictionary) -> void:
+master func done_drawing(image_info : Dictionary) -> void:
 	var sender_id := get_tree().get_rpc_sender_id()
 	if not _is_valid_request(sender_id, Phase_Draw): return
 
@@ -103,7 +102,7 @@ mastersync func done_drawing(image_info : Dictionary) -> void:
 	rpc_players('_next_phase')
 
 
-mastersync func done_guess(guess : String) -> void:
+master func done_guess(guess : String) -> void:
 	var sender_id := get_tree().get_rpc_sender_id()
 	if not _is_valid_request(sender_id, Phase_Guess): return
 	
