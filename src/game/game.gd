@@ -21,15 +21,14 @@ var _drawings := {}
 var _guesses := {}
 var _words := {}
 
+var _phase_done := {}
+
 var _holding_map := {}
 
 var _word_choices := {}
 
 var _phases := []
 var _phase := 0
-
-var _guess_num := 0
-var _draw_num := 0
 
 func init(room_settings : Dictionary) -> void:
 	for i in range(room_settings.players.size()):
@@ -93,7 +92,8 @@ mastersync func done_drawing(image_info : Dictionary) -> void:
 	var holding_id := _holding_map[sender_id] as int
 	_drawings[holding_id].append(image_info)
 	
-	if not _drawings_ready(): return
+	_phase_done[sender_id] = true
+	if not _players_done(): return
 	rpc_players('_pass')
 	
 	for id in _players:
@@ -110,7 +110,8 @@ mastersync func done_guess(guess : String) -> void:
 	var holding_id := _holding_map[sender_id] as int
 	_guesses[holding_id].append(guess)
 
-	if not _guesses_ready(): return
+	_phase_done[sender_id] = true
+	if not _players_done(): return
 	rpc_players('_pass')
 
 	for id in _players:
@@ -119,9 +120,11 @@ mastersync func done_guess(guess : String) -> void:
 	
 	rpc_players('_next_phase')
 
+func _players_done() -> bool:
+	return _phase_done.size() == _players.size()
+
 remotesync func _init_guesses() -> void:
 	for id in _words: _guesses[id].append(_words[id])
-	_guess_num = 1
 
 remotesync func _set_word_choice(id : int, word : String) -> void:
 	_words[id] = word
@@ -156,11 +159,6 @@ func _get_word_choices(words_per_player := 3) -> Dictionary:
 
 remotesync func _pass() -> void:
 	if not _valid_phase(): return
-	
-	if get_phase() == Phase_Guess:
-		_guess_num += 1
-	elif get_phase() == Phase_Draw:
-		_draw_num += 1
 
 	var ids := _holding_map.keys()
 	var vs := []
@@ -169,6 +167,8 @@ remotesync func _pass() -> void:
 	
 	var back := vs.pop_back() as int
 	vs.push_front(back)
+
+	_phase_done.clear()
 
 	for i in range(ids.size()):
 		_holding_map[ids[i]] = vs[i]
@@ -203,16 +203,6 @@ func get_local_guess() -> String:
 	var holding_id := _holding_map[get_tree().get_network_unique_id()] as int
 	if _guesses[holding_id].empty(): return ''
 	return _guesses[holding_id][-1]
-
-func _drawings_ready() -> bool:
-	for id in _drawings:
-		if _drawings[id].size() <= _draw_num: return false
-	return true
-
-func _guesses_ready() -> bool:
-	for id in _guesses:
-		if _guesses[id].size() <= _guess_num: return false
-	return true
 
 func _valid_phase():
 	return _phase >= 0 && _phase < _phases.size()
