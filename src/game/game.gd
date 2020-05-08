@@ -4,11 +4,10 @@ class_name Game
 
 const Phase_None := 0
 const Phase_ChooseWord := 1
-const Phase_Pass := 2
-const Phase_Draw := 3
-const Phase_Guess := 4
-const Phase_End := 5
-const Phase_ShowWord := 6
+const Phase_Draw := 2
+const Phase_Guess := 3
+const Phase_End := 4
+const Phase_ShowScribbleChain := 5
 
 signal player_left(id)
 signal phase_changed(old_phase, new_phase)
@@ -42,8 +41,7 @@ func init(room_settings : Dictionary) -> void:
 
 func _ready():
 	get_tree().connect('network_peer_disconnected', self, '_player_left')
-	#_phases = _build_phases()
-	_phases = _test_phases()
+	_phases = _build_phases()
 
 func _player_left(id : int) -> void:
 	if not id in _players: return
@@ -82,6 +80,10 @@ master func pick_word(from_id : int, index : int) -> void:
 
 	if _words.size() < _players.size(): return
 	rpc_players('_init_guesses')
+
+	if _players.size() % 2 != 0:
+		rpc_players('_pass')
+
 	rpc_players('_next_phase')
 
 master func done_drawing(image_info : Dictionary) -> void:
@@ -219,27 +221,16 @@ remotesync func _set_word_choices(word_choices : Dictionary) -> void:
 func _build_phases() -> Array:
 	var phases := []
 
-	var passes := 0
+	phases.push_back(Phase_None)
 	phases.push_back(Phase_ChooseWord)
-	if _players.size() % 2 != 0:
-		phases.push_back(Phase_Pass)
-		passes += 1
 
-# warning-ignore:unused_variable
-	for i in range(passes, _players.size()):
+	for _i in range(_players.size()):
 		phases.push_back(Phase_Draw)
-		phases.push_back(Phase_Pass)
 		phases.push_back(Phase_Guess)
-		phases.push_back(Phase_Pass)
 	
+	for _i in range(_players.size()):
+		phases.push_back(Phase_ShowScribbleChain)
+
 	phases.push_back(Phase_End)
 
-	return phases
-
-func _test_phases() -> Array:
-	var phases := [ Phase_None, Phase_ChooseWord]
-	for _i in range(5):
-		phases += [Phase_Draw, Phase_Guess]
-	
-	phases += [Phase_End]
 	return phases
