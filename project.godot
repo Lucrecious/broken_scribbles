@@ -59,6 +59,10 @@ ui_draw={
  ]
 }
 
+[network]
+
+ssl/certificates="res://assets/ssl/cert.crt"
+
 [rendering]
 
 quality/driver/driver_name="GLES2"

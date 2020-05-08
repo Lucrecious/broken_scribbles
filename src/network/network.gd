@@ -1,7 +1,7 @@
 extends Node2D
 
-#const DEFAULT_IP := '127.0.0.1'
-const DEFAULT_IP := '18.222.136.215'
+const DEFAULT_IP := '127.0.0.1'
+#const DEFAULT_IP := '18.222.136.215'
 const DEFAULT_PORT := 31400
 const MAX_PLAYERS := 10
 
@@ -59,7 +59,12 @@ func print_rooms() -> void:
 func init_client() -> int:
 	var client := WebSocketClient.new()
 	var url := 'wss://' + DEFAULT_IP + ':' + str(DEFAULT_PORT)
-
+	
+	var cert := X509Certificate.new()
+	cert.load('res://assets/ssl/cert.crt')
+	client.trusted_ssl_certificate = cert
+	
+	
 	var success := client.connect_to_url(url, PoolStringArray(), true)
 	if success != OK: return success
 	get_tree().set_network_peer(client)
@@ -68,8 +73,18 @@ func init_client() -> int:
 
 func init_server() -> int:
 	var server := WebSocketServer.new()
+	
+	var cert := X509Certificate.new()
+	cert.load('res://assets/ssl/cert.crt')
+	var key := CryptoKey.new()
+	key.load('res://assets/ssl/private.key')
+	
+	server.private_key = key
+	server.ssl_certificate = cert
+
 	var success := server.listen(DEFAULT_PORT, PoolStringArray(), true)
 	if success != OK: return success
+	print(success)
 	get_tree().set_network_peer(server)
 	_local_peer = server
 	return OK
@@ -177,6 +192,7 @@ func _room_just_emptied(room_id : String) -> void:
 	rpc('_remove_room', room_id)
 
 func _client_entered(id : int) -> void:
+	print('client entered: %d' % id)
 	_clients[id] = true
 	
 	_sync(id)
