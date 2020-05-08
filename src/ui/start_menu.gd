@@ -1,6 +1,6 @@
 extends Control
 
-onready var _room_name_edit := $VBox/UserRom as LineEdit
+onready var _room_name_edit := $VBox/RoomName as LineEdit
 onready var _create_room_button := $VBox/CreateRoom as Button
 onready var _enter_room_button := $VBox/EnterRoom as Button
 onready var _room_list_select := $VBox/Rooms as ItemList

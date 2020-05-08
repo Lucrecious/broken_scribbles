@@ -2,6 +2,8 @@ extends TextureRect
 
 signal canvas_changed
 
+export(int, 2, 1000) var pixel_length := 50
+
 var _brush_stamp := [
 	Vector2(0, -1),
 	Vector2(-1, 0),
@@ -12,7 +14,8 @@ var _brush_stamp := [
 
 var _brush_color := Color.red
 
-onready var _size := rect_size
+onready var _size := Vector2()
+onready var _unit_size := Vector2()
 
 var drawable := true
 
@@ -42,8 +45,15 @@ func set_brush_stamp(stamp : Array) -> void:
 	_brush_stamp = stamp
 
 func _ready() -> void:
+	var aspect_ratio = rect_size.x / rect_size.y
+	_size.x = pixel_length
+	_size.y = pixel_length / aspect_ratio
+	
+	_unit_size.x = rect_size.x / _size.x
+	_unit_size.y = rect_size.y / _size.y
+	
 	var image = Image.new()
-	image.create(_size.x, _size.y, false, Image.FORMAT_RGBA8)
+	image.create(_size.x, _size.y, false, Image.FORMAT_RGB8)
 	var tex := ImageTexture.new()
 	tex.create_from_image(image, 0)
 	texture = tex
@@ -56,6 +66,8 @@ func _gui_input(event: InputEvent) -> void:
 		return
 	
 	var mouse_position := get_local_mouse_position()
+	mouse_position.x = int(mouse_position.x / _unit_size.x)
+	mouse_position.y = int(mouse_position.y / _unit_size.y)
 	if Input.is_action_just_pressed('ui_draw'):
 		_clicked_on_image = _has_point(mouse_position)
 	
@@ -64,6 +76,8 @@ func _gui_input(event: InputEvent) -> void:
 	var mouse_delta := Vector2()
 	if event is InputEventMouseMotion:
 		mouse_delta = (event as InputEventMouseMotion).relative
+		mouse_delta.x = int(mouse_delta.x / _unit_size.x)
+		mouse_delta.y = int(mouse_delta.y / _unit_size.y)
 	
 	var changed := _add_pixels(mouse_position, mouse_delta)
 	
