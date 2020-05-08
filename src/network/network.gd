@@ -1,9 +1,12 @@
 extends Node2D
 
-const DEFAULT_IP := '127.0.0.1'
-#const DEFAULT_IP := '18.222.136.215'
+#const DEFAULT_IP := '127.0.0.1'
+const DEFAULT_IP := '18.222.136.215'
 const DEFAULT_PORT := 31400
 const MAX_PLAYERS := 10
+
+const cert_location := 'user://cert.crt'
+const private_key_location := 'user://private.key'
 
 const server_id := 1
 
@@ -61,7 +64,7 @@ func init_client() -> int:
 	var url := 'wss://' + DEFAULT_IP + ':' + str(DEFAULT_PORT)
 	
 	var cert := X509Certificate.new()
-	cert.load('res://assets/ssl/cert.crt')
+	cert.load(cert_location)
 	client.trusted_ssl_certificate = cert
 	
 	
@@ -74,10 +77,18 @@ func init_client() -> int:
 func init_server() -> int:
 	var server := WebSocketServer.new()
 	
+	var dir := Directory.new()
 	var cert := X509Certificate.new()
-	cert.load('res://assets/ssl/cert.crt')
 	var key := CryptoKey.new()
-	key.load('res://assets/ssl/private.key')
+	if not dir.file_exists(private_key_location):
+		var crypto := Crypto.new()
+		key = crypto.generate_rsa(4096)
+		cert = crypto.generate_self_signed_certificate(key, "CN=%s,O=myorganisation,C=IT" % DEFAULT_IP)
+	else:
+		cert.load(cert_location)
+		key.load(private_key_location)
+	
+	cert.save(cert_location)
 	
 	server.private_key = key
 	server.ssl_certificate = cert
