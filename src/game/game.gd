@@ -224,7 +224,7 @@ func _build_phases() -> Array:
 	phases.push_back(Phase_None)
 	phases.push_back(Phase_ChooseWord)
 
-	for _i in range(_players.size()):
+	for _i in range(int(_players.size() / 2.0)):
 		phases.push_back(Phase_Draw)
 		phases.push_back(Phase_Guess)
 	
