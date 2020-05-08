@@ -11,11 +11,15 @@ const Phase_ShowScribbleChain := 5
 
 signal player_left(id)
 signal phase_changed(old_phase, new_phase)
+signal received_scribble_chain(player_id)
 
 var _room_id := ''
 
 var _disconnected := {}
+
 var _players := []
+var _scribble_chains := {}
+
 var _drawings := {}
 var _guesses := {}
 var _words := {}
@@ -41,7 +45,44 @@ func init(room_settings : Dictionary) -> void:
 
 func _ready():
 	get_tree().connect('network_peer_disconnected', self, '_player_left')
+
+	if is_network_master():
+		connect('phase_changed', self, '_on_phase_changed')
+
 	_phases = _build_phases()
+
+func _on_phase_changed(old_phase : int, new_phase : int) -> void:
+	if new_phase == Phase_ShowScribbleChain:
+		_send_one_scribble_chain_in_parts()
+
+func _send_one_scribble_chain_in_parts() -> void:
+	var player_id := _players[_scribble_chains.size()] as int
+	var parts := _interlace_guesses_and_drawings(player_id)
+
+	for i in range(parts.size()):
+		rpc_players('_add_scribble_chain_part', [parts[i], player_id, i >= parts.size() - 1])
+
+func _add_scribble_chain_part(guess_or_drawing, player_id : int, is_end : bool) -> void:
+	if not player_id in _scribble_chains:
+		_scribble_chains[player_id] = []
+	
+	_scribble_chains[player_id].append(guess_or_drawing)
+
+	if not is_end: return
+
+	emit_signal('received_scribble_chain', player_id)
+	
+func _interlace_guesses_and_drawings(player_index : int) -> Array:
+	var player_id := _players[player_index] as int
+
+	var parts := []
+	assert(_guesses[player_id].size() == _drawings[player_id].size())
+	var l := min(_guesses[player_id].size(), _drawings[player_id].size())
+	for i in range(l):
+		parts.append(_guesses[i])
+		parts.append(_drawings[i])
+	
+	return parts
 
 func _player_left(id : int) -> void:
 	if not id in _players: return
@@ -121,6 +162,13 @@ master func done_guess(guess : String) -> void:
 	
 	rpc_players('_next_phase')
 
+master func done_show_scribble_chain() -> void:
+	var sender_id := get_tree().get_rpc_sender_id()
+	if not _is_valid_request(sender_id, Phase_ShowScribbleChain): return
+
+	_phase_done[sender_id] = true
+	if not _players_done(): return
+
 func _players_done() -> bool:
 	return _phase_done.size() == _players.size()
 
@@ -169,8 +217,6 @@ remotesync func _pass() -> void:
 	var back := vs.pop_back() as int
 	vs.push_front(back)
 
-	_phase_done.clear()
-
 	for i in range(ids.size()):
 		_holding_map[ids[i]] = vs[i]
 
@@ -212,6 +258,7 @@ remotesync func _reset_game() -> void:
 	_phase = 0
 
 remotesync func _next_phase() -> void:
+	_phase_done.clear()
 	_phase += 1
 	emit_signal('phase_changed', _phases[_phase - 1], _phases[_phase])
 
