@@ -61,12 +61,11 @@ func print_rooms() -> void:
 
 func init_client() -> int:
 	var client := WebSocketClient.new()
-	var url := 'wss://' + DEFAULT_IP + ':' + str(DEFAULT_PORT)
+	var url := 'ws://' + DEFAULT_IP + ':' + str(DEFAULT_PORT)
 	
-	var cert := X509Certificate.new()
-	cert.load(cert_location)
-	client.trusted_ssl_certificate = cert
-	
+	#var cert := X509Certificate.new()
+	#cert.load('res://asserts/ssl/cert.crt')
+	#client.trusted_ssl_certificate = cert
 	
 	var success := client.connect_to_url(url, PoolStringArray(), true)
 	if success != OK: return success
@@ -77,21 +76,21 @@ func init_client() -> int:
 func init_server() -> int:
 	var server := WebSocketServer.new()
 	
-	var dir := Directory.new()
-	var cert := X509Certificate.new()
-	var key := CryptoKey.new()
-	if not dir.file_exists(private_key_location):
-		var crypto := Crypto.new()
-		key = crypto.generate_rsa(4096)
-		cert = crypto.generate_self_signed_certificate(key, "CN=%s,O=myorganisation,C=IT" % DEFAULT_IP)
-	else:
-		cert.load(cert_location)
-		key.load(private_key_location)
+	#var dir := Directory.new()
+	#var cert := X509Certificate.new()
+	#var key := CryptoKey.new()
+	#if not dir.file_exists(private_key_location):
+	#	var crypto := Crypto.new()
+	#	key = crypto.generate_rsa(4096)
+	#	cert = crypto.generate_self_signed_certificate(key, "CN=%s,O=myorganisation,C=IT" % DEFAULT_IP)
+	#else:
+	#	cert.load(cert_location)
+	#	key.load(private_key_location)
 	
-	cert.save(cert_location)
+	#cert.save(cert_location)
 	
-	server.private_key = key
-	server.ssl_certificate = cert
+	#server.private_key = key
+	#server.ssl_certificate = cert
 
 	var success := server.listen(DEFAULT_PORT, PoolStringArray(), true)
 	if success != OK: return success
