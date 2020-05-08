@@ -13,45 +13,39 @@ __meta__ = {
 
 [node name="VBox" type="VBoxContainer" parent="."]
 margin_left = 466.0
-margin_top = 238.0
+margin_top = 257.0
 margin_right = 560.0
-margin_bottom = 362.0
+margin_bottom = 342.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Debug" type="Button" parent="VBox"]
+[node name="RoomName" type="LineEdit" parent="VBox"]
 margin_right = 94.0
-margin_bottom = 20.0
-text = "Debug"
-
-[node name="Username" type="LineEdit" parent="VBox"]
-margin_top = 24.0
-margin_right = 94.0
-margin_bottom = 48.0
-placeholder_text = "Username"
+margin_bottom = 24.0
+placeholder_text = "Room Name"
 caret_blink = true
 caret_blink_speed = 0.5
 
 [node name="CreateRoom" type="Button" parent="VBox"]
-margin_top = 52.0
+margin_top = 28.0
 margin_right = 94.0
-margin_bottom = 72.0
+margin_bottom = 48.0
 text = "Create Room"
 
 [node name="EnterRoom" type="Button" parent="VBox"]
-margin_top = 76.0
+margin_top = 52.0
 margin_right = 94.0
-margin_bottom = 96.0
+margin_bottom = 72.0
 text = "Enter Room"
 
-[node name="RoomName" type="LineEdit" parent="VBox"]
-margin_top = 100.0
+[node name="Rooms" type="ItemList" parent="VBox"]
+margin_top = 76.0
 margin_right = 94.0
-margin_bottom = 124.0
-placeholder_text = "Room Name"
-caret_blink = true
-caret_blink_speed = 0.5
-[connection signal="pressed" from="VBox/Debug" to="." method="_on_Debug_pressed"]
+margin_bottom = 85.0
+auto_height = true
+__meta__ = {
+"_edit_group_": true
+}
 [connection signal="pressed" from="VBox/CreateRoom" to="." method="_on_CreateRoom_pressed"]
 [connection signal="pressed" from="VBox/EnterRoom" to="." method="_on_EnterRoom_pressed"]
