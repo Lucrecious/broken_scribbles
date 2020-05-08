@@ -169,6 +169,8 @@ master func done_show_scribble_chain() -> void:
 	_phase_done[sender_id] = true
 	if not _players_done(): return
 
+	rpc_players('_next_phase')
+
 func _players_done() -> bool:
 	return _phase_done.size() == _players.size()
 
@@ -225,21 +227,12 @@ remotesync func _on_done_drawing(image_info : Dictionary) -> void:
 	var holding_id := _holding_map[id] as int
 	_drawings[holding_id].append(image_info)
 
-func get_local_image() -> Image:
-	var image := Image.new()
+func get_local_image() -> Dictionary:
 	var holding_id := _holding_map[get_tree().get_network_unique_id()] as int
-	if _drawings[holding_id].empty(): return image
+	if _drawings[holding_id].empty(): return {}
 
 	var info := _drawings[holding_id][-1] as Dictionary
-
-	var size := info.size as Vector2
-	var uncompressed_size := info.uncompressed_size as int
-	var format := info.format as int
-	var bytes := (info.bytes as PoolByteArray).decompress(uncompressed_size, File.COMPRESSION_FASTLZ)
-
-	image.create_from_data(int(size.x), int(size.y), false, format, bytes)
-
-	return image
+	return info
 
 remotesync func _on_done_guessing(guess : String) -> void:
 	var id := get_tree().get_network_unique_id()

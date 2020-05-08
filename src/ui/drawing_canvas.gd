@@ -19,14 +19,42 @@ onready var _unit_size := Vector2()
 
 var drawable := true
 
-func set_image(other : Image) -> bool:
+func set_image(info : Dictionary) -> bool:
 	var image := texture.get_data()
+
+	if not info.get('size') is Vector2: return false
+	if not info.get('uncompressed_size') is int: return false
+	if not info.get('format') is int: return false
+	if not info.get('bytes') is PoolByteArray: return false
+
+	var size := info.size as Vector2
+	var uncompressed_size := info.uncompressed_size as int
+	var format := info.format as int
+	var bytes := (info.bytes as PoolByteArray).decompress(uncompressed_size, File.COMPRESSION_FASTLZ)
+
+	var other := Image.new()
+	other.create_from_data(int(size.x), int(size.y), false, format, bytes)
+
 	if other.get_size() != image.get_size(): return false
 	image.lock()
 	image.blit_rect(other, Rect2(Vector2(), image.get_size()), Vector2())
 	image.unlock()
 	texture.set_data(image)
 	return true
+
+func get_image_info() -> Dictionary:
+	var image := texture.get_data() as Image
+	
+	image.lock()
+	var image_info := {
+		uncompressed_size = image.get_data().size(),
+		bytes = image.get_data().compress(File.COMPRESSION_FASTLZ),
+		size = image.get_size(),
+		format = image.get_format()
+	}
+	image.unlock()
+
+	return image_info
 
 func clear() -> void:
 	var image := texture.get_data()

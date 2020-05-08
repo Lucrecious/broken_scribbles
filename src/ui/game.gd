@@ -13,6 +13,10 @@ var _pick_a_word_instance : Control
 func init(game : Game) -> void:
 	_game = game
 	_game.connect('phase_changed', self, '_phase_changed')
+	_game.connect('received_scribble_chain', self, '_on_received_scribble_chain')
+
+func _on_received_scribble_chain(player_id : int) -> void:
+	_scribble_chain = _game._scribble_chains[player_id]
 
 func _phase_changed(_old_phase : int, new_phase : int) -> void:
 	if new_phase == Game.Phase_ChooseWord:
@@ -21,6 +25,10 @@ func _phase_changed(_old_phase : int, new_phase : int) -> void:
 		_on_guess_drawing()
 	if new_phase == Game.Phase_Draw:
 		_on_draw_guess()
+	if new_phase == Game.Phase_ShowScribbleChain:
+		_header.readonly = true
+		_drawing_board.drawable = false
+	
 
 func _on_draw_guess() -> void:
 	_done_button.disabled = false
@@ -61,22 +69,31 @@ func _on_Done_pressed() -> void:
 	
 	if _game.get_phase() == Game.Phase_Draw:
 		_on_done_phase_draw()
-	elif _game.get_phase() == Game.Phase_Guess:
+		return
+
+	if _game.get_phase() == Game.Phase_Guess:
 		_on_done_phase_guess()
+		return
+
+	if _game.get_phase() == Game.Phase_ShowScribbleChain:
+		_on_done_show_scribble_chain()
+	
+var _scribble_chain := []
+func _on_done_show_scribble_chain() -> void:
+	if _scribble_chain.empty():
+		_game.rpc('done_show_scribble_chain')
+		_done_button.disabled = true
+		return
+	
+	var first = _scribble_chain.pop_front() 
+	if first is String:
+		_header.text = first
+	elif first is Dictionary:
+		_drawing_board.set_image(first)
 
 func _on_done_phase_draw() -> void:
-	var image := _drawing_board.texture.get_data() as Image
 	
-	image.lock()
-	var image_info := {
-		uncompressed_size = image.get_data().size(),
-		bytes = image.get_data().compress(File.COMPRESSION_FASTLZ),
-		size = image.get_size(),
-		format = image.get_format()
-	}
-	image.unlock()
-	
-	_game.rpc_id(Network.server_id, 'done_drawing', image_info)
+	_game.rpc_id(Network.server_id, 'done_drawing', _drawing_board.get_image_info())
 
 func _on_done_phase_guess() -> void:
 	_game.rpc_id(Network.server_id, 'done_guess', _header.text)
