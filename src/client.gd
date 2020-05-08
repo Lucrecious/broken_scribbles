@@ -1,7 +1,13 @@
 extends Node2D
 
 func _ready():
-	if Network.init_client() != OK: return
+	var error := Network.init_client()
+	if error != OK:
+		var label := Label.new()
+		label.rect_position = Vector2(500, 500)
+		add_child(label)
+		label.text = "Error: " + str(error)
+		return
 	var start_menu := preload('res://src/ui/start_menu.tscn').instance()
 	add_child(start_menu)
 

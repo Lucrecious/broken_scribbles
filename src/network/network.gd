@@ -58,7 +58,7 @@ func print_rooms() -> void:
 
 func init_client() -> int:
 	var client := WebSocketClient.new()
-	var url := 'ws://' + DEFAULT_IP + ':' + str(DEFAULT_PORT)
+	var url := 'wss://' + DEFAULT_IP + ':' + str(DEFAULT_PORT)
 
 	var success := client.connect_to_url(url, PoolStringArray(), true)
 	if success != OK: return success
