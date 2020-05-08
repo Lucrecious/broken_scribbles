@@ -17,6 +17,7 @@ func init(game : Game) -> void:
 
 func _on_received_scribble_chain(player_id : int) -> void:
 	_scribble_chain = _game._scribble_chains[player_id]
+	print('got chain')
 
 func _phase_changed(_old_phase : int, new_phase : int) -> void:
 	if new_phase == Game.Phase_ChooseWord:
@@ -77,11 +78,12 @@ func _on_Done_pressed() -> void:
 
 	if _game.get_phase() == Game.Phase_ShowScribbleChain:
 		_on_done_show_scribble_chain()
+		return
 	
 var _scribble_chain := []
 func _on_done_show_scribble_chain() -> void:
 	if _scribble_chain.empty():
-		_game.rpc('done_show_scribble_chain')
+		_game.rpc_id(Network.server_id, 'done_show_scribble_chain')
 		_done_button.disabled = true
 		return
 	
@@ -92,7 +94,6 @@ func _on_done_show_scribble_chain() -> void:
 		_drawing_board.set_image(first)
 
 func _on_done_phase_draw() -> void:
-	
 	_game.rpc_id(Network.server_id, 'done_drawing', _drawing_board.get_image_info())
 
 func _on_done_phase_guess() -> void:

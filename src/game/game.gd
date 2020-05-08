@@ -57,12 +57,16 @@ func _on_phase_changed(old_phase : int, new_phase : int) -> void:
 
 func _send_one_scribble_chain_in_parts() -> void:
 	var player_id := _players[_scribble_chains.size()] as int
+
 	var parts := _interlace_guesses_and_drawings(player_id)
 
 	for i in range(parts.size()):
+		print('in loop')
 		rpc_players('_add_scribble_chain_part', [parts[i], player_id, i >= parts.size() - 1])
+	
 
-func _add_scribble_chain_part(guess_or_drawing, player_id : int, is_end : bool) -> void:
+remotesync func _add_scribble_chain_part(guess_or_drawing, player_id : int, is_end : bool) -> void:
+	print('_add_scribble_chain_part')
 	if not player_id in _scribble_chains:
 		_scribble_chains[player_id] = []
 	
@@ -72,15 +76,28 @@ func _add_scribble_chain_part(guess_or_drawing, player_id : int, is_end : bool) 
 
 	emit_signal('received_scribble_chain', player_id)
 	
-func _interlace_guesses_and_drawings(player_index : int) -> Array:
-	var player_id := _players[player_index] as int
+func _interlace_guesses_and_drawings(player_id : int) -> Array:
+	if not player_id in _guesses: return []
+	if not player_id in _drawings: return []
+
+	var drawings_index := 0
+	var guesses_index := 0
+	var use_drawing := true
 
 	var parts := []
-	assert(_guesses[player_id].size() == _drawings[player_id].size())
-	var l := min(_guesses[player_id].size(), _drawings[player_id].size())
-	for i in range(l):
-		parts.append(_guesses[i])
-		parts.append(_drawings[i])
+
+	for _i in range(_drawings[player_id].size() + _guesses[player_id].size()):
+		use_drawing = not use_drawing
+
+		if (not use_drawing && guesses_index < _guesses.size()) || drawings_index >= _drawings.size():
+			parts.append(_guesses[guesses_index])
+			guesses_index += 1
+			continue
+
+		if (use_drawing && drawings_index < _drawings.size()) || guesses_index >= _guesses.size():
+			parts.append(_drawings[drawings_index])
+			drawings_index += 1
+			continue
 	
 	return parts
 
