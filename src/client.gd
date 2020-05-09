@@ -1,5 +1,9 @@
 extends Node2D
 
+onready var _start_menu := preload('res://src/ui/start_menu.tscn')
+
+var _current_room : Node2D
+
 func _ready():
 	var error := Network.init_client()
 	if error != OK:
@@ -8,10 +12,17 @@ func _ready():
 		add_child(label)
 		label.text = "Error: " + str(error)
 		return
-	var start_menu := preload('res://src/ui/start_menu.tscn').instance()
-	add_child(start_menu)
 
 	Network.connect('entered_room_callback', self, '_entered_room')
+	Network.connect('client_left_room', self, '_client_left_room')
+
+	add_child(_start_menu.instance())
+
+func _client_left_room(id : int, room_id : String) -> void:
+	if id != get_tree().get_network_unique_id(): return
+
+	remove_child(_current_room)
+	add_child(_start_menu.instance())
 
 func _entered_room(success : bool, room_id : String, reason : int, is_local: bool) -> void:
 	if not success:
@@ -24,3 +35,4 @@ func _entered_room(success : bool, room_id : String, reason : int, is_local: boo
 	var room := preload('res://src/ui/room.tscn').instance()
 	room.init(room_id)
 	add_child(room)
+	_current_room = room

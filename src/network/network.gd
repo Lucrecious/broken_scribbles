@@ -103,6 +103,7 @@ func leave_room(client_id : int, room_id : String) -> void:
 
 remotesync func _remove_client_from_room(id : int, room_id : String) -> void:
 	_rooms[room_id].remove_client(id)
+	emit_signal('client_left_room', id, room_id)
 
 master func create_room(room_name : String) -> void:
 	assert(_local_peer)
