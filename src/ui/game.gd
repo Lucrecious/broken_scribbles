@@ -17,7 +17,8 @@ func init(game : Game) -> void:
 
 func _on_received_scribble_chain(player_id : int) -> void:
 	_scribble_chain = _game._scribble_chains[player_id]
-	print('got chain')
+	print(_scribble_chain)
+	_done_button.disabled = false
 
 func _phase_changed(_old_phase : int, new_phase : int) -> void:
 	if new_phase == Game.Phase_ChooseWord:
@@ -77,6 +78,7 @@ func _on_Done_pressed() -> void:
 		return
 
 	if _game.get_phase() == Game.Phase_ShowScribbleChain:
+		_done_button.disabled = false
 		_on_done_show_scribble_chain()
 		return
 	
@@ -88,6 +90,7 @@ func _on_done_show_scribble_chain() -> void:
 		return
 	
 	var first = _scribble_chain.pop_front() 
+	prints('first', first)
 	if first is String:
 		_header.text = first
 	elif first is Dictionary:
