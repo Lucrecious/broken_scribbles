@@ -31,6 +31,7 @@ func _ready() -> void:
 	_setup_leader()
 
 func _on_client_left(_id : int) -> void:
+	print('update user names')
 	_update_usernames()
 	_setup_leader()
 
