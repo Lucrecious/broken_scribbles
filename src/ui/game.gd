@@ -1,6 +1,7 @@
 extends Control
 
 var _game : Game
+var _room : Room
 
 onready var _pick_a_word := preload('res://src/ui/pick_a_word.tscn')
 
@@ -10,7 +11,8 @@ onready var _done_button := $Done
 
 var _pick_a_word_instance : Control
 
-func init(game : Game) -> void:
+func init(room : Room, game : Game) -> void:
+	_room = room;
 	_game = game
 	_game.connect('phase_changed', self, '_phase_changed')
 	_game.connect('received_scribble_chain', self, '_on_received_scribble_chain')
@@ -80,6 +82,14 @@ func _on_Done_pressed() -> void:
 		_done_button.disabled = false
 		_on_done_show_scribble_chain()
 		return
+
+	if _game.get_phase() == Game.Phase_End:
+		_done_button.disabled = false;
+		_on_done_end()
+		return
+
+func _on_done_end() -> void:
+	_room.rpc_id(Network.server_id, 'leave_room')
 	
 var _scribble_chain := []
 func _on_done_show_scribble_chain() -> void:

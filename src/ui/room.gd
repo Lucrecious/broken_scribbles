@@ -52,7 +52,7 @@ func _on_game_created() -> void:
 	_play_button.visible = false
 	if not _room.game(): return
 	_game_ui.visible = true
-	_game_ui.init(_room.game())
+	_game_ui.init(_room, _room.game())
 
 func _on_Play_pressed() -> void:
 	var leader_id := _room.clients()[0] as int
