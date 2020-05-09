@@ -37,7 +37,7 @@ master func leave_room() -> void:
 	Network.leave_room(sender_id, _id)
 
 func remove_client(id : int) -> void:
-	_clients.remove(id)
+	_clients.erase(id)
 	emit_signal('client_left', id)
 
 func _add_game() -> void:

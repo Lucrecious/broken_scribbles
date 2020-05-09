@@ -2,7 +2,7 @@ extends Node2D
 
 onready var _start_menu := preload('res://src/ui/start_menu.tscn')
 
-var _current_room : Node2D
+var _current_room : Control
 
 func _ready():
 	var error := Network.init_client()

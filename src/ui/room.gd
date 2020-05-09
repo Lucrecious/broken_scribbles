@@ -43,6 +43,7 @@ func _setup_leader() -> void:
 	_play_button.disabled = false
 
 func _update_usernames(_id := 0) -> void:
+	_players.clear()
 	for id in _room.clients():
 		_players.add_item(str(id))
 
