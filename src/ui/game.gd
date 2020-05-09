@@ -148,6 +148,7 @@ func _on_done_phase_draw() -> void:
 
 func _on_done_phase_guess() -> void:
 	_game.rpc_id(Network.server_id, 'done_guess', _header.text)
+	_game.rpc_id(Network.server_id, 'finish_guessing_phase')
 
 var _pallet_colors := [Color.blue, Color.black, Color.green, Color.red]
 var _pallet_names := 'blue,black,green,red'.split(',')

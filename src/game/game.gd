@@ -196,6 +196,7 @@ func _players_done() -> bool:
 
 remotesync func _init_guesses() -> void:
 	for id in _words: _guesses[id].append(_words[id])
+	_guess_round = 1
 
 remotesync func _set_word_choice(id : int, word : String) -> void:
 	_words[id] = word
