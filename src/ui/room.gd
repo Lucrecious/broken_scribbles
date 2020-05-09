@@ -23,6 +23,7 @@ func _gui_input(event: InputEvent) -> void:
 	if not _text_edit.has_focus(): return
 
 func _ready() -> void:
+	$Game/Center/DrawingPanel/Center/Background.self_modulate = Color.black
 	if not _room: return
 	
 	_game_ui.visible = false
@@ -89,9 +90,3 @@ func _on_TextEdit_text_changed() -> void:
 	_text_edit.text = ''
 	
 	_room.rpc_unreliable_id(Network.server_id, 'send_chat_message', message)
-
-
-
-
-
-

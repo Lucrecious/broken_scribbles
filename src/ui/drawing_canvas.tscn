@@ -11,4 +11,4 @@ script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
-pixel_scale_factor = 2.0
+pixel_scale_factor = 1.0

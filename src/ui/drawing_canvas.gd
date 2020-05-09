@@ -5,7 +5,7 @@ signal canvas_changed
 export(float, 1, 1000, .1) var pixel_scale_factor := 2.5
 
 var _brush_blit := Image.new()
-var _brush_stamp := ImageTexture.new()
+var _brush_cursor_icon := ImageTexture.new()
 
 var _brush_color := Color.black
 
@@ -13,6 +13,9 @@ onready var _size := Vector2()
 onready var _unit_size := Vector2()
 
 var drawable := true
+
+func set_cursor_as_brush() -> void:
+	Input.set_custom_mouse_cursor(_brush_cursor_icon)
 
 func set_image(info : Dictionary) -> bool:
 	var image := get_image_from(info)
@@ -71,7 +74,7 @@ func set_brush_color(color : Color) -> void:
 	
 	_brush_blit.unlock()
 	
-	var tex_image := _brush_stamp.get_data()
+	var tex_image := _brush_cursor_icon.get_data()
 	tex_image.lock()
 	for x in range(tex_image.get_width()):
 		for y in range(tex_image.get_height()):
@@ -80,7 +83,7 @@ func set_brush_color(color : Color) -> void:
 			tex_image.set_pixel(x, y, col)
 	
 	tex_image.unlock()
-	_brush_stamp.set_data(tex_image)
+	_brush_cursor_icon.set_data(tex_image)
 
 func set_brush_as_eraser() -> void:
 	pass
@@ -97,7 +100,7 @@ func set_brush(image : Image) -> void:
 	
 	var tex := ImageTexture.new()
 	tex.create_from_image(new)
-	_brush_stamp = tex
+	_brush_cursor_icon = tex
 
 func _ready() -> void:
 	_size.x = rect_size.x / pixel_scale_factor
@@ -120,16 +123,14 @@ func _ready() -> void:
 var _clicked_on_image := false
 func _gui_input(event: InputEvent) -> void:
 	if not drawable: return
-	var mouse_position := get_local_mouse_position()
-	mouse_position.x = int(mouse_position.x / _unit_size.x)
-	mouse_position.y = int(mouse_position.y / _unit_size.y)
-	
-	if _has_point(mouse_position):
-		Input.set_custom_mouse_cursor(_brush_stamp)
 	
 	if not Input.is_action_pressed('ui_draw'):
 		_clicked_on_image = false
 		return
+	
+	var mouse_position := get_local_mouse_position()
+	mouse_position.x = int(mouse_position.x / _unit_size.x)
+	mouse_position.y = int(mouse_position.y / _unit_size.y)
 
 	if Input.is_action_just_pressed('ui_draw'):
 		_clicked_on_image = _has_point(mouse_position)

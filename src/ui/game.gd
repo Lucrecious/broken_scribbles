@@ -147,9 +147,9 @@ var _pallet_names := 'blue,black,green,red'.split(',')
 func _on_Pallet_item_selected(index: int) -> void:
 	_drawing_board.set_brush_color(_pallet_colors[index])
 
+func _on_DrawingCanvas_mouse_entered() -> void:
+	_drawing_board.set_cursor_as_brush()
 
 
-
-
-
-
+func _on_DrawingCanvas_mouse_exited() -> void:
+	Input.set_custom_mouse_cursor(null, 0)

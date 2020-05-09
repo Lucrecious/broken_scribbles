@@ -70,7 +70,7 @@ __meta__ = {
 }
 
 [node name="DrawingCanvas" parent="Game/Center/DrawingPanel/Center/Background" instance=ExtResource( 4 )]
-pixel_scale_factor = 2.5
+pixel_scale_factor = 3.0
 
 [node name="Done" type="Button" parent="Game"]
 margin_left = 789.0
@@ -195,6 +195,8 @@ wrap_enabled = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
+[connection signal="mouse_entered" from="Game/Center/DrawingPanel/Center/Background/DrawingCanvas" to="Game" method="_on_DrawingCanvas_mouse_entered"]
+[connection signal="mouse_exited" from="Game/Center/DrawingPanel/Center/Background/DrawingCanvas" to="Game" method="_on_DrawingCanvas_mouse_exited"]
 [connection signal="pressed" from="Game/Done" to="Game" method="_on_Done_pressed"]
 [connection signal="item_selected" from="Game/Pallet" to="Game" method="_on_Pallet_item_selected"]
 [connection signal="pressed" from="InfoPanel/Buttons/Leave" to="." method="_on_Leave_pressed"]
