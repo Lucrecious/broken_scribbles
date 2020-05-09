@@ -149,8 +149,7 @@ master func update_current_drawing(image_info : Dictionary) -> void:
 	if not _is_valid_request(sender_id, Phase_Draw): return
 
 	var holding_id := _holding_map[sender_id] as int
-	if _draw_round <= _drawings[holding_id].size():
-		print('here')
+	if _drawings[holding_id].size() <= _draw_round:
 		_drawings[holding_id].append(image_info)
 	else:
 		_drawings[holding_id][-1] = image_info
