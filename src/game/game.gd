@@ -150,6 +150,7 @@ master func update_current_drawing(image_info : Dictionary) -> void:
 
 	var holding_id := _holding_map[sender_id] as int
 	if _draw_round <= _drawings[holding_id].size():
+		print('here')
 		_drawings[holding_id].append(image_info)
 	else:
 		_drawings[holding_id][-1] = image_info

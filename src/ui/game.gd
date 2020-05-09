@@ -122,8 +122,13 @@ func _on_done_show_scribble_chain() -> void:
 	
 	for i in range(_scribble_chain.size()):
 		var val = _scribble_chain[i]
-		if val is String: _scribble_chain[i] = val
-		if not val is Dictionary: continue
+		if val is String:
+			_scribble_chain[i] = val
+			continue
+		
+		if not val is Dictionary:
+			continue
+		
 		var image := _drawing_board.get_image_from(val) as Image
 		_scribble_chain[i] = image
 	
