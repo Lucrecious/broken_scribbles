@@ -2,12 +2,10 @@
 
 [ext_resource path="res://src/ui/scribble_chain.gd" type="Script" id=1]
 
-[node name="HBox" type="HBoxContainer"]
+[node name="ScribbleChain" type="ItemList"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_top = 215.0
 margin_bottom = -242.0
+max_columns = 12
 script = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}

@@ -33,14 +33,8 @@ func get_image_from(info : Dictionary) -> Image:
 	var format := info.format as int
 	var bytes := (info.bytes as PoolByteArray).decompress(uncompressed_size, File.COMPRESSION_FASTLZ)
 
-	var other := Image.new()
-	other.create_from_data(int(size.x), int(size.y), false, format, bytes)
-
 	var image := Image.new()
-	if other.get_size() != image.get_size(): return null
-	image.lock()
-	image.blit_rect(other, Rect2(Vector2(), image.get_size()), Vector2())
-	image.unlock()
+	image.create_from_data(int(size.x), int(size.y), false, format, bytes)
 
 	return image
 

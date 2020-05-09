@@ -108,7 +108,7 @@ var _chain_node : Control
 func _on_done_show_scribble_chain() -> void:
 	if _scribble_chain.empty():
 		if _chain_node:
-			remove_child(_chain_node)
+			get_parent().remove_child(_chain_node)
 			_chain_node.queue_free()
 			_chain_node = null
 
@@ -125,9 +125,10 @@ func _on_done_show_scribble_chain() -> void:
 	
 	var chain_node := preload('res://src/ui/scribble_chain.tscn').instance()
 	chain_node.init(_scribble_chain)
-	add_child(chain_node)
-	move_child(chain_node, 0)
+	get_parent().add_child(chain_node)
+	#move_child(chain_node, 0)
 	_chain_node = chain_node
+	_chain_node.rect_position = Vector2(0, 300)
 
 	_scribble_chain.clear()
 
