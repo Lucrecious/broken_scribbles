@@ -112,9 +112,6 @@ master func enter_room(room_id : String) -> void:
 	
 	rpc('_attempt_enter_room', sender_id, room_id)
 
-master func play_game(room_id : String) -> void:
-	rpc('_play_game', get_tree().get_rpc_sender_id(), room_id)
-
 func _abort_enter_room(client_id : int, room_id : String) -> bool:
 	var is_local := client_id == get_tree().get_network_unique_id()
 
@@ -157,11 +154,6 @@ puppetsync func _add_room(from_id : int, room_id : String, room_name : String) -
 
 puppetsync func _signal_entered_room(success : bool, room_id : String, reason : int, is_local : bool) -> void:
 	emit_signal('entered_room_callback', success, room_id, reason, is_local)
-		
-puppetsync func _play_game(id : int, room_id : String) -> void:
-	if not room_id in _rooms: return
-	if not id in _rooms[room_id].clients(): return
-	_rooms[room_id].add_game()
 
 puppetsync func _remove_room(room_id : String) -> void:
 	if not room_id in _rooms: return

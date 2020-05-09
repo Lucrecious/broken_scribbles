@@ -23,15 +23,21 @@ func init(id : String, nickname : String) -> void:
 	_id = id
 	name = _id
 	_nickname = nickname
+	
+master func play_game() -> void:
+	if _clients.empty(): return
+	var sender_id := get_tree().get_rpc_sender_id()
+	if _clients[0] != sender_id: return
+	_add_game()
 
-master func add_game() -> void:
-	_add_game(_clients)
+func _add_game() -> void:
+	_add_game_node(_clients)
 	for client in _clients:
-		rpc_id(client, '_add_game', _clients)
+		rpc_id(client, '_add_game_node', _clients)
 
 	_game_instance.start_game()
 
-remotesync func _add_game(clients : Array) -> void:
+remotesync func _add_game_node(clients : Array) -> void:
 	if _game_instance: return
 	var game := _game.instance() as Game
 	game.init({ players = clients })
