@@ -22,6 +22,9 @@ func _client_left_room(id : int, room_id : String) -> void:
 	if id != get_tree().get_network_unique_id(): return
 
 	remove_child(_current_room)
+	_current_room.queue_free()
+	_current_room = null
+	
 	add_child(_start_menu.instance())
 
 func _entered_room(success : bool, room_id : String, reason : int, is_local: bool) -> void:
