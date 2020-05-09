@@ -1,7 +1,6 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=2 format=2]
 
 [ext_resource path="res://src/ui/drawing_canvas.gd" type="Script" id=1]
-[ext_resource path="res://assets/brushes/plus_5x5.png" type="Texture" id=2]
 
 [node name="DrawingCanvas" type="TextureRect"]
 anchor_right = 1.0
@@ -13,11 +12,3 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 pixel_length = 400
-
-[node name="Brush" type="TextureRect" parent="."]
-margin_right = 40.0
-margin_bottom = 40.0
-texture = ExtResource( 2 )
-__meta__ = {
-"_edit_use_anchors_": false
-}

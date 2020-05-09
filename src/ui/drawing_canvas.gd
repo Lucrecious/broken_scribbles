@@ -4,11 +4,10 @@ signal canvas_changed
 
 export(int, 2, 1000) var pixel_length := 50
 
-var _brush_stamp := Image.new()
+var _brush_blit := Image.new()
+var _brush_stamp := ImageTexture.new()
 
 var _brush_color := Color.black
-
-onready var _brush := $Brush as TextureRect
 
 onready var _size := Vector2()
 onready var _unit_size := Vector2()
@@ -62,21 +61,43 @@ func clear() -> void:
 func set_brush_color(color : Color) -> void:
 	_brush_color = color
 	
-	var size := _brush_stamp.get_size()
+	var size := _brush_blit.get_size()
 	
-	_brush_stamp.lock()
+	_brush_blit.lock()
 	for x in range(size.x): for y in range(size.y):
-		var col := _brush_stamp.get_pixel(x, y)
+		var col := _brush_blit.get_pixel(x, y)
 		col = Color(color.r, color.g, color.b, col.a)
-		_brush_stamp.set_pixel(x, y, col)
+		_brush_blit.set_pixel(x, y, col)
 	
-	_brush_stamp.unlock()
+	_brush_blit.unlock()
+	
+	var tex_image := _brush_stamp.get_data()
+	tex_image.lock()
+	for x in range(tex_image.get_width()):
+		for y in range(tex_image.get_height()):
+			var col := tex_image.get_pixel(x, y)
+			col = Color(color.r, color.g, color.b, col.a)
+			tex_image.set_pixel(x, y, col)
+	
+	tex_image.unlock()
+	_brush_stamp.set_data(tex_image)
 
 func set_brush_as_eraser() -> void:
 	pass
 
 func set_brush(image : Image) -> void:
-	_brush_stamp = image
+	var new := image.get_rect(image.get_used_rect())
+	
+	_brush_blit = image.get_rect(image.get_used_rect())
+	_brush_blit.convert(texture.get_data().get_format())
+	
+	var size := new.get_size() * _unit_size
+	new.resize(size.x, size.y, Image.INTERPOLATE_NEAREST)
+	new.convert(texture.get_data().get_format())
+	
+	var tex := ImageTexture.new()
+	tex.create_from_image(new)
+	_brush_stamp = tex
 
 func _ready() -> void:
 	
@@ -93,21 +114,26 @@ func _ready() -> void:
 	tex.create_from_image(image, 0)
 	texture = tex
 	
-	_brush_stamp.copy_from(_brush.texture.get_data())
-	_brush_stamp.convert(image.get_format())
+	var brush := Image.new()
+	brush.load('res://assets/brushes/plus_5x5.png')
 	
+	set_brush(brush)
 	set_brush_color(Color.blue)
 
 var _clicked_on_image := false
 func _gui_input(event: InputEvent) -> void:
 	if not drawable: return
-	if not Input.is_action_pressed('ui_draw'):
-		_clicked_on_image = false
-		return
-	
 	var mouse_position := get_local_mouse_position()
 	mouse_position.x = int(mouse_position.x / _unit_size.x)
 	mouse_position.y = int(mouse_position.y / _unit_size.y)
+	
+	if _has_point(mouse_position):
+		Input.set_custom_mouse_cursor(_brush_stamp)
+	
+	if not Input.is_action_pressed('ui_draw'):
+		_clicked_on_image = false
+		return
+
 	if Input.is_action_just_pressed('ui_draw'):
 		_clicked_on_image = _has_point(mouse_position)
 	
@@ -131,16 +157,15 @@ func _add_pixels(mouse_pos : Vector2, delta : Vector2) -> bool:
 	var drag := _get_line_points(mouse_pos - delta, mouse_pos, delta_abs * 20) 
 	var image := texture.get_data()
 	
-	var offset := (_brush_stamp.get_size() / 2.0)
 	
 	image.lock()
 	for pos in drag:
 		var p := pos as Vector2
 		if not _has_point(p): continue
 		image.blend_rect(
-			_brush_stamp,
-			_brush_stamp.get_used_rect(),
-			pos - offset)
+			_brush_blit,
+			_brush_blit.get_used_rect(),
+			pos)
 		changed = true
 	
 	image.unlock()
