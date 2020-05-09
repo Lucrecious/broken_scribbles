@@ -137,6 +137,7 @@ func _on_done_show_scribble_chain() -> void:
 	_scribble_chain.clear()
 
 func _on_done_phase_draw() -> void:
+	print(_drawing_board.get_image_info().bytes.size())
 	_game.rpc_id(Network.server_id, 'done_drawing', _drawing_board.get_image_info())
 
 func _on_done_phase_guess() -> void:
@@ -149,7 +150,6 @@ func _on_Pallet_item_selected(index: int) -> void:
 
 func _on_DrawingCanvas_mouse_entered() -> void:
 	_drawing_board.set_cursor_as_brush()
-
 
 func _on_DrawingCanvas_mouse_exited() -> void:
 	Input.set_custom_mouse_cursor(null, 0)

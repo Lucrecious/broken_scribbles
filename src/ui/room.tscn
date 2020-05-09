@@ -70,7 +70,6 @@ __meta__ = {
 }
 
 [node name="DrawingCanvas" parent="Game/Center/DrawingPanel/Center/Background" instance=ExtResource( 4 )]
-pixel_scale_factor = 3.0
 
 [node name="Done" type="Button" parent="Game"]
 margin_left = 789.0
