@@ -79,11 +79,11 @@ func _on_Leave_pressed() -> void:
 	_room.rpc_id(Network.server_id, 'leave_room')
 
 func _on_TextEdit_text_changed() -> void:
-	if not Input.is_action_just_pressed('ui_accept'): return
+	if not Input.is_action_just_pressed('send_chat'): return
 	var message := _text_edit.text
 	_text_edit.text = ''
 	
-	_room.unreliable_rpc_id(Network.server_id, 'send_chat_message', message)
+	_room.rpc_unreliable_id(Network.server_id, 'send_chat_message', message)
 
 
 
