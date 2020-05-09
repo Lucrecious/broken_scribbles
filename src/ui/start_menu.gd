@@ -9,10 +9,7 @@ func _ready() -> void:
 	Network.connect('entered_room_callback', self, '_entered_room')
 	Network.connect('room_added', self, '_on_room_added')
 
-	_init_room_ids()
-
-func _init_room_ids() -> void:
-	_room_ids = Network.get_room_ids()
+	_update_room_list()
 
 func _disable_ui():
 	_create_room_button.disabled = true
@@ -24,15 +21,14 @@ func _enable_ui():
 	_enter_room_button.disabled = false
 	_room_name_edit.editable = true
 
-var _room_ids := []
-func _on_room_added(room_id : String) -> void:
-	_room_ids.append(room_id)
-	
+func _update_room_list() -> void:
 	_room_list_select.clear()
-	for id in _room_ids:
+	for id in Network.get_room_ids():
 		var nickname := Network.get_room(id).nickname()
 		_room_list_select.add_item(nickname)
 	
+func _on_room_added(_room_id := '') -> void:
+	_update_room_list()
 
 func _entered_room(success : bool, room_id : String, reason : int, is_local: bool) -> void:
 	call_deferred('_enable_ui')
@@ -44,6 +40,10 @@ func _on_CreateRoom_pressed() -> void:
 func _on_EnterRoom_pressed() -> void:
 	var items := _room_list_select.get_selected_items()
 	if items.empty(): return
-	var room_id := _room_ids[items[0]] as String
+	
+	var room_ids := Network.get_room_ids()
+	if items[0] >= room_ids.size(): return
+	var room_id := room_ids[items[0]] as String
+	
 	Network.rpc_id(Network.server_id, 'enter_room', room_id)
 	_disable_ui()
