@@ -40,6 +40,9 @@ func remove_client(id : int) -> void:
 	_clients.erase(id)
 	emit_signal('client_left', id)
 
+	if not _clients.empty(): return
+	emit_signal('just_emptied', _id)
+
 func _add_game() -> void:
 	_add_game_node(_clients)
 	for client in _clients:
