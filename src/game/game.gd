@@ -12,6 +12,8 @@ const Phase_ShowScribbleChain := 5
 signal player_left(id)
 signal phase_changed(old_phase, new_phase)
 signal received_scribble_chain(player_id)
+signal phase_timeout
+signal phase_timer_started
 
 var _room_id := ''
 
@@ -36,6 +38,8 @@ var _phase := 0
 var _draw_round := 0
 var _guess_round := 0
 
+var _phase_timer := $PhaseTimer as Timer
+
 func init(room_settings : Dictionary) -> void:
 	for i in range(room_settings.players.size()):
 		var id := room_settings.players[i] as int
@@ -49,14 +53,47 @@ func init(room_settings : Dictionary) -> void:
 func _ready():
 	get_tree().connect('network_peer_disconnected', self, '_player_left')
 
+	_phase_timer.connect('timeout', self, '_phase_timeout')
+
 	if is_network_master():
 		connect('phase_changed', self, '_on_phase_changed')
 
 	_phases = _build_phases()
 
+func _phase_timeout() -> void:
+	emit_signal('phase_timeout')
+
+	if not is_network_master(): return
+
+	if get_phase() == Phase_Draw:
+		finish_drawing_phase()
+		return
+	
+	if get_phase() == Phase_Guess:
+		finish_guessing_phase()
+		return
+
+
 func _on_phase_changed(old_phase : int, new_phase : int) -> void:
+	_phase_timer.wait_time = _get_wait_time(30)
+
+	if new_phase == Phase_Draw: _phase_timer.wait_time = _get_wait_time(15)
+	if new_phase == Phase_Guess: _phase_timer.wait_time = _get_wait_time(30)
+	if new_phase == Phase_ChooseWord: _phase_timer.wait_time = _get_wait_time(10)
+	if new_phase == Phase_ShowScribbleChain: _phase_timer.wait_time = _get_wait_time(30)
+		
+
 	if new_phase == Phase_ShowScribbleChain:
 		_send_one_scribble_chain_in_parts()
+
+	_phase_timer.start()
+	emit_signal('phase_timer_started')
+
+# The server waits an extra X seconds before switching phases...
+# This gives the client time to send in their data before the phase ends
+# It also ensures that the player feels like the timer and audio align perfectly
+func _get_wait_time(sec : float) -> float:
+	return sec if not is_network_master() else sec + 5
 
 func _send_one_scribble_chain_in_parts() -> void:
 	var player_id := _players[_scribble_chains.size()] as int
@@ -154,7 +191,8 @@ master func update_current_drawing(image_info : Dictionary) -> void:
 	else:
 		_drawings[holding_id][_draw_round] = image_info
 
-master func finish_drawing_phase() -> void:
+func finish_drawing_phase() -> void:
+	if not is_network_master(): return
 	rpc_players('_pass')
 	
 	for id in _players:
@@ -173,7 +211,9 @@ master func done_guess(guess : String) -> void:
 	else:
 		_guesses[holding_id][_guess_round] = guess
 
-master func finish_guessing_phase() -> void:
+func finish_guessing_phase() -> void:
+	if not is_network_master(): return
+
 	rpc_players('_pass')
 
 	for id in _players:

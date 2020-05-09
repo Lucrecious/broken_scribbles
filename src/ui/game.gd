@@ -21,12 +21,21 @@ func init(room : Room, game : Game) -> void:
 	_game = game
 	_game.connect('phase_changed', self, '_phase_changed')
 	_game.connect('received_scribble_chain', self, '_on_received_scribble_chain')
+	_game.connect('phase_timeout', self, '_phase_timeout')
+	_game.connect('phase_timer_started', self, '_phase_timer_started')
+
+func _phase_timer_started() -> void:
+	print('phase timer started!')
+
+func _phase_timeout() -> void:
+	print('phase timed out!')
 
 func _on_received_scribble_chain(player_id : int) -> void:
 	_scribble_chain = _game._scribble_chains[player_id]
 	_done_button.disabled = false
 
 func _phase_changed(_old_phase : int, new_phase : int) -> void:
+	print('phase_changed')
 	if new_phase == Game.Phase_ChooseWord:
 		_on_choose_word()
 		return
