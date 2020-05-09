@@ -9,6 +9,11 @@ func _ready() -> void:
 	Network.connect('entered_room_callback', self, '_entered_room')
 	Network.connect('room_added', self, '_on_room_added')
 
+	_init_room_ids()
+
+func _init_room_ids() -> void:
+	_room_ids := get_room_ids()
+
 func _disable_ui():
 	_create_room_button.disabled = true
 	_enter_room_button.disabled = true

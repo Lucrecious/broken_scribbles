@@ -148,9 +148,12 @@ func _abort_create_room(client_id : int) -> bool:
 	
 	return false
 
-func get_room(room_id : String) -> Room:
+func get_room(room_id : String): # -> Room
 	if not room_id in _rooms: return null
 	return _rooms[room_id] as Room
+
+func get_room_ids() -> Array:
+	return _rooms.keys()
 
 puppetsync func _attempt_enter_room(from_id : int, room_id : String) -> void:
 	(_rooms[room_id] as Room).add_client(from_id)
