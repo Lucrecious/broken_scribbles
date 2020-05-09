@@ -18,8 +18,6 @@ var _room_id := ''
 var _disconnected := {}
 
 var _players := []
-var _scribble_chains := {}
-
 var _drawings := {}
 var _guesses := {}
 var _words := {}
@@ -62,8 +60,6 @@ func _send_one_scribble_chain_in_parts() -> void:
 
 	for i in range(parts.size()):
 		rpc_players('_add_scribble_chain_part', [parts[i], player_id, i >= parts.size() - 1])
-		printt('in loop', parts[i])
-	
 
 remotesync func _add_scribble_chain_part(guess_or_drawing, player_id : int, is_end : bool) -> void:
 	if not player_id in _scribble_chains:

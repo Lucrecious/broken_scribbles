@@ -42,6 +42,3 @@ func _on_EnterRoom_pressed() -> void:
 	var room_id := _room_ids[items[0]] as String
 	Network.rpc_id(Network.server_id, 'enter_room', room_id)
 	_disable_ui()
-
-func _on_Debug_pressed() -> void:
-	Network.print_rooms()

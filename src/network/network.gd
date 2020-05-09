@@ -54,11 +54,6 @@ func _listen_client(client : WebSocketClient) -> void:
 	
 	client.poll()
 
-func print_rooms() -> void:
-	for id in _rooms:
-		var r = _rooms[id]
-		prints(r.nickname(), r.id(), r.clients())
-
 func init_client() -> int:
 	var client := WebSocketClient.new()
 	var url := 'ws://' + DEFAULT_IP + ':' + str(DEFAULT_PORT)
@@ -94,7 +89,6 @@ func init_server() -> int:
 
 	var success := server.listen(DEFAULT_PORT, PoolStringArray(), true)
 	if success != OK: return success
-	print(success)
 	get_tree().set_network_peer(server)
 	_local_peer = server
 	return OK
@@ -202,7 +196,6 @@ func _room_just_emptied(room_id : String) -> void:
 	rpc('_remove_room', room_id)
 
 func _client_entered(id : int) -> void:
-	print('client entered: %d' % id)
 	_clients[id] = true
 	
 	_sync(id)
