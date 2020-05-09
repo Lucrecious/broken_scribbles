@@ -33,6 +33,9 @@ var _word_choices := {}
 var _phases := []
 var _phase := 0
 
+var _draw_round := 0
+var _guess_round := 0
+
 func init(room_settings : Dictionary) -> void:
 	for i in range(room_settings.players.size()):
 		var id := room_settings.players[i] as int
@@ -141,23 +144,24 @@ master func pick_word(from_id : int, index : int) -> void:
 
 	rpc_players('_next_phase')
 
-master func done_drawing(image_info : Dictionary) -> void:
+master func update_current_drawing(image_info : Dictionary) -> void:
 	var sender_id := get_tree().get_rpc_sender_id()
 	if not _is_valid_request(sender_id, Phase_Draw): return
 
 	var holding_id := _holding_map[sender_id] as int
-	_drawings[holding_id].append(image_info)
-	
-	_phase_done[sender_id] = true
-	if not _players_done(): return
+	if _draw_round <= _drawings[holding_id].size():
+		_drawings[holding_id].append(image_info)
+	else:
+		_drawings[holding_id][-1] = image_info
+
+master func finish_drawing_phase() -> void:
 	rpc_players('_pass')
 	
 	for id in _players:
-		holding_id = _holding_map[id] as int
+		var holding_id := _holding_map[id] as int
 		rpc_id(id, '_on_done_drawing', _drawings[holding_id][-1])
 	
 	rpc_players('_next_phase')
-
 
 master func done_guess(guess : String) -> void:
 	var sender_id := get_tree().get_rpc_sender_id()
@@ -265,6 +269,11 @@ remotesync func _reset_game() -> void:
 	_phase = 0
 
 remotesync func _next_phase() -> void:
+	if get_phase() == Phase_Guess:
+		_guess_round += 1
+	elif get_phase() == Phase_Draw:
+		_draw_round += 1
+
 	_phase_done.clear()
 	_phase += 1
 	emit_signal('phase_changed', _phases[_phase - 1], _phases[_phase])
