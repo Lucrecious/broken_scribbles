@@ -178,6 +178,8 @@ master func finish_guessing_phase() -> void:
 
 	for id in _players:
 		var holding_id := _holding_map[id] as int
+		if _guesses[holding_id].size() <= _guess_round:
+			_guesses[holding_id].append('<missed the guess>')
 		rpc_id(id, '_on_done_guessing', _guesses[holding_id][-1])
 	
 	rpc_players('_next_phase')
