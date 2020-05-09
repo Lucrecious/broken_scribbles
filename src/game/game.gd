@@ -38,7 +38,7 @@ var _phase := 0
 var _draw_round := 0
 var _guess_round := 0
 
-var _phase_timer := $PhaseTimer as Timer
+onready var _phase_timer := $PhaseTimer as Timer
 
 func init(room_settings : Dictionary) -> void:
 	for i in range(room_settings.players.size()):
@@ -169,8 +169,10 @@ func _is_valid_request(sender_id : int, valid_phase : int) -> bool:
 	return true
 
 master func pick_word(from_id : int, index : int) -> void:
+	print('picked word')
 	if not _is_valid_request(from_id, Phase_ChooseWord): return
 	if from_id in _words: return
+	print('setting word everywhere')
 	rpc_players('_set_word_choice', [from_id, _word_choices[from_id][index]])
 
 	if _words.size() < _players.size(): return
@@ -180,6 +182,7 @@ master func pick_word(from_id : int, index : int) -> void:
 		rpc_players('_pass')
 
 	rpc_players('_next_phase')
+	print('went to next phase')
 
 master func update_current_drawing(image_info : Dictionary) -> void:
 	var sender_id := get_tree().get_rpc_sender_id()
