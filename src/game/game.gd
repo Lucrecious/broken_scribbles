@@ -18,6 +18,8 @@ var _room_id := ''
 var _disconnected := {}
 
 var _players := []
+var _scribble_chains := {}
+
 var _drawings := {}
 var _guesses := {}
 var _words := {}
