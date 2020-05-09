@@ -12,6 +12,7 @@ const server_id := 1
 
 signal entered_room_callback(success, room_id, reason, is_local)
 signal room_added(room_id)
+signal client_left_room(id, room_id)
 
 enum {
 	Error_none = 0,
@@ -92,6 +93,16 @@ func init_server() -> int:
 	get_tree().set_network_peer(server)
 	_local_peer = server
 	return OK
+
+func leave_room(client_id : int, room_id : String) -> void:
+	if not is_network_master(): return
+	if not room_id in _rooms: return
+	if not client_id in _rooms[room_id].clients(): return
+
+	rpc('_remove_client_from_room', client_id, room_id)
+
+remotesync func _remove_client_from_room(id : int, room_id : String) -> void:
+	_rooms[room_id].remove_client(id)
 
 master func create_room(room_name : String) -> void:
 	assert(_local_peer)

@@ -30,6 +30,16 @@ master func play_game() -> void:
 	if _clients[0] != sender_id: return
 	_add_game()
 
+master func leave_room() -> void:
+	var sender_id := get_tree().get_rpc_sender_id()
+	if not sender_id in _clients: return
+	
+	Network.leave_room(sender_id, _room_id)
+
+func remove_client(id : int) -> void:
+	_clients.remove(id)
+	emit_signal('client_left', id)
+
 func _add_game() -> void:
 	_add_game_node(_clients)
 	for client in _clients:

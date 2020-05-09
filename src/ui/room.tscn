@@ -50,10 +50,10 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="CopyID" type="Button" parent="InfoPanel/Buttons"]
+[node name="Leave" type="Button" parent="InfoPanel/Buttons"]
 margin_right = 65.0
 margin_bottom = 20.0
-text = "Copy ID"
+text = "Leave"
 
 [node name="Play" type="Button" parent="InfoPanel/Buttons"]
 margin_top = 24.0
@@ -124,6 +124,6 @@ margin_top = 86.0
 margin_right = 880.0
 margin_bottom = 128.0
 text = "Done"
-[connection signal="pressed" from="InfoPanel/Buttons/CopyID" to="." method="_on_CopyID_pressed"]
+[connection signal="pressed" from="InfoPanel/Buttons/Leave" to="." method="_on_Leave_pressed"]
 [connection signal="pressed" from="InfoPanel/Buttons/Play" to="." method="_on_Play_pressed"]
 [connection signal="pressed" from="Game/Done" to="Game" method="_on_Done_pressed"]

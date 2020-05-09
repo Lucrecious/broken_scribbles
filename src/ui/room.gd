@@ -46,9 +46,6 @@ func _update_usernames(_id := 0) -> void:
 	for id in _room.clients():
 		_players.add_item(str(id))
 
-func _on_CopyID_pressed() -> void:
-	OS.clipboard = _room_id
-
 func _on_game_created() -> void:
 	assert(_room.game())
 	_play_button.visible = false
@@ -62,3 +59,6 @@ func _on_Play_pressed() -> void:
 	
 	_room.rpc_id(Network.server_id, 'play_game')
 	_play_button.disabled = true
+
+func _on_Leave_pressed() -> void:
+	_room.rpc_id(Network.server_id, 'leave_room')
