@@ -12,6 +12,7 @@ const server_id := 1
 
 signal entered_room_callback(success, room_id, reason, is_local)
 signal room_added(room_id)
+signal room_removed(room_id)
 signal client_left_room(id, room_id)
 
 enum {
@@ -162,7 +163,9 @@ puppetsync func _attempt_enter_room(from_id : int, room_id : String) -> void:
 
 puppetsync func _add_room(from_id : int, room_id : String, room_name : String) -> void:
 	_add_room_node(room_id, room_name, from_id)
-	_rooms[room_id].connect('just_emptied', self, '_room_just_emptied')
+	
+	if is_network_master():
+		_rooms[room_id].connect('just_emptied', self, '_room_just_emptied')
 
 	if from_id != get_tree().get_network_unique_id(): return
 	_signal_entered_room(true, room_id, Error_none, from_id == get_tree().get_network_unique_id())
@@ -179,6 +182,8 @@ puppetsync func _remove_room(room_id : String) -> void:
 	_rooms.erase(room_id)
 	remove_child(room)
 	room.queue_free()
+	
+	emit_signal('room_removed', room_id)
 
 func _add_room_node(room_id : String, nickname : String, creator_id : int) -> void:
 	var room = preload('res://src/network/room.tscn').instance()

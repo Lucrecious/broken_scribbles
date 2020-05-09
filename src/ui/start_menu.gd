@@ -8,6 +8,7 @@ onready var _room_list_select := $VBox/Rooms as ItemList
 func _ready() -> void:
 	Network.connect('entered_room_callback', self, '_entered_room')
 	Network.connect('room_added', self, '_on_room_added')
+	Network.connect('room_removed', self, '_on_room_removed')
 
 	_update_room_list()
 
@@ -28,6 +29,9 @@ func _update_room_list() -> void:
 		_room_list_select.add_item(nickname)
 	
 func _on_room_added(_room_id := '') -> void:
+	_update_room_list()
+
+func _on_room_removed(_room_id := '') -> void:
 	_update_room_list()
 
 func _entered_room(success : bool, room_id : String, reason : int, is_local: bool) -> void:
