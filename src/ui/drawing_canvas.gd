@@ -4,15 +4,11 @@ signal canvas_changed
 
 export(int, 2, 1000) var pixel_length := 50
 
-var _brush_stamp := [
-	Vector2(0, -1),
-	Vector2(-1, 0),
-	Vector2(0, 0),
-	Vector2(1, 0),
-	Vector2(0, 1)
-]
+var _brush_stamp := Image.new()
 
-var _brush_color := Color.red
+var _brush_color := Color.black
+
+onready var _brush := $Brush as TextureRect
 
 onready var _size := Vector2()
 onready var _unit_size := Vector2()
@@ -69,10 +65,11 @@ func set_brush_color(color : Color) -> void:
 func set_brush_as_eraser() -> void:
 	_brush_color = Color.transparent
 
-func set_brush_stamp(stamp : Array) -> void:
-	_brush_stamp = stamp
+func set_brush(image : Image) -> void:
+	_brush_stamp = image
 
 func _ready() -> void:
+	
 	var aspect_ratio = rect_size.x / rect_size.y
 	_size.x = pixel_length
 	_size.y = pixel_length / aspect_ratio
@@ -81,10 +78,13 @@ func _ready() -> void:
 	_unit_size.y = rect_size.y / _size.y
 	
 	var image = Image.new()
-	image.create(_size.x, _size.y, false, Image.FORMAT_RGB8)
+	image.create(_size.x, _size.y, false, Image.FORMAT_RGBA5551)
 	var tex := ImageTexture.new()
 	tex.create_from_image(image, 0)
 	texture = tex
+	
+	_brush_stamp.copy_from(_brush.texture.get_data())
+	_brush_stamp.convert(image.get_format())
 
 var _clicked_on_image := false
 func _gui_input(event: InputEvent) -> void:
@@ -113,22 +113,23 @@ func _gui_input(event: InputEvent) -> void:
 	emit_signal('canvas_changed')
 	update()
 
-func _add_pixel(image : Image, position : Vector2, color : Color) -> bool:
-	var old_color := image.get_pixel(int(position.x), int(position.y))
-	image.set_pixel(int(position.x), int(position.y), color)
-	return old_color != color
-
 func _add_pixels(mouse_pos : Vector2, delta : Vector2) -> bool:
 	var changed := false
 	var delta_abs = delta.abs().dot(Vector2(1, 1)) + 1
-	var drag := _get_line_points(mouse_pos - delta, mouse_pos, delta_abs) 
+	var drag := _get_line_points(mouse_pos - delta, mouse_pos, delta_abs * 20) 
 	var image := texture.get_data()
 	
+	var offset := (_brush_stamp.get_size() / 2.0)
+	
 	image.lock()
-	for v in _brush_stamp: for pos in drag:
-		var p := (pos + v) as Vector2
+	for pos in drag:
+		var p := pos as Vector2
 		if not _has_point(p): continue
-		changed = _add_pixel(image, p, _brush_color) or changed
+		image.blend_rect(
+			_brush_stamp,
+			_brush_stamp.get_used_rect(),
+			pos - offset)
+		changed = true
 	
 	image.unlock()
 	

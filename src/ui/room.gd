@@ -19,11 +19,8 @@ func init(room_id : String) -> void:
 	_room_id = room_id
 
 func _gui_input(event: InputEvent) -> void:
-	print('testing')
-	if not event.is_action_pressed('ui_accept', false): return
+	if not event.is_action_pressed('send_chat', false): return
 	if not _text_edit.has_focus(): return
-	
-	print('hhere')
 
 func _ready() -> void:
 	if not _room: return
@@ -42,7 +39,15 @@ func _ready() -> void:
 	_setup_leader()
 
 func _on_received_message(from_id : int, message : String) -> void:
-	_chat_history.text += message
+	message = '%d: %s' % [from_id, message]
+	var lines := _chat_history.text.split('\n', false)
+	lines += message.split('\n')
+	for i in range(_chat_history.max_lines_visible, lines.size()):
+		lines.remove(0)
+	
+	_chat_history.text = ''
+	for line in lines:
+		_chat_history.text += '%s\n' % line
 
 func _on_client_left(_id : int) -> void:
 	_update_usernames()
