@@ -137,7 +137,6 @@ func _on_done_show_scribble_chain() -> void:
 	_scribble_chain.clear()
 
 func _on_done_phase_draw() -> void:
-	print(_drawing_board.get_image_info().bytes.size())
 	_game.rpc_id(Network.server_id, 'done_drawing', _drawing_board.get_image_info())
 
 func _on_done_phase_guess() -> void:
