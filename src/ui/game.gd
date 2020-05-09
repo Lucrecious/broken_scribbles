@@ -154,3 +154,11 @@ func _on_DrawingCanvas_mouse_entered() -> void:
 
 func _on_DrawingCanvas_mouse_exited() -> void:
 	Input.set_custom_mouse_cursor(null, 0)
+
+func _on_DrawingCanvas_canvas_changed() -> void:
+	_game.rpc_unreliable_id(Network.server_id, 'update_current_drawing', _drawing_board.get_image_info())
+
+
+
+
+
