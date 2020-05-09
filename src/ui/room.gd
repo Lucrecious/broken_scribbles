@@ -1,13 +1,12 @@
 extends Control
 
 var _room_id := ''
-var _username_scene 
 
 onready var _pick_a_word := preload('res://src/ui/pick_a_word.tscn')
 
 onready var _nickname := $InfoPanel/Nickname
 onready var _players := $InfoPanel/Players
-onready var _room := Network.get_room(_room_id)
+onready var _room := Network.get_room(_room_id) as Room
 
 onready var _game_ui := $Game
 
@@ -27,11 +26,6 @@ func _ready() -> void:
 	
 	_nickname.text = _room.nickname()
 
-	var username_template := $InfoPanel/Players/Username
-	username_template.text = ''
-	_username_scene = PackedScene.new()
-	_username_scene.pack(username_template)
-
 	_update_usernames()
 
 	_setup_leader()
@@ -49,14 +43,8 @@ func _setup_leader() -> void:
 	_play_button.disabled = false
 
 func _update_usernames(_id := 0) -> void:
-	for c in _players.get_children():
-		_players.remove_child(c)
-		c.queue_free()
-	
-	for i in _room.clients():
-		var username := _username_scene.instance() as Label
-		username.text = str(i)
-		_players.add_child(username)
+	for id in _room.clients():
+		_players.add_item(str(id))
 
 func _on_CopyID_pressed() -> void:
 	OS.clipboard = _room_id

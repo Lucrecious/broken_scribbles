@@ -31,18 +31,15 @@ margin_bottom = 14.0
 text = "nickname"
 max_lines_visible = 1
 
-[node name="Players" type="VBoxContainer" parent="InfoPanel"]
+[node name="Players" type="ItemList" parent="InfoPanel"]
 margin_left = 10.0
 margin_top = 40.0
+margin_right = 84.0
+margin_bottom = 57.0
+auto_height = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
-
-[node name="Username" type="Label" parent="InfoPanel/Players"]
-margin_right = 36.0
-margin_bottom = 14.0
-text = "name"
-max_lines_visible = 1
 
 [node name="Buttons" type="VBoxContainer" parent="InfoPanel"]
 margin_left = 100.0
