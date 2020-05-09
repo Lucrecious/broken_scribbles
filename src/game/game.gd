@@ -152,7 +152,7 @@ master func update_current_drawing(image_info : Dictionary) -> void:
 	if _drawings[holding_id].size() <= _draw_round:
 		_drawings[holding_id].append(image_info)
 	else:
-		_drawings[holding_id][-1] = image_info
+		_drawings[holding_id][_draw_round] = image_info
 
 master func finish_drawing_phase() -> void:
 	rpc_players('_pass')
@@ -168,14 +168,16 @@ master func done_guess(guess : String) -> void:
 	if not _is_valid_request(sender_id, Phase_Guess): return
 	
 	var holding_id := _holding_map[sender_id] as int
-	_guesses[holding_id].append(guess)
+	if _guesses[holding_id].size() <= _guess_round:
+		_guesses[holding_id].append(guess)
+	else:
+		_guesses[holding_id][_guess_round] = guess
 
-	_phase_done[sender_id] = true
-	if not _players_done(): return
+master func finish_guessing_phase() -> void:
 	rpc_players('_pass')
 
 	for id in _players:
-		holding_id = _holding_map[id] as int
+		var holding_id := _holding_map[id] as int
 		rpc_id(id, '_on_done_guessing', _guesses[holding_id][-1])
 	
 	rpc_players('_next_phase')
