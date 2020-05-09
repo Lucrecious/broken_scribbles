@@ -61,8 +61,8 @@ func _send_one_scribble_chain_in_parts() -> void:
 	var parts := _interlace_guesses_and_drawings(player_id)
 
 	for i in range(parts.size()):
-		print('in loop')
 		rpc_players('_add_scribble_chain_part', [parts[i], player_id, i >= parts.size() - 1])
+		printt('in loop', parts[i])
 	
 
 remotesync func _add_scribble_chain_part(guess_or_drawing, player_id : int, is_end : bool) -> void:
