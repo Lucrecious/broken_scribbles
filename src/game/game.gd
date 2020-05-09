@@ -66,7 +66,6 @@ func _send_one_scribble_chain_in_parts() -> void:
 	
 
 remotesync func _add_scribble_chain_part(guess_or_drawing, player_id : int, is_end : bool) -> void:
-	print('_add_scribble_chain_part')
 	if not player_id in _scribble_chains:
 		_scribble_chains[player_id] = []
 	
@@ -86,17 +85,16 @@ func _interlace_guesses_and_drawings(player_id : int) -> Array:
 
 	var parts := []
 
-	printt(_guesses, _drawings)
 	for _i in range(_drawings[player_id].size() + _guesses[player_id].size()):
 		use_drawing = not use_drawing
 
 		if (not use_drawing && guesses_index < _guesses.size()) || drawings_index >= _drawings.size():
-			parts.append(_guesses[guesses_index])
+			parts.append(_guesses[player_id][guesses_index])
 			guesses_index += 1
 			continue
 
 		if (use_drawing && drawings_index < _drawings.size()) || guesses_index >= _guesses.size():
-			parts.append(_drawings[drawings_index])
+			parts.append(_drawings[player_id][drawings_index])
 			drawings_index += 1
 			continue
 	
