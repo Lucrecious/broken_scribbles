@@ -12,7 +12,7 @@ func _ready() -> void:
 	_init_room_ids()
 
 func _init_room_ids() -> void:
-	_room_ids := get_room_ids()
+	_room_ids = Network.get_room_ids()
 
 func _disable_ui():
 	_create_room_button.disabled = true

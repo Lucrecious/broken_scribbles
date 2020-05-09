@@ -148,7 +148,7 @@ func _abort_create_room(client_id : int) -> bool:
 	
 	return false
 
-func get_room(room_id : String): # -> Room
+func get_room(room_id : String) -> Room:
 	if not room_id in _rooms: return null
 	return _rooms[room_id] as Room
 
