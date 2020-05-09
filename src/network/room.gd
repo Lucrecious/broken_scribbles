@@ -5,6 +5,7 @@ class_name Room
 signal client_added(id)
 signal client_left(id)
 signal just_emptied(room_id)
+signal received_message(id, message)
 signal game_created
 
 # State
@@ -35,6 +36,16 @@ master func leave_room() -> void:
 	if not sender_id in _clients: return
 	
 	Network.leave_room(sender_id, _id)
+
+master func send_chat_message(message : String) -> void:
+	var sender_id := get_tree().get_rpc_sender_id()
+	if not sender_id in _clients: return
+
+	for id in _clients:
+		rpc_id(id, '_receive_message', sender_id, message)
+
+puppet func _receive_message(from_id : int, message : String) -> void:
+	emit_signal('received_message', from_id, message)
 
 func remove_client(id : int) -> void:
 	_clients.erase(id)
