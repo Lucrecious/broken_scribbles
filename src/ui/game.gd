@@ -24,13 +24,24 @@ func _on_received_scribble_chain(player_id : int) -> void:
 func _phase_changed(_old_phase : int, new_phase : int) -> void:
 	if new_phase == Game.Phase_ChooseWord:
 		_on_choose_word()
+		return
+
 	if new_phase == Game.Phase_Guess:
 		_on_guess_drawing()
+		return
+
 	if new_phase == Game.Phase_Draw:
 		_on_draw_guess()
+		return
+
 	if new_phase == Game.Phase_ShowScribbleChain:
 		_header.readonly = true
 		_drawing_board.drawable = false
+		return
+
+	if new_phase == Game.Phase_End:
+		_done_button.disabled = false
+		return
 	
 
 func _on_draw_guess() -> void:
