@@ -153,11 +153,9 @@ func _on_done_show_scribble_chain() -> void:
 func _on_done_phase_draw() -> void:
 	_game.rpc_id(Network.server_id, 'update_current_drawing', _drawing_board.get_image_info())
 	_done_button.disabled = false
-	_game.rpc_id(Network.server_id, 'finish_drawing_phase')
 
 func _on_done_phase_guess() -> void:
 	_game.rpc_id(Network.server_id, 'done_guess', _header.text)
-	_game.rpc_id(Network.server_id, 'finish_guessing_phase')
 
 var _pallet_colors := [Color.blue, Color.black, Color.green, Color.red]
 var _pallet_names := 'blue,black,green,red'.split(',')
