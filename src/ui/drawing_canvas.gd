@@ -16,12 +16,17 @@ onready var _unit_size := Vector2()
 var drawable := true
 
 func set_image(info : Dictionary) -> bool:
-	var image := texture.get_data()
+	var image := get_image_from(info)
+	if not image: return false
+		
+	texture.set_data(image)
+	return true
 
-	if not info.get('size') is Vector2: return false
-	if not info.get('uncompressed_size') is int: return false
-	if not info.get('format') is int: return false
-	if not info.get('bytes') is PoolByteArray: return false
+func get_image_from(info : Dictionary) -> Image:
+	if not info.get('size') is Vector2: return null
+	if not info.get('uncompressed_size') is int: return null
+	if not info.get('format') is int: return null
+	if not info.get('bytes') is PoolByteArray: return null
 
 	var size := info.size as Vector2
 	var uncompressed_size := info.uncompressed_size as int
@@ -31,12 +36,13 @@ func set_image(info : Dictionary) -> bool:
 	var other := Image.new()
 	other.create_from_data(int(size.x), int(size.y), false, format, bytes)
 
-	if other.get_size() != image.get_size(): return false
+	var image := Image.new()
+	if other.get_size() != image.get_size(): return null
 	image.lock()
 	image.blit_rect(other, Rect2(Vector2(), image.get_size()), Vector2())
 	image.unlock()
-	texture.set_data(image)
-	return true
+
+	return image
 
 func get_image_info() -> Dictionary:
 	var image := texture.get_data() as Image
@@ -61,9 +67,19 @@ func clear() -> void:
 
 func set_brush_color(color : Color) -> void:
 	_brush_color = color
+	
+	var size := _brush_stamp.get_size()
+	
+	_brush_stamp.lock()
+	for x in range(size.x): for y in range(size.y):
+		var col := _brush_stamp.get_pixel(x, y)
+		col = Color(color.r, color.g, color.b, col.a)
+		_brush_stamp.set_pixel(x, y, col)
+	
+	_brush_stamp.unlock()
 
 func set_brush_as_eraser() -> void:
-	_brush_color = Color.transparent
+	pass
 
 func set_brush(image : Image) -> void:
 	_brush_stamp = image
@@ -78,13 +94,15 @@ func _ready() -> void:
 	_unit_size.y = rect_size.y / _size.y
 	
 	var image = Image.new()
-	image.create(_size.x, _size.y, false, Image.FORMAT_RGBA8)
+	image.create(_size.x, _size.y, false, Image.FORMAT_RGBA4444)
 	var tex := ImageTexture.new()
 	tex.create_from_image(image, 0)
 	texture = tex
 	
 	_brush_stamp.copy_from(_brush.texture.get_data())
 	_brush_stamp.convert(image.get_format())
+	
+	set_brush_color(Color.blue)
 
 var _clicked_on_image := false
 func _gui_input(event: InputEvent) -> void:

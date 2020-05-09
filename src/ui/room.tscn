@@ -61,70 +61,6 @@ margin_right = 65.0
 margin_bottom = 44.0
 text = "Play"
 
-[node name="Game" type="Control" parent="."]
-anchor_right = 1.0
-anchor_bottom = 1.0
-script = ExtResource( 3 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Header" type="TextEdit" parent="Game"]
-margin_left = 426.787
-margin_top = 77.2926
-margin_right = 772.787
-margin_bottom = 139.293
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Center" type="CenterContainer" parent="Game"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 192.0
-margin_top = 132.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="DrawingPanel" type="Panel" parent="Game/Center"]
-margin_left = 66.0
-margin_top = 34.0
-margin_right = 766.0
-margin_bottom = 434.0
-rect_min_size = Vector2( 700, 400 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Center" type="CenterContainer" parent="Game/Center/DrawingPanel"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Background" type="TextureRect" parent="Game/Center/DrawingPanel/Center"]
-margin_left = 25.0
-margin_top = 25.0
-margin_right = 675.0
-margin_bottom = 375.0
-rect_min_size = Vector2( 650, 350 )
-texture = ExtResource( 2 )
-expand = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="DrawingCanvas" parent="Game/Center/DrawingPanel/Center/Background" instance=ExtResource( 4 )]
-
-[node name="Done" type="Button" parent="Game"]
-margin_left = 789.0
-margin_top = 86.0
-margin_right = 880.0
-margin_bottom = 128.0
-text = "Done"
-
 [node name="Chat" type="PanelContainer" parent="."]
 margin_left = 18.0
 margin_top = 233.0
@@ -188,7 +124,71 @@ wrap_enabled = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Game" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Header" type="TextEdit" parent="Game"]
+margin_left = 426.787
+margin_top = 77.2926
+margin_right = 772.787
+margin_bottom = 139.293
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Center" type="CenterContainer" parent="Game"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 192.0
+margin_top = 132.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="DrawingPanel" type="Panel" parent="Game/Center"]
+margin_left = 66.0
+margin_top = 34.0
+margin_right = 766.0
+margin_bottom = 434.0
+rect_min_size = Vector2( 700, 400 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Center" type="CenterContainer" parent="Game/Center/DrawingPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Background" type="TextureRect" parent="Game/Center/DrawingPanel/Center"]
+margin_left = 25.0
+margin_top = 25.0
+margin_right = 675.0
+margin_bottom = 375.0
+rect_min_size = Vector2( 650, 350 )
+texture = ExtResource( 2 )
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="DrawingCanvas" parent="Game/Center/DrawingPanel/Center/Background" instance=ExtResource( 4 )]
+
+[node name="Done" type="Button" parent="Game"]
+margin_left = 789.0
+margin_top = 86.0
+margin_right = 880.0
+margin_bottom = 128.0
+text = "Done"
 [connection signal="pressed" from="InfoPanel/Buttons/Leave" to="." method="_on_Leave_pressed"]
 [connection signal="pressed" from="InfoPanel/Buttons/Play" to="." method="_on_Play_pressed"]
-[connection signal="pressed" from="Game/Done" to="Game" method="_on_Done_pressed"]
 [connection signal="text_changed" from="Chat/Panel/VBox/TypingBorder/TypingPanel/TextEdit" to="." method="_on_TextEdit_text_changed"]
+[connection signal="pressed" from="Game/Done" to="Game" method="_on_Done_pressed"]

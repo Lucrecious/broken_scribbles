@@ -90,6 +90,7 @@ func _on_Done_pressed() -> void:
 		return
 
 	if _game.get_phase() == Game.Phase_ShowScribbleChain:
+		#_drawing_board.clear()
 		_done_button.disabled = false
 		_on_done_show_scribble_chain()
 		return
@@ -103,17 +104,32 @@ func _on_done_end() -> void:
 	_room.rpc_id(Network.server_id, 'leave_room')
 	
 var _scribble_chain := []
+var _chain_node : Control
 func _on_done_show_scribble_chain() -> void:
 	if _scribble_chain.empty():
+		if _chain_node:
+			remove_child(_chain_node)
+			_chain_node.queue_free()
+			_chain_node = null
+
 		_game.rpc_id(Network.server_id, 'done_show_scribble_chain')
 		_done_button.disabled = true
 		return
 	
-	var first = _scribble_chain.pop_front() 
-	if first is String:
-		_header.text = first
-	elif first is Dictionary:
-		_drawing_board.set_image(first)
+	for i in range(_scribble_chain.size()):
+		var val = _scribble_chain[i]
+		if val is String: _scribble_chain[i] = val
+		if not val is Dictionary: continue
+		var image := _drawing_board.get_image_from(val) as Image
+		_scribble_chain[i] = image
+	
+	var chain_node := preload('res://src/ui/scribble_chain.tscn').instance()
+	chain_node.init(_scribble_chain)
+	add_child(chain_node)
+	move_child(chain_node, 0)
+	_chain_node = chain_node
+
+	_scribble_chain.clear()
 
 func _on_done_phase_draw() -> void:
 	_game.rpc_id(Network.server_id, 'done_drawing', _drawing_board.get_image_info())
