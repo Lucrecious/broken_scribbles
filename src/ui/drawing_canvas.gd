@@ -2,7 +2,7 @@ extends TextureRect
 
 signal canvas_changed
 
-export(int, 2, 1000) var pixel_length := 50
+export(float, 1, 1000, .1) var pixel_scale_factor := 2.5
 
 var _brush_blit := Image.new()
 var _brush_stamp := ImageTexture.new()
@@ -92,7 +92,7 @@ func set_brush(image : Image) -> void:
 	_brush_blit.convert(texture.get_data().get_format())
 	
 	var size := new.get_size() * _unit_size
-	new.resize(size.x, size.y, Image.INTERPOLATE_NEAREST)
+	new.resize(int(size.x), int(size.y), Image.INTERPOLATE_NEAREST)
 	new.convert(texture.get_data().get_format())
 	
 	var tex := ImageTexture.new()
@@ -100,13 +100,11 @@ func set_brush(image : Image) -> void:
 	_brush_stamp = tex
 
 func _ready() -> void:
+	_size.x = rect_size.x / pixel_scale_factor
+	_size.y = rect_size.y / pixel_scale_factor
 	
-	var aspect_ratio = rect_size.x / rect_size.y
-	_size.x = pixel_length
-	_size.y = pixel_length / aspect_ratio
-	
-	_unit_size.x = rect_size.x / _size.x
-	_unit_size.y = rect_size.y / _size.y
+	_unit_size.x = pixel_scale_factor
+	_unit_size.y = pixel_scale_factor
 	
 	var image = Image.new()
 	image.create(_size.x, _size.y, false, Image.FORMAT_RGBA4444)
@@ -114,8 +112,7 @@ func _ready() -> void:
 	tex.create_from_image(image, 0)
 	texture = tex
 	
-	var brush := Image.new()
-	brush.load('res://assets/brushes/plus_5x5.png')
+	var brush := load('res://assets/brushes/plus_5x5.png') as Image
 	
 	set_brush(brush)
 	set_brush_color(Color.blue)

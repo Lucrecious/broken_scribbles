@@ -104,7 +104,7 @@ func _player_left(id : int) -> void:
 	emit_signal('player_left', id)
 
 func get_phase() -> int:
-	if not _valid_phase(): Phase_None
+	if not _valid_phase(): return Phase_None
 	return _phases[_phase]
 
 func rpc_players(method : String, args := []) -> void:

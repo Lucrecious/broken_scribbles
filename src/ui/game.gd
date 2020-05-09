@@ -8,8 +8,13 @@ onready var _pick_a_word := preload('res://src/ui/pick_a_word.tscn')
 onready var _header := $Header as TextEdit
 onready var _drawing_board := $Center/DrawingPanel/Center/Background/DrawingCanvas
 onready var _done_button := $Done
+onready var _pallet := $Pallet
 
 var _pick_a_word_instance : Control
+
+func _ready() -> void:
+	for n in _pallet_names:
+		_pallet.add_item(n)
 
 func init(room : Room, game : Game) -> void:
 	_room = room;
@@ -42,7 +47,6 @@ func _phase_changed(_old_phase : int, new_phase : int) -> void:
 	if new_phase == Game.Phase_End:
 		_done_button.disabled = false
 		return
-	
 
 func _on_draw_guess() -> void:
 	_done_button.disabled = false
@@ -137,6 +141,11 @@ func _on_done_phase_draw() -> void:
 
 func _on_done_phase_guess() -> void:
 	_game.rpc_id(Network.server_id, 'done_guess', _header.text)
+
+var _pallet_colors := [Color.blue, Color.black, Color.green, Color.red]
+var _pallet_names := 'blue,black,green,red'.split(',')
+func _on_Pallet_item_selected(index: int) -> void:
+	_drawing_board.set_brush_color(_pallet_colors[index])
 
 
 

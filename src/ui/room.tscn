@@ -70,6 +70,7 @@ __meta__ = {
 }
 
 [node name="DrawingCanvas" parent="Game/Center/DrawingPanel/Center/Background" instance=ExtResource( 4 )]
+pixel_scale_factor = 2.5
 
 [node name="Done" type="Button" parent="Game"]
 margin_left = 789.0
@@ -77,6 +78,12 @@ margin_top = 86.0
 margin_right = 880.0
 margin_bottom = 128.0
 text = "Done"
+
+[node name="Pallet" type="ItemList" parent="Game"]
+margin_left = 969.925
+margin_top = 170.323
+margin_right = 1006.93
+margin_bottom = 546.323
 
 [node name="InfoPanel" type="Panel" parent="."]
 margin_left = 10.0
@@ -189,6 +196,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 [connection signal="pressed" from="Game/Done" to="Game" method="_on_Done_pressed"]
+[connection signal="item_selected" from="Game/Pallet" to="Game" method="_on_Pallet_item_selected"]
 [connection signal="pressed" from="InfoPanel/Buttons/Leave" to="." method="_on_Leave_pressed"]
 [connection signal="pressed" from="InfoPanel/Buttons/Play" to="." method="_on_Play_pressed"]
 [connection signal="text_changed" from="Chat/Panel/VBox/TypingBorder/TypingPanel/TextEdit" to="." method="_on_TextEdit_text_changed"]

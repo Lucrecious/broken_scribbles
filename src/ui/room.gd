@@ -42,7 +42,7 @@ func _on_received_message(from_id : int, message : String) -> void:
 	message = '%d: %s' % [from_id, message]
 	var lines := _chat_history.text.split('\n', false)
 	lines += message.split('\n')
-	for i in range(_chat_history.max_lines_visible, lines.size()):
+	for _i in range(_chat_history.max_lines_visible, lines.size()):
 		lines.remove(0)
 	
 	_chat_history.text = ''
