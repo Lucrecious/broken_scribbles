@@ -78,7 +78,7 @@ func _ready() -> void:
 	_unit_size.y = rect_size.y / _size.y
 	
 	var image = Image.new()
-	image.create(_size.x, _size.y, false, Image.FORMAT_RGBA5551)
+	image.create(_size.x, _size.y, false, Image.FORMAT_RGBA8)
 	var tex := ImageTexture.new()
 	tex.create_from_image(image, 0)
 	texture = tex
