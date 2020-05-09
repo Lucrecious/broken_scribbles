@@ -86,6 +86,7 @@ func _interlace_guesses_and_drawings(player_id : int) -> Array:
 
 	var parts := []
 
+	printt(_guesses, _drawings)
 	for _i in range(_drawings[player_id].size() + _guesses[player_id].size()):
 		use_drawing = not use_drawing
 
