@@ -27,12 +27,18 @@ func init(room : Room, game : Game) -> void:
 func _phase_timer_started() -> void:
 	print('phase timer started!')
 
-func _phase_timeout() -> void:
+func _phase_timeout(prev_phase) -> void:
 	print('phase timeout')
-	if _game.get_phase() == Game.Phase_ChooseWord:
-		if not _pick_a_word_instance: return
-		_word_picked(0)
+	if _game.get_phase() == Game.Phase_Draw:
+		_game.rpc_id(Network.server_id, 'update_current_drawing', _drawing_board.get_image_info())
 		print('back up')
+		return
+	
+	if _game.get_phase() == Game.Phase_Guess:
+		_game.rpc_id(Network.server_id, 'done_guess', _header.text)
+		print('other back up')
+		return
+
 
 func _on_received_scribble_chain(player_id : int) -> void:
 	_scribble_chain = _game._scribble_chains[player_id]
