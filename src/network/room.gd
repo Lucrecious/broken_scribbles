@@ -53,6 +53,7 @@ func _change_drawing_time(index : int) -> void:
 remotesync func _set_draw_sec_index(index : int) -> void:
 	print(get_tree().get_rpc_sender_id())
 	var sec := get_draw_sec(index)
+	print(sec)
 	if sec == -1: return
 
 	_draw_sec_index = index
