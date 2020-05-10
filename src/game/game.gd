@@ -58,7 +58,7 @@ func _ready():
 
 	_phases = _build_phases()
 
-func get_phase_timer_time_left() -> float:
+func phase_timer_time_left() -> float:
 	if _phase_timer.is_stopped(): return 0.0
 	return _phase_timer.time_left
 
