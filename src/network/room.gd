@@ -51,7 +51,7 @@ func _change_drawing_time(index : int) -> void:
 		rpc_id(id, '_set_draw_sec_index', index)
 
 remotesync func _set_draw_sec_index(index : int) -> void:
-	var sec := Room.get_draw_sec(index)
+	var sec := get_draw_sec(index)
 	if sec == -1: return
 
 	_draw_sec_index = index
