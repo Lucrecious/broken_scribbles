@@ -30,7 +30,7 @@ func _input(event: InputEvent) -> void:
 func on_drawing_just_started() -> void:
 	_loop.stop()
 	
-	var timer := get_tree().create_timer(_end_draw_time - .5)
+	var timer := get_tree().create_timer(_end_draw_time - .8)
 	timer.connect('timeout', self, '_do_fade_out')
 	_drawing.play()
 

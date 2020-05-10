@@ -28,7 +28,8 @@ func _ready() -> void:
 	_time_left_label.clear()
 	
 func _phase_timer_started() -> void:
-	emit_signal('drawing_just_started')
+	if _game.get_phase() == Game.Phase_Draw:
+		emit_signal('drawing_just_started')
 
 func _phase_timeout() -> void:
 	_drawing_board.drawable = false
