@@ -16,6 +16,11 @@ var drawable := true
 func set_cursor_as_brush() -> void:
 	Input.set_custom_mouse_cursor(_brush_cursor_icon)
 
+func set_image_from(image : Image) -> void:
+	if not image: return
+	clear()
+	texture.set_data(image)
+
 func set_image(info : Dictionary) -> bool:
 	clear()
 	var image := get_image_from(info)

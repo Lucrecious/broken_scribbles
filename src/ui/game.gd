@@ -13,6 +13,8 @@ onready var _done_button := $Done
 onready var _pallet := $Pallet
 onready var _time_left_label := $TimeLeft as TimeLeftControl
 
+onready var _scribble_chain_handler := $ScribbleChainHandler
+
 var _pick_a_word_instance : Control
 
 func init(room : Room, game : Game) -> void:
@@ -48,7 +50,6 @@ func _phase_timeout() -> void:
 
 func _on_received_scribble_chain(player_id : int) -> void:
 	_scribble_chain = _game._scribble_chains[player_id]
-	_done_button.disabled = false
 
 func _phase_changed(old_phase : int, new_phase : int) -> void:
 	if old_phase == Game.Phase_ChooseWord:
@@ -68,7 +69,10 @@ func _phase_changed(old_phase : int, new_phase : int) -> void:
 
 	if new_phase == Game.Phase_ShowScribbleChain:
 		_header.editable = false
+		_header.text = ''
 		_drawing_board.drawable = false
+		_drawing_board.clear()
+		_done_button.disabled = true
 		return
 
 	if new_phase == Game.Phase_End:
@@ -87,7 +91,7 @@ func _on_draw_guess() -> void:
 func _on_guess_drawing() -> void:
 	_done_button.disabled = false
 	
-	_header.editable = false
+	_header.editable = true
 	_header.text = ''
 
 	_drawing_board.drawable = false
@@ -151,24 +155,8 @@ func _on_done_show_scribble_chain() -> void:
 		_done_button.disabled = true
 		return
 	
-	for i in range(_scribble_chain.size()):
-		var val = _scribble_chain[i]
-		if val is String:
-			_scribble_chain[i] = val
-			continue
-		
-		if not val is Dictionary:
-			continue
-		
-		var image := _drawing_board.get_image_from(val) as Image
-		_scribble_chain[i] = image
-	
-	var chain_node := preload('res://src/ui/scribble_chain.tscn').instance()
-	chain_node.init(_scribble_chain)
-	get_parent().add_child(chain_node)
-	#move_child(chain_node, 0)
-	_chain_node = chain_node
-	_chain_node.rect_position = Vector2(0, 300)
+	_scribble_chain_handler.set_chain(_scribble_chain)
+	_scribble_chain_handler.start()
 
 	_scribble_chain.clear()
 
@@ -212,3 +200,9 @@ func _on_Pallet_pencil_picked() -> void:
 
 func _on_Pallet_scrap_picked() -> void:
 	_drawing_board.clear()
+
+func _on_ScribbleChainHandler_show_chain_part(part) -> void:
+	if part is Image:
+		_drawing_board.set_image_from(part)
+	if part is String:
+		_header.text = part
