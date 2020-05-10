@@ -146,6 +146,12 @@ margin_right = 65.0
 margin_bottom = 44.0
 text = "Play"
 
+[node name="TimeCycle" type="Button" parent="InfoPanel/Buttons"]
+margin_top = 48.0
+margin_right = 65.0
+margin_bottom = 68.0
+text = "Time"
+
 [node name="Chat" type="PanelContainer" parent="."]
 margin_left = 18.0
 margin_top = 233.0
@@ -217,4 +223,5 @@ __meta__ = {
 [connection signal="timeout" from="Game/TimeLeft/UpdateTimerTick" to="Game" method="_on_UpdateTimerTick_timeout"]
 [connection signal="pressed" from="InfoPanel/Buttons/Leave" to="." method="_on_Leave_pressed"]
 [connection signal="pressed" from="InfoPanel/Buttons/Play" to="." method="_on_Play_pressed"]
+[connection signal="pressed" from="InfoPanel/Buttons/TimeCycle" to="." method="_on_TimeCycle_pressed"]
 [connection signal="text_changed" from="Chat/Panel/VBox/TypingBorder/TypingPanel/TextEdit" to="." method="_on_TextEdit_text_changed"]

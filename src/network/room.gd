@@ -13,6 +13,9 @@ var _id := ''
 var _nickname := ''
 var _clients := []
 
+var _valid_draw_sec := [15, 30, 60, 90]
+var _draw_sec_index := 2
+
 onready var _game := preload('res://src/game/game.tscn')
 
 var _game_instance : Game
@@ -24,6 +27,23 @@ func init(id : String, nickname : String) -> void:
 	_id = id
 	name = _id
 	_nickname = nickname
+
+master func change_drawing_time(index : int) -> void:
+	if _clients.empty(): return
+	var sender_id := get_tree().get_rpc_sender_id()
+	if sender_id != _clients[0]: return
+
+	_change_drawing_time(index)
+
+func _change_drawing_time(index : int) -> void:
+	if not is_network_master(): return
+	if index <= 0: return
+	if index >= _valid_draw_sec.size(): return
+	_draw_sec_index = index
+
+	for id in _clients:
+		rset_id(id, '_draw_sec_index', index)
+
 	
 master func play_game() -> void:
 	if _clients.empty(): return
@@ -55,16 +75,16 @@ func remove_client(id : int) -> void:
 	emit_signal('just_emptied', _id)
 
 func _add_game() -> void:
-	_add_game_node(_clients)
+	_add_game_node(_clients, _draw_sec_index)
 	for client in _clients:
 		rpc_id(client, '_add_game_node', _clients)
 
 	_game_instance.start_game()
 
-remotesync func _add_game_node(clients : Array) -> void:
+remotesync func _add_game_node(clients : Array, sec : float) -> void:
 	if _game_instance: return
 	var game := _game.instance() as Game
-	game.init({ players = clients })
+	game.init({ players = clients, draw_sec = sec })
 	add_child(game)
 	_game_instance = game
 	emit_signal('game_created')

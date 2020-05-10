@@ -14,6 +14,7 @@ onready var _chat_history := $Chat/Panel/VBox/HistoryBorder/HistoryPanel/Chat as
 onready var _game_ui := $Game as Control
 
 onready var _play_button := $InfoPanel/Buttons/Play as Button
+onready var _time_cycle := $InfoPanel/Buttons/TimeCycle as Button
 
 func init(room_id : String) -> void:
 	_room_id = room_id
@@ -41,6 +42,8 @@ func _ready() -> void:
 	_update_usernames()
 
 	_setup_leader()
+	
+	_on_TimeCycle_pressed()
 
 func _on_received_message(from_id : int, message : String) -> void:
 	message = '%d: %s' % [from_id, message]
@@ -93,3 +96,11 @@ func _on_TextEdit_text_changed() -> void:
 	_text_edit.text = ''
 	
 	_room.rpc_unreliable_id(Network.server_id, 'send_chat_message', message)
+
+var _valid_times := [15, 30, 60, 90]
+onready var _time_index := _room._draw_sec_index
+func _on_TimeCycle_pressed() -> void:
+	_time_cycle.text = str(_valid_times[_time_index])
+	_time_index = (_time_index + 1) % _valid_times.size()
+	
+	_room.rpc_id(Network.server_id, 'change_drawing_time', _time_index)
