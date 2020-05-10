@@ -36,6 +36,7 @@ func init(id : String, nickname : String) -> void:
 	_nickname = nickname
 
 master func change_drawing_time(index : int) -> void:
+	print('here')
 	if _clients.empty(): return
 	var sender_id := get_tree().get_rpc_sender_id()
 	if sender_id != _clients[0]: return
