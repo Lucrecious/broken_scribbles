@@ -29,6 +29,13 @@ func _phase_timer_started() -> void:
 	pass
 
 func _phase_timeout() -> void:
+	_drawing_board.drawable = false
+	_done_button.disabled = true
+
+	if _game.get_phase() == Game.Phase_ChooseWord:
+		_word_picked(0)
+		return
+
 	if _game.get_phase() == Game.Phase_Draw:
 		_game.rpc_id(Network.server_id, 'update_current_drawing', _drawing_board.get_image_info())
 		return
