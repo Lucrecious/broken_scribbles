@@ -44,10 +44,7 @@ func _ready() -> void:
 
 	_setup_leader()
 	
-	_time_cycle.text = '??'
-	var init_draw_sec := Room.get_draw_sec(_time_index) as float
-	if init_draw_sec == -1: return
-	_time_cycle.text = str(init_draw_sec)
+	_time_cycle.text = str(Constants.get_draw_seconds(-1))
 
 func _on_received_message(from_id : int, message : String) -> void:
 	message = '%d: %s' % [from_id, message]
