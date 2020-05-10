@@ -103,6 +103,7 @@ func _on_phase_changed(old_phase : int, new_phase : int) -> void:
 	emit_signal('phase_timer_started')
 
 	if not is_network_master(): return
+	print('phased changed')
 
 	if new_phase == Phase_ShowScribbleChain:
 		_send_one_scribble_chain_in_parts()

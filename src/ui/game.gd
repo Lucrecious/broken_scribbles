@@ -9,7 +9,6 @@ onready var _pick_a_word := preload('res://src/ui/pick_a_word.tscn')
 
 onready var _header := $Header as LineEdit
 onready var _drawing_board := $DrawingCanvas
-onready var _done_button := $Done
 onready var _pallet := $Pallet
 onready var _time_left_label := $TimeLeft as TimeLeftControl
 
@@ -34,7 +33,6 @@ func _phase_timer_started() -> void:
 
 func _phase_timeout() -> void:
 	_drawing_board.drawable = false
-	_done_button.disabled = true
 
 	if _game.get_phase() == Game.Phase_ChooseWord:
 		_word_picked(0)
@@ -50,6 +48,7 @@ func _phase_timeout() -> void:
 
 func _on_received_scribble_chain(player_id : int) -> void:
 	_scribble_chain = _game._scribble_chains[player_id]
+	_on_done_show_scribble_chain()
 
 func _phase_changed(old_phase : int, new_phase : int) -> void:
 	if old_phase == Game.Phase_ChooseWord:
@@ -69,20 +68,16 @@ func _phase_changed(old_phase : int, new_phase : int) -> void:
 
 	if new_phase == Game.Phase_ShowScribbleChain:
 		_header.editable = false
+		print('clearing the text from %s' % _header.text)
 		_header.text = ''
 		_drawing_board.drawable = false
 		_drawing_board.clear()
-		#_done_button.disabled = true
-		_done_button.disabled = false
 		return
 
 	if new_phase == Game.Phase_End:
-		_done_button.disabled = false
 		return
 
 func _on_draw_guess() -> void:
-	_done_button.disabled = false
-	
 	_header.editable = false
 	_header.text = _game.get_local_guess()
 
@@ -90,9 +85,8 @@ func _on_draw_guess() -> void:
 	_drawing_board.clear()
 
 func _on_guess_drawing() -> void:
-	_done_button.disabled = false
-	
 	_header.editable = true
+	print('clear on guess drawing %s' % _header.text)
 	_header.text = ''
 
 	_drawing_board.drawable = false
@@ -117,53 +111,17 @@ func _remove_pick_a_word_dialog() -> void:
 func _on_Done_pressed() -> void:
 	if not _game: return
 	
-	_done_button.disabled = true
 	_drawing_board.drawable = false
 	_header.editable = false
 	
-	if _game.get_phase() == Game.Phase_Draw:
-		_on_done_phase_draw()
-		return
-
-	if _game.get_phase() == Game.Phase_Guess:
-		_on_done_phase_guess()
-		return
-
-	if _game.get_phase() == Game.Phase_ShowScribbleChain:
-		#_drawing_board.clear()
-		_done_button.disabled = false
-		_on_done_show_scribble_chain()
-		return
-
-	if _game.get_phase() == Game.Phase_End:
-		_done_button.disabled = false;
-		_on_done_end()
-		return
-
-func _on_done_end() -> void:
-	_room.rpc_id(Network.server_id, 'leave_room')
-	
 var _scribble_chain := []
-var _chain_node : Control
 func _on_done_show_scribble_chain() -> void:
-	if _scribble_chain.empty():
-		if _chain_node:
-			get_parent().remove_child(_chain_node)
-			_chain_node.queue_free()
-			_chain_node = null
-
-		_game.rpc_id(Network.server_id, 'done_show_scribble_chain')
-		_done_button.disabled = true
-		return
+	if _scribble_chain.empty(): return
 	
 	_scribble_chain_handler.set_chain(_scribble_chain)
 	_scribble_chain_handler.start()
 
 	_scribble_chain.clear()
-
-func _on_done_phase_draw() -> void:
-	_game.rpc_id(Network.server_id, 'update_current_drawing', _drawing_board.get_image_info())
-	_done_button.disabled = false
 
 func _on_done_phase_guess() -> void:
 	_game.rpc_id(Network.server_id, 'done_guess', _header.text)
@@ -207,3 +165,8 @@ func _on_ScribbleChainHandler_show_chain_part(part) -> void:
 		_drawing_board.set_image(part)
 	if part is String:
 		_header.text = part
+		print('trying to show: ' + part)
+
+func _on_Header_text_entered(new_text: String) -> void:
+	_on_done_phase_guess()
+	_header.editable = false
