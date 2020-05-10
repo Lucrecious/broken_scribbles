@@ -52,7 +52,6 @@ func init(room_settings : Dictionary) -> void:
 
 		_holding_map[id] = id
 	
-	print(_draw_sec_time)
 	_draw_sec_time = room_settings.get('draw_sec', 15)
 
 func _ready():

@@ -41,6 +41,7 @@ master func change_drawing_time(index : int) -> void:
 	if sender_id != _clients[0]: return
 
 	_change_drawing_time(index)
+	print(index)
 
 func _change_drawing_time(index : int) -> void:
 	if not is_network_master(): return
