@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://src/ui/room.gd" type="Script" id=1]
 [ext_resource path="res://assets/ui/borders/border_c.tscn" type="PackedScene" id=2]
@@ -8,6 +8,8 @@
 [ext_resource path="res://assets/ui/borders/border_a.tscn" type="PackedScene" id=6]
 [ext_resource path="res://assets/ui/header/header_a.tscn" type="PackedScene" id=7]
 [ext_resource path="res://src/ui/pallet/pallet.tscn" type="PackedScene" id=8]
+[ext_resource path="res://src/ui/guessing_text.tscn" type="PackedScene" id=9]
+[ext_resource path="res://src/ui/game/timer.tscn" type="PackedScene" id=10]
 
 [node name="Room" type="Control"]
 anchor_right = 1.0
@@ -40,30 +42,13 @@ margin_right = 1409.87
 margin_bottom = 1351.0
 rect_scale = Vector2( 0.5, 0.5 )
 
-[node name="Header" type="TextEdit" parent="Game"]
-margin_left = 351.159
-margin_top = 138.0
-margin_right = 653.159
-margin_bottom = 188.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
 [node name="Pallet" type="HBoxContainer" parent="Game"]
 margin_left = 38.0
 margin_top = 242.0
 margin_right = 122.0
 margin_bottom = 588.0
 
-[node name="TimeLeft" type="Label" parent="Game"]
-margin_left = 184.234
-margin_top = 118.0
-margin_right = 225.234
-margin_bottom = 160.0
-text = "time"
-__meta__ = {
-"_edit_use_anchors_": false
-}
+[node name="TimeLeft" parent="Game" instance=ExtResource( 10 )]
 
 [node name="UpdateTimerTick" type="Timer" parent="Game/TimeLeft"]
 wait_time = 0.1
@@ -85,6 +70,12 @@ margin_right = 847.562
 margin_bottom = 600.3
 size_flags_horizontal = 3
 size_flags_vertical = 3
+
+[node name="Header" parent="Game" instance=ExtResource( 9 )]
+margin_left = 330.0
+margin_top = 128.0
+margin_right = 689.0
+margin_bottom = 195.0
 
 [node name="InfoPanel" type="Panel" parent="."]
 margin_left = 966.0

@@ -66,6 +66,9 @@ func phase_timer_time_left() -> float:
 	if _phase_timer.is_stopped(): return 0.0
 	return _phase_timer.time_left
 
+func phase_timer_time_wait() -> float:
+	return _phase_timer.wait_time
+
 func is_phase_timer_ticking() -> bool:
 	return not _phase_timer.is_stopped()
 

@@ -7,11 +7,11 @@ var _room : Room
 
 onready var _pick_a_word := preload('res://src/ui/pick_a_word.tscn')
 
-onready var _header := $Header as TextEdit
+onready var _header := $Header as LineEdit
 onready var _drawing_board := $DrawingCanvas
 onready var _done_button := $Done
 onready var _pallet := $Pallet
-onready var _time_left_label := $TimeLeft as Label
+onready var _time_left_label := $TimeLeft as TimeLeftControl
 
 var _pick_a_word_instance : Control
 
@@ -22,6 +22,9 @@ func init(room : Room, game : Game) -> void:
 	_game.connect('received_scribble_chain', self, '_on_received_scribble_chain')
 	_game.connect('phase_timeout', self, '_phase_timeout')
 	_game.connect('phase_timer_started', self, '_phase_timer_started')
+
+func _ready() -> void:
+	_time_left_label.clear()
 
 func _phase_timer_started() -> void:
 	if _game.get_phase() != Game.Phase_Draw: return
@@ -64,7 +67,7 @@ func _phase_changed(old_phase : int, new_phase : int) -> void:
 		return
 
 	if new_phase == Game.Phase_ShowScribbleChain:
-		_header.readonly = true
+		_header.editable = false
 		_drawing_board.drawable = false
 		return
 
@@ -75,7 +78,7 @@ func _phase_changed(old_phase : int, new_phase : int) -> void:
 func _on_draw_guess() -> void:
 	_done_button.disabled = false
 	
-	_header.readonly = true
+	_header.editable = false
 	_header.text = _game.get_local_guess()
 
 	_drawing_board.drawable = true
@@ -84,7 +87,7 @@ func _on_draw_guess() -> void:
 func _on_guess_drawing() -> void:
 	_done_button.disabled = false
 	
-	_header.readonly = false
+	_header.editable = false
 	_header.text = ''
 
 	_drawing_board.drawable = false
@@ -107,9 +110,11 @@ func _remove_pick_a_word_dialog() -> void:
 	_pick_a_word_instance = null
 
 func _on_Done_pressed() -> void:
+	if not _game: return
+	
 	_done_button.disabled = true
 	_drawing_board.drawable = false
-	_header.readonly = true
+	_header.editable = false
 	
 	if _game.get_phase() == Game.Phase_Draw:
 		_on_done_phase_draw()
@@ -187,11 +192,14 @@ func _on_DrawingCanvas_canvas_changed() -> void:
 func _on_UpdateTimerTick_timeout() -> void:
 	if not _game: return
 	
-	_time_left_label.text = ''
+	_time_left_label.clear()
 
 	if not _game.is_phase_timer_ticking(): return
 	
-	_time_left_label.text = str(_game.phase_timer_time_left())
+	_time_left_label.update_time(
+		_game.phase_timer_time_left(),
+		_game.phase_timer_time_wait()
+	)
 
 func _on_Pallet_color_picked(color) -> void:
 	_drawing_board.set_brush_color(color)

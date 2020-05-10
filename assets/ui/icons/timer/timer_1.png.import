@@ -1,0 +1,17 @@
+[remap]
+
+importer="texture_atlas"
+type="Texture"
+path="res://.import/timer_1.png-492125fecc8cf347ebecb832aa18a103.res"
+group_file="res://assets/ui/icons/timer/timer.png"
+valid=true
+[deps]
+
+
+source_file="res://assets/ui/icons/timer/timer_1.png"
+dest_files=[ "res://.import/timer_1.png-492125fecc8cf347ebecb832aa18a103.res" ]
+
+[params]
+
+atlas_file="res://assets/ui/icons/timer/timer.png"
+import_mode=0

@@ -1,0 +1,13 @@
+﻿
+FONTLOG for Oktober–––––––––––––––––––––––––––––––––––––––––
+This file provides detailed information on the Oktober Font Software. 
+This information should be distributed along with the Oktober fonts and any derivative works.
+Basic Font Information–––––––––––––––––––––––––––––––––––––––––
+Oktober – font definition, designed by Johannes Hirsekorn.
+
+ChangeLog–––––––––––––––––––––––––––––––––––––––––
+(This should list both major and minor changes, most recent first.)
+30 October 2012 (Johannes Hirsekorn) Oktober Version 1.0- Initial release of the font Oktober under the SIL OFL 1.1
+
+Acknowledgements–––––––––––––––––––––––––––––––––––––––––
+(Here is where contributors can be acknowledged. If you make modifications be sure to add your name (N), email (E), web-address (W) and description (D). This list is sorted by last name in alphabetical order.)N: Johannes HirsekornE: johannes.hirsekorn@panicum.deW: <URL>D: Designer 
