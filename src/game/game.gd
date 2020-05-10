@@ -62,6 +62,7 @@ func _phase_timeout() -> void:
 	emit_signal('phase_timeout')
 
 	if not is_network_master(): return
+	print('SERVER TIMEOUT')
 
 	if get_phase() == Phase_Draw:
 		_finish_drawing_phase()
@@ -72,6 +73,7 @@ func _phase_timeout() -> void:
 		return
 	
 	if get_phase() == Phase_ChooseWord:
+		print('HEREEE')
 		_finish_pick_word_phase()
 		return
 
