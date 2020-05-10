@@ -28,14 +28,20 @@ func _phase_timer_started() -> void:
 	print('phase timer started!')
 
 func _phase_timeout() -> void:
-	print('phase timed out!')
+	print('phase timeout')
+	if _game.get_phase() == Game.Phase_ChooseWord:
+		if not _pick_a_word_instance: return
+		_word_picked(0)
+		print('back up')
 
 func _on_received_scribble_chain(player_id : int) -> void:
 	_scribble_chain = _game._scribble_chains[player_id]
 	_done_button.disabled = false
 
-func _phase_changed(_old_phase : int, new_phase : int) -> void:
-	print('phase_changed')
+func _phase_changed(old_phase : int, new_phase : int) -> void:
+	if old_phase == Game.Phase_ChooseWord:
+		_remove_pick_a_word_dialog()
+
 	if new_phase == Game.Phase_ChooseWord:
 		_on_choose_word()
 		return
@@ -83,7 +89,9 @@ func _on_choose_word() -> void:
 
 func _word_picked(index : int) -> void:
 	_game.rpc_id(Network.server_id, 'pick_word', get_tree().get_network_unique_id(), index)
+	_remove_pick_a_word_dialog()
 
+func _remove_pick_a_word_dialog() -> void:
 	if not _pick_a_word_instance: return
 	remove_child(_pick_a_word_instance)
 	_pick_a_word_instance.queue_free()
