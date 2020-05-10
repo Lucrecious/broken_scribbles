@@ -34,6 +34,9 @@ func on_drawing_just_started() -> void:
 	timer.connect('timeout', self, '_do_fade_out')
 	_drawing.play()
 
+func on_draw_sec_changed(new_sec : float) -> void:
+	_end_draw_time = new_sec
+
 func _do_fade_out() -> void:
 	_fade_out_tween.remove_all()
 	_fade_out_tween.interpolate_property(_drawing, 'volume_db', 0, -80, .5)

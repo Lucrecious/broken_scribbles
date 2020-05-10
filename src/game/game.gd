@@ -42,8 +42,6 @@ onready var _phase_timer := $PhaseTimer as Timer
 
 var _draw_sec_time := 15.0
 
-func get_draw_sec() -> float: return _draw_sec_time
-
 func init(room_settings : Dictionary) -> void:
 	for i in range(room_settings.players.size()):
 		var id := room_settings.players[i] as int
