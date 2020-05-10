@@ -36,12 +36,9 @@ func init(id : String, nickname : String) -> void:
 	_nickname = nickname
 
 master func change_drawing_time(index : int) -> void:
-	print('here')
 	if _clients.empty(): return
 	var sender_id := get_tree().get_rpc_sender_id()
 	if sender_id != _clients[0]: return
-
-	print('changing the time...')
 
 	_change_drawing_time(index)
 
@@ -54,6 +51,7 @@ func _change_drawing_time(index : int) -> void:
 		rpc_id(id, '_set_draw_sec_index', index)
 
 remotesync func _set_draw_sec_index(index : int) -> void:
+	print(get_tree().get_rpc_sender_id())
 	var sec := get_draw_sec(index)
 	if sec == -1: return
 
