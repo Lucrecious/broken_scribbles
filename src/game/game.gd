@@ -384,4 +384,6 @@ func _build_phases() -> Array:
 
 	phases.push_back(Phase_End)
 
+	print(phases)
+
 	return phases
