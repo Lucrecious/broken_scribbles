@@ -96,6 +96,8 @@ __meta__ = {
 }
 
 [node name="UpdateTimerTick" type="Timer" parent="Game/TimeLeft"]
+wait_time = 0.1
+autostart = true
 
 [node name="InfoPanel" type="Panel" parent="."]
 margin_left = 10.0
