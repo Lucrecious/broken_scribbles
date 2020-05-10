@@ -36,7 +36,7 @@ func _ready() -> void:
 	_room.connect('client_left', self, '_on_client_left')
 	_room.connect('game_created', self, '_on_game_created')
 	_room.connect('received_message', self, '_on_received_message')
-	_room.connect('draw_sec_changed', self, '_on_draw_sec_changed')
+	_room.connect('draw_sec_index_changed', self, '_on_draw_sec_index_changed')
 	
 	_nickname.text = _room.nickname()
 
@@ -113,5 +113,5 @@ func _on_TimeCycle_pressed() -> void:
 	
 	_room.rpc_id(Network.server_id, 'change_drawing_time', _time_index)
 
-func _on_draw_sec_changed(sec : float) -> void:
-	_time_cycle.text = str(sec)
+func _on_draw_sec_index_changed(index : int) -> void:
+	_time_cycle.text = str(Constants.get_draw_seconds(index))

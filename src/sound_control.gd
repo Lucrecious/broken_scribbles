@@ -6,7 +6,7 @@ onready var _end_round := $EndRound as AudioStreamPlayer
 
 onready var _fade_out_tween := $FadeOutTween as Tween
 
-var _end_draw_time := 90.0
+var _end_draw_time := Constants.get_draw_seconds(-1) as float
 
 func set_end_draw_sec(end_draw_time : float) -> void:
 	if end_draw_time <= 0: return
@@ -34,7 +34,7 @@ func on_drawing_just_started() -> void:
 	timer.connect('timeout', self, '_do_fade_out')
 	_drawing.play()
 
-func on_draw_sec_changed(new_sec : float) -> void:
+func on_draw_sec_index_changed(new_sec : float) -> void:
 	_end_draw_time = new_sec
 
 func _do_fade_out() -> void:

@@ -2,18 +2,11 @@ extends Node2D
 
 class_name Room
 
-const valid_draw_sec := [15, 30, 60, 90]
-
-static func get_draw_sec(index : int) -> int:
-	if index < 0: return -1
-	if index >= valid_draw_sec.size(): return -1
-	return valid_draw_sec[index]
-
 signal client_added(id)
 signal client_left(id)
 signal just_emptied(room_id)
 signal received_message(id, message)
-signal draw_sec_changed(new_sec)
+signal draw_sec_index_changed(new_sec)
 signal game_created
 
 # State
@@ -21,7 +14,7 @@ var _id := ''
 var _nickname := ''
 var _clients := []
 
-var _draw_sec_index := 2
+var _draw_sec_index := Constants.DEFAULT_DRAW_SECOND_INDEX as int
 
 onready var _game := preload('res://src/game/game.tscn')
 
@@ -51,11 +44,8 @@ func _change_drawing_time(index : int) -> void:
 		rpc_id(id, '_set_draw_sec_index', index)
 
 remotesync func _set_draw_sec_index(index : int) -> void:
-	var sec := get_draw_sec(index)
-	if sec == -1: return
-
 	_draw_sec_index = index
-	emit_signal('draw_sec_changed', sec)
+	emit_signal('draw_sec_index_changed', index)
 
 master func play_game() -> void:
 	if _clients.empty(): return
@@ -87,16 +77,16 @@ func remove_client(id : int) -> void:
 	emit_signal('just_emptied', _id)
 
 func _add_game() -> void:
-	_add_game_node(_clients, get_draw_sec(_draw_sec_index))
+	_add_game_node(_clients, _draw_sec_index)
 	for client in _clients:
-		rpc_id(client, '_add_game_node', _clients, get_draw_sec(_draw_sec_index))
+		rpc_id(client, '_add_game_node', _clients, _draw_sec_index)
 
 	_game_instance.start_game()
 
-remotesync func _add_game_node(clients : Array, sec : float) -> void:
+remotesync func _add_game_node(clients : Array, draw_sec_index : float) -> void:
 	if _game_instance: return
 	var game := _game.instance() as Game
-	game.init({ players = clients, draw_sec = sec })
+	game.init({ players = clients, draw_sec_index = draw_sec_index })
 	add_child(game)
 	_game_instance = game
 	emit_signal('game_created')

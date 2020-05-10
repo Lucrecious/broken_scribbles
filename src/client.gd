@@ -49,6 +49,6 @@ func _entered_room(success : bool, room_id : String, reason : int, is_local: boo
 	_current_room = room
 
 	_current_room.game().connect('drawing_just_started', _sound_control, 'on_drawing_just_started')
-	_current_room._room.connect('draw_sec_changed', _sound_control, 'on_draw_sec_changed')
+	_current_room._room.connect('draw_sec_index_changed', _sound_control, 'on_draw_sec_index_changed')
 
 

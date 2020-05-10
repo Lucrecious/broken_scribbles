@@ -2,6 +2,12 @@ extends Reference
 
 class_name Constants
 
+const VALID_DRAW_SECONDS := [15.0, 30.0, 60.0, 90.0]
+const DEFAULT_DRAW_SECOND_INDEX := 2
+static func get_draw_seconds(index : int) -> float:
+	if index < 0 || index >= VALID_DRAW_SECONDS.size(): return VALID_DRAW_SECONDS[DEFAULT_DRAW_SECOND_INDEX]
+	return VALID_DRAW_SECONDS[index]
+
 const Category_None = 0
 
 const Words = {
