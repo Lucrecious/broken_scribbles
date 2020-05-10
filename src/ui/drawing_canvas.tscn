@@ -5,7 +5,9 @@
 [node name="DrawingCanvas" type="TextureRect"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-rect_min_size = Vector2( 16, 16 )
+margin_right = -24.0
+margin_bottom = -25.0
+rect_min_size = Vector2( 128, 128 )
 expand = true
 script = ExtResource( 1 )
 __meta__ = {
