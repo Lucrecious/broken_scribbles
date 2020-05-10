@@ -2,6 +2,13 @@ extends Node2D
 
 class_name Room
 
+const valid_draw_sec := [15, 30, 60, 90]
+
+static func get_draw_sec(index : int) -> int:
+	if index < 0: return -1
+	if index >= valid_draw_sec.size(): return -1
+	return valid_draw_sec[index]
+
 signal client_added(id)
 signal client_left(id)
 signal just_emptied(room_id)
@@ -14,7 +21,6 @@ var _id := ''
 var _nickname := ''
 var _clients := []
 
-var _valid_draw_sec := [15, 30, 60, 90]
 var _draw_sec_index := 2
 
 onready var _game := preload('res://src/game/game.tscn')
@@ -43,7 +49,6 @@ func _change_drawing_time(index : int) -> void:
 
 	for id in _clients:
 		rpc_id(id, '_set_draw_sec_index', index)
-
 
 remotesync func _set_draw_sec_index(index : int) -> void:
 	_draw_sec_index = index
