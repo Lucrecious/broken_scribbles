@@ -114,7 +114,8 @@ master func create_room(room_name : String) -> void:
 	if _abort_create_room(sender_id): return
 
 	var room_id := UUID.v4()
-	rpc('_add_room', sender_id, room_id, room_name)
+	var name := _create_random_name()
+	rpc('_add_room', sender_id, room_id, room_name, name)
 
 master func enter_room(room_id : String) -> void:
 	assert(_local_peer)
@@ -123,7 +124,18 @@ master func enter_room(room_id : String) -> void:
 	var sender_id := get_tree().get_rpc_sender_id()
 	if _abort_enter_room(sender_id, room_id): return
 	
-	rpc('_attempt_enter_room', sender_id, room_id)
+	var name := _create_random_name()
+
+	rpc('_attempt_enter_room', sender_id, room_id, name)
+
+func _create_random_name() -> String:
+	var adjective := Constants.FeelingAdjectives.keys()[randi() % Constants.FeelingAdjectives.size()] as String
+	adjective = adjective.to_lower()
+	
+	var animal := Constants.Animals.keys()[randi() % Constants.Animals.size()] as String
+	animal = animal.to_lower()
+	
+	return '%s %s' % [adjective, animal]
 
 func _abort_enter_room(client_id : int, room_id : String) -> bool:
 	var is_local := client_id == get_tree().get_network_unique_id()
@@ -156,22 +168,22 @@ func get_room(room_id : String) -> Room:
 func get_room_ids() -> Array:
 	return _rooms.keys()
 
-puppetsync func _attempt_enter_room(from_id : int, room_id : String) -> void:
-	(_rooms[room_id] as Room).add_client(from_id)
+puppetsync func _attempt_enter_room(from_id : int, room_id : String, client_nickname : String) -> void:
+	(_rooms[room_id] as Room).add_client(from_id, client_nickname)
 	if from_id != get_tree().get_network_unique_id(): return
-	_signal_entered_room(true, room_id, Error_none, from_id == get_tree().get_network_unique_id())
+	_signal_entered_room(true, room_id, Error_none)
 
-puppetsync func _add_room(from_id : int, room_id : String, room_name : String) -> void:
-	_add_room_node(room_id, room_name, from_id)
+puppetsync func _add_room(from_id : int, room_id : String, room_name : String, client_nickname : String) -> void:
+	_add_room_node(room_id, room_name, from_id, client_nickname)
 	
 	if is_network_master():
 		_rooms[room_id].connect('just_emptied', self, '_room_just_emptied')
 
 	if from_id != get_tree().get_network_unique_id(): return
-	_signal_entered_room(true, room_id, Error_none, from_id == get_tree().get_network_unique_id())
+	_signal_entered_room(true, room_id, Error_none)
 
-puppetsync func _signal_entered_room(success : bool, room_id : String, reason : int, is_local : bool) -> void:
-	emit_signal('entered_room_callback', success, room_id, reason, is_local)
+puppetsync func _signal_entered_room(success : bool, room_id : String, reason : int) -> void:
+	emit_signal('entered_room_callback', success, room_id, reason)
 
 puppetsync func _remove_room(room_id : String) -> void:
 	if not room_id in _rooms: return
@@ -185,10 +197,10 @@ puppetsync func _remove_room(room_id : String) -> void:
 	
 	emit_signal('room_removed', room_id)
 
-func _add_room_node(room_id : String, nickname : String, creator_id : int) -> void:
+func _add_room_node(room_id : String, nickname : String, creator_id : int, creator_nickname : String) -> void:
 	var room = preload('res://src/network/room.tscn').instance()
 	room.init(room_id, nickname)
-	room.add_client(creator_id)
+	room.add_client(creator_id, creator_nickname)
 
 	add_child(room)
 	_rooms[room_id] = room
@@ -218,17 +230,24 @@ func _sync(id : int) -> void:
 	var room_states := {}
 	for id in _rooms:
 		var r = _rooms[id] as Room
-		room_states[id] = { nickname = r.nickname(), clients = r.clients() }
+		room_states[id] = {
+			nickname = r.nickname(),
+			clients = r.clients(),
+			client_nicknames = r.client_nicknames() }
 	
 	rpc_id(id, '_sync_rooms', room_states)
 
 puppet func _sync_rooms(room_states : Dictionary) -> void:
 	for id in room_states:
 		var clients := room_states[id].clients as Array
+		var client_nicknames := room_states[id].client_nicknames as Dictionary
 		if not clients.size(): continue
-
-		_add_room_node(id, room_states[id].nickname, clients[0])
+	
+		var first := clients[0] as int
+		_add_room_node(id, room_states[id].nickname, first, client_nicknames[first])
 		_rooms[id]._clients = clients
+		_rooms[id]._client_2_nickname = client_nicknames
+		print(client_nicknames)
 
 func _client_left(id : int) -> void:
 	_clients.erase(id)

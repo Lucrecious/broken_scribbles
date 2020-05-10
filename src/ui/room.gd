@@ -5,7 +5,7 @@ var _room_id := ''
 onready var _pick_a_word := preload('res://src/ui/pick_a_word.tscn')
 
 onready var _nickname := $InfoPanel/Nickname
-onready var _players := $InfoPanel/Players
+onready var _players := $Game/PlayerList
 onready var _room := Network.get_room(_room_id) as Room
 
 onready var _text_edit := $Chat/Panel/VBox/TypingBorder/TypingPanel/TextEdit as TextEdit
@@ -29,8 +29,6 @@ func _gui_input(event: InputEvent) -> void:
 
 func _ready() -> void:
 	if not _room: return
-	
-	_game_ui.visible = false
 	
 	_room.connect('client_added', self, '_update_usernames')
 	_room.connect('client_left', self, '_on_client_left')
@@ -70,9 +68,7 @@ func _setup_leader() -> void:
 	_play_button.disabled = false
 
 func _update_usernames(_id := 0) -> void:
-	_players.clear()
-	for id in _room.clients():
-		_players.add_item(str(id))
+	_players.update_list(_room.clients())
 
 func _on_game_created() -> void:
 	assert(_room.game())
@@ -87,9 +83,6 @@ func _on_Play_pressed() -> void:
 	
 	_room.rpc_id(Network.server_id, 'play_game')
 	_play_button.disabled = true
-
-func _on_Leave_pressed() -> void:
-	_room.rpc_id(Network.server_id, 'leave_room')
 
 func _on_TextEdit_text_changed() -> void:
 	if not Input.is_action_just_pressed('send_chat'): return
@@ -112,3 +105,7 @@ func _on_TimeCycle_pressed() -> void:
 
 func _on_draw_sec_index_changed(index : int) -> void:
 	_time_cycle.text = str(Constants.get_draw_seconds(index))
+
+
+func _on_LeaveRoomButton_pressed() -> void:
+	_room.rpc_id(Network.server_id, 'leave_room')

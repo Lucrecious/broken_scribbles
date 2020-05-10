@@ -13,12 +13,17 @@ signal game_created
 var _id := ''
 var _nickname := ''
 var _clients := []
+var _client_2_nickname := {}
 
 var _draw_sec_index := Constants.DEFAULT_DRAW_SECOND_INDEX as int
 
 onready var _game := preload('res://src/game/game.tscn')
 
 var _game_instance : Game
+
+func client_nickname(id : int) -> String:
+	if not id in _client_2_nickname: return ''
+	return _client_2_nickname[id] as String
 
 func _ready() -> void:
 	get_tree().connect('network_peer_disconnected', self, '_client_disconnected')
@@ -103,12 +108,10 @@ func nickname() -> String:
 func clients() -> Array:
 	return _clients.duplicate()
 
-func add_client(id : int) -> void:
+func add_client(id : int, client_nickname : String) -> void:
 	_clients.append(id)
+	_client_2_nickname[id] = client_nickname
 	emit_signal('client_added', id)
-
-master func _add_client(id : int) -> void:
-	_clients.append(id)
 
 func _client_disconnected(id : int) -> void:
 	if not id in _clients: return
