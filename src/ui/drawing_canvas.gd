@@ -11,7 +11,6 @@ var _brush_color := Color.black
 
 onready var _size := Vector2()
 onready var _unit_size := Vector2()
-
 var drawable := true
 
 func set_cursor_as_brush() -> void:
@@ -135,7 +134,6 @@ func _gui_input(event: InputEvent) -> void:
 
 	if Input.is_action_just_pressed('ui_draw'):
 		_clicked_on_image = _has_point(mouse_position)
-		printt(_clicked_on_image, 'here')
 	
 	if not _clicked_on_image: return
 	
@@ -145,7 +143,6 @@ func _gui_input(event: InputEvent) -> void:
 		mouse_delta.x = int(mouse_delta.x / _unit_size.x)
 		mouse_delta.y = int(mouse_delta.y / _unit_size.y)
 	
-	print('drawing!!')
 	var changed := _add_pixels(mouse_position, mouse_delta)
 	
 	if not changed: return
@@ -192,5 +189,4 @@ func _get_line_points(from : Vector2, to : Vector2, num_points : int) -> Array:
 	
 func _has_point(pos : Vector2) -> bool:
 	var rect := Rect2(Vector2(), _size)
-	printt(pos, _size)
 	return rect.has_point(pos)
