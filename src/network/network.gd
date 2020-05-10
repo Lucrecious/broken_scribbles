@@ -10,7 +10,7 @@ const private_key_location := 'user://private.key'
 
 const server_id := 1
 
-signal entered_room_callback(success, room_id, reason, is_local)
+signal entered_room_callback(success, room_id, reason)
 signal room_added(room_id)
 signal room_removed(room_id)
 signal client_left_room(id, room_id)

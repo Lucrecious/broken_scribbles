@@ -32,7 +32,7 @@ func _client_left_room(id : int, room_id : String) -> void:
 	_start_menu_instance = _start_menu.instance()
 	add_child(_start_menu_instance)
 
-func _entered_room(success : bool, room_id : String, client_nickname : String, reason : int) -> void:
+func _entered_room(success : bool, room_id : String, reason : int) -> void:
 	if not success:
 		var error := "[error: %s] [room id: '%s']" % [Network.error_2_string(reason), room_id]
 		print(error)
@@ -44,7 +44,7 @@ func _entered_room(success : bool, room_id : String, client_nickname : String, r
 		_start_menu_instance = null
 
 	var room := preload('res://src/ui/room.tscn').instance()
-	room.init(room_id, client_nickname)
+	room.init(room_id)
 	add_child(room)
 	_current_room = room
 
