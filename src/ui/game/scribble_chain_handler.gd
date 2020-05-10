@@ -2,8 +2,8 @@ extends Node
 
 signal show_chain_part(part)
 
-export(float) var sec_per_words := 10
-export(float) var sec_per_picture := 10
+export(float) var sec_per_words := 5
+export(float) var sec_per_picture := 5
 
 var _scribble_chain := []
 
