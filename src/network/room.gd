@@ -87,9 +87,9 @@ func remove_client(id : int) -> void:
 	emit_signal('just_emptied', _id)
 
 func _add_game() -> void:
-	_add_game_node(_clients, _draw_sec_index)
+	_add_game_node(_clients, get_draw_sec(_draw_sec_index))
 	for client in _clients:
-		rpc_id(client, '_add_game_node', _clients, _draw_sec_index)
+		rpc_id(client, '_add_game_node', _clients, get_draw_sec(_draw_sec_index))
 
 	_game_instance.start_game()
 

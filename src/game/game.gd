@@ -52,7 +52,9 @@ func init(room_settings : Dictionary) -> void:
 
 		_holding_map[id] = id
 	
-	_draw_sec_time = Room.get_draw_sec(room_settings.get('draw_sec', 15))
+	_draw_sec_time = room_settings.get('draw_sec', 15)
+	if _draw_sec_time > 0: return
+	_draw_sec_time = 30
 
 func _ready():
 	get_tree().connect('network_peer_disconnected', self, '_player_left')
