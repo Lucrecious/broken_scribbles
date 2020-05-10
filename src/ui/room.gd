@@ -11,12 +11,15 @@ onready var _room := Network.get_room(_room_id) as Room
 onready var _text_edit := $Chat/Panel/VBox/TypingBorder/TypingPanel/TextEdit as TextEdit
 onready var _chat_history := $Chat/Panel/VBox/HistoryBorder/HistoryPanel/Chat as Label
 
-onready var _game_ui := $Game
+onready var _game_ui := $Game as Control
 
 onready var _play_button := $InfoPanel/Buttons/Play as Button
 
 func init(room_id : String) -> void:
 	_room_id = room_id
+
+func game() -> Control:
+	return _game_ui
 
 func _gui_input(event: InputEvent) -> void:
 	if not event.is_action_pressed('send_chat', false): return

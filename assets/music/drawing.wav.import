@@ -1,0 +1,21 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/drawing.wav-8ffb2026b514bc0534ebbcf5e8ff1628.sample"
+
+[deps]
+
+source_file="res://assets/music/drawing.wav"
+dest_files=[ "res://.import/drawing.wav-8ffb2026b514bc0534ebbcf5e8ff1628.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop=false
+compress/mode=0

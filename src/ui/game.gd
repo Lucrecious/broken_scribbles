@@ -1,5 +1,7 @@
 extends Control
 
+signal drawing_just_started
+
 var _game : Game
 var _room : Room
 
@@ -26,7 +28,8 @@ func init(room : Room, game : Game) -> void:
 	_game.connect('phase_timer_started', self, '_phase_timer_started')
 
 func _phase_timer_started() -> void:
-	pass
+	if _game.get_phase() != Game.Phase_Draw: return
+	emit_signal('drawing_just_started')
 
 func _phase_timeout() -> void:
 	_drawing_board.drawable = false

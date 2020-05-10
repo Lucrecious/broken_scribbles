@@ -89,7 +89,7 @@ func _on_phase_changed(old_phase : int, new_phase : int) -> void:
 	_phase_timer.wait_time = _get_wait_time(30)
 
 	if new_phase == Phase_ChooseWord: _phase_timer.wait_time = _get_wait_time(10)
-	if new_phase == Phase_Draw: _phase_timer.wait_time = _get_wait_time(15)
+	if new_phase == Phase_Draw: _phase_timer.wait_time = _get_wait_time(30)
 	if new_phase == Phase_Guess: _phase_timer.wait_time = _get_wait_time(30)
 	if new_phase == Phase_ShowScribbleChain: _phase_timer.wait_time = _get_wait_time(30)
 		
