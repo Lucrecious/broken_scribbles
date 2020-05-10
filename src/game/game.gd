@@ -75,17 +75,20 @@ func is_phase_timer_ticking() -> bool:
 func _phase_timeout() -> void:
 	emit_signal('phase_timeout')
 
-	if is_network_master():
-		if get_phase() == Phase_Draw:
-			_finish_drawing_phase()
-		
-		if get_phase() == Phase_Guess:
-			_finish_guessing_phase()
-		
-		if get_phase() == Phase_ChooseWord:
-			_finish_pick_word_phase()
+	if not is_network_master(): return
+
+	if get_phase() == Phase_Draw:
+		_finish_drawing_phase()
 	
-	rpc_players('_next_phase', [])
+	if get_phase() == Phase_Guess:
+		_finish_guessing_phase()
+	
+	if get_phase() == Phase_ChooseWord:
+		_finish_pick_word_phase()
+	
+	rpc_players('_next_phase')
+	print(get_phase() ==  Phase_Draw)
+	print(get_phase() == Phase_ShowScribbleChain)
 
 func _on_phase_changed(old_phase : int, new_phase : int) -> void:
 	_phase_timer.stop()
