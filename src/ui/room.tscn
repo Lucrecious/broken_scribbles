@@ -85,6 +85,18 @@ margin_top = 170.323
 margin_right = 1006.93
 margin_bottom = 546.323
 
+[node name="TimeLeft" type="Label" parent="Game"]
+margin_left = 357.0
+margin_top = 86.0
+margin_right = 398.0
+margin_bottom = 128.0
+text = "time"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="UpdateTimerTick" type="Timer" parent="Game/TimeLeft"]
+
 [node name="InfoPanel" type="Panel" parent="."]
 margin_left = 10.0
 margin_top = 10.0
@@ -200,6 +212,7 @@ __meta__ = {
 [connection signal="mouse_exited" from="Game/Center/DrawingPanel/Center/Background/DrawingCanvas" to="Game" method="_on_DrawingCanvas_mouse_exited"]
 [connection signal="pressed" from="Game/Done" to="Game" method="_on_Done_pressed"]
 [connection signal="item_selected" from="Game/Pallet" to="Game" method="_on_Pallet_item_selected"]
+[connection signal="timeout" from="Game/TimeLeft/UpdateTimerTick" to="Game" method="_on_UpdateTimerTick_timeout"]
 [connection signal="pressed" from="InfoPanel/Buttons/Leave" to="." method="_on_Leave_pressed"]
 [connection signal="pressed" from="InfoPanel/Buttons/Play" to="." method="_on_Play_pressed"]
 [connection signal="text_changed" from="Chat/Panel/VBox/TypingBorder/TypingPanel/TextEdit" to="." method="_on_TextEdit_text_changed"]

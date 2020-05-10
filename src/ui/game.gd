@@ -9,6 +9,7 @@ onready var _header := $Header as TextEdit
 onready var _drawing_board := $Center/DrawingPanel/Center/Background/DrawingCanvas
 onready var _done_button := $Done
 onready var _pallet := $Pallet
+onready var _time_left_label := $TimeLeft as Label
 
 var _pick_a_word_instance : Control
 
@@ -185,7 +186,10 @@ func _on_DrawingCanvas_mouse_exited() -> void:
 func _on_DrawingCanvas_canvas_changed() -> void:
 	_game.rpc_unreliable_id(Network.server_id, 'update_current_drawing', _drawing_board.get_image_info())
 
+func _on_UpdateTimerTick_timeout() -> void:
+	_time_left_label.text = ''
 
-
-
-
+	if not _game.is_phase_timer_ticking(): return
+	
+	_time_left_label.text = str(_game.phase_timer_time_left())
+	
