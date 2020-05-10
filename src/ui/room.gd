@@ -45,7 +45,10 @@ func _ready() -> void:
 
 	_setup_leader()
 	
-	_time_cycle.text = str(_valid_ _room._draw_sec_index
+	_time_cycle.text = '??'
+	var init_draw_sec := Room.get_draw_sec(_time_index) as float
+	if init_draw_sec == -1: return
+	_time_cycle.text = str(init_draw_sec)
 
 func _on_received_message(from_id : int, message : String) -> void:
 	message = '%d: %s' % [from_id, message]
@@ -103,8 +106,8 @@ func _on_TimeCycle_pressed() -> void:
 	if _room.clients().empty(): return
 	if _room.clients()[0] != get_tree().get_network_unique_id(): return
 	
-		var sec := Room.get_draw_sec(_time_index)
-		if sec == -1: return
+	var sec := Room.get_draw_sec(_time_index) as float
+	if sec == -1: return
 		
 	_time_cycle.text = str(sec)
 	_time_index = (_time_index + 1) % Room.valid_draw_sec.size()
@@ -112,6 +115,6 @@ func _on_TimeCycle_pressed() -> void:
 	_room.rpc_id(Network.server_id, 'change_drawing_time', _time_index)
 
 func _on_draw_sec_changed(index : int) -> void:
-	if index < 0: return
-	if index >= _valid_times.size(): return
-	_time_cycle.text = str(_valid_times[index])
+	var sec := Room.get_draw_sec(index) as float
+	if sec == -1: return
+	_time_cycle.text = str(sec)
