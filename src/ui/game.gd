@@ -26,18 +26,15 @@ func init(room : Room, game : Game) -> void:
 	_game.connect('phase_timer_started', self, '_phase_timer_started')
 
 func _phase_timer_started() -> void:
-	print('phase timer started!')
+	pass
 
 func _phase_timeout() -> void:
-	print('phase timeout')
 	if _game.get_phase() == Game.Phase_Draw:
 		_game.rpc_id(Network.server_id, 'update_current_drawing', _drawing_board.get_image_info())
-		print('back up')
 		return
 	
 	if _game.get_phase() == Game.Phase_Guess:
 		_game.rpc_id(Network.server_id, 'done_guess', _header.text)
-		print('other back up')
 		return
 
 
@@ -187,6 +184,8 @@ func _on_DrawingCanvas_canvas_changed() -> void:
 	_game.rpc_unreliable_id(Network.server_id, 'update_current_drawing', _drawing_board.get_image_info())
 
 func _on_UpdateTimerTick_timeout() -> void:
+	if not _game: return
+	
 	_time_left_label.text = ''
 
 	if not _game.is_phase_timer_ticking(): return
