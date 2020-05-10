@@ -48,6 +48,7 @@ func _phase_timeout() -> void:
 
 func _on_received_scribble_chain(player_id : int) -> void:
 	_scribble_chain = _game._scribble_chains[player_id]
+	print('from received scribble chain')
 	_on_done_show_scribble_chain()
 
 func _phase_changed(old_phase : int, new_phase : int) -> void:
@@ -68,7 +69,7 @@ func _phase_changed(old_phase : int, new_phase : int) -> void:
 
 	if new_phase == Game.Phase_ShowScribbleChain:
 		_header.editable = false
-		print('clearing the text from %s' % _header.text)
+		print('from new phase clearing the text from %s' % _header.text)
 		_header.text = ''
 		_drawing_board.drawable = false
 		_drawing_board.clear()

@@ -73,7 +73,10 @@ func is_phase_timer_ticking() -> bool:
 	return not _phase_timer.is_stopped()
 
 func _phase_timeout() -> void:
+	print(get_tree().get_network_unique_id())
 	emit_signal('phase_timeout')
+
+	call_deferred('rpc_players', '_next_phase', [])
 
 	if not is_network_master(): return
 
@@ -213,8 +216,6 @@ func _finish_pick_word_phase() -> void:
 	if _players.size() % 2 != 0:
 		rpc_players('_pass')
 
-	rpc_players('_next_phase')
-
 master func update_current_drawing(image_info : Dictionary) -> void:
 	var sender_id := get_tree().get_rpc_sender_id()
 	if not _is_valid_request(sender_id, Phase_Draw): return
@@ -237,8 +238,6 @@ func _finish_drawing_phase() -> void:
 			_drawings[holding_id].append({})
 
 		rpc_id(id, '_on_done_drawing', _drawings[holding_id][-1])
-	
-	rpc_players('_next_phase')
 
 master func done_guess(guess : String) -> void:
 	var sender_id := get_tree().get_rpc_sender_id()
@@ -275,16 +274,9 @@ func _finish_guessing_phase() -> void:
 
 		rpc_id(id, '_on_done_guessing', _guesses[holding_id][-1])
 	
-	rpc_players('_next_phase')
-
 master func done_show_scribble_chain() -> void:
 	var sender_id := get_tree().get_rpc_sender_id()
 	if not _is_valid_request(sender_id, Phase_ShowScribbleChain): return
-
-	_phase_done[sender_id] = true
-	if not _players_done(): return
-
-	rpc_players('_next_phase')
 
 func _players_done() -> bool:
 	return _phase_done.size() == _players.size()
