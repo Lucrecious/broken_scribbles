@@ -102,7 +102,6 @@ func _on_phase_changed(old_phase : int, new_phase : int) -> void:
 	emit_signal('phase_timer_started')
 
 	if not is_network_master(): return
-	print('phased changed')
 
 	if new_phase == Phase_ShowScribbleChain:
 		_send_one_scribble_chain_in_parts()
@@ -198,7 +197,6 @@ master func pick_word(from_id : int, index : int) -> void:
 	_finish_pick_word_phase()
 
 	rpc_players('_next_phase')
-	print_debug(get_phase() == Phase_Draw)
 
 func _finish_pick_word_phase() -> void:
 	if not is_network_master(): return
@@ -382,7 +380,5 @@ func _build_phases() -> Array:
 		phases.push_back(Phase_ShowScribbleChain)
 
 	phases.push_back(Phase_End)
-
-	print(phases)
 
 	return phases

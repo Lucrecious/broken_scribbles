@@ -28,7 +28,6 @@ func _ready() -> void:
 	_time_left_label.clear()
 	
 func _phase_timer_started() -> void:
-	if _game.get_phase() != Game.Phase_Draw: return
 	emit_signal('drawing_just_started')
 
 func _phase_timeout() -> void:
@@ -44,8 +43,6 @@ func _phase_timeout() -> void:
 
 func _on_received_scribble_chain(player_id : int) -> void:
 	_scribble_chain = _game._scribble_chains[player_id]
-	print('from received scribble chain')
-	_on_done_show_scribble_chain()
 
 func _phase_changed(old_phase : int, new_phase : int) -> void:
 	if old_phase == Game.Phase_ChooseWord:
@@ -65,10 +62,11 @@ func _phase_changed(old_phase : int, new_phase : int) -> void:
 
 	if new_phase == Game.Phase_ShowScribbleChain:
 		_header.editable = false
-		print('from new phase clearing the text from %s' % _header.text)
 		_header.text = ''
 		_drawing_board.drawable = false
 		_drawing_board.clear()
+
+		_on_done_show_scribble_chain()
 		return
 
 	if new_phase == Game.Phase_End:
@@ -83,7 +81,6 @@ func _on_draw_guess() -> void:
 
 func _on_guess_drawing() -> void:
 	_header.editable = true
-	print('clear on guess drawing %s' % _header.text)
 	_header.text = ''
 
 	_drawing_board.drawable = false
@@ -142,8 +139,7 @@ func _on_UpdateTimerTick_timeout() -> void:
 	
 	_time_left_label.update_time(
 		_game.phase_timer_time_left(),
-		_game.phase_timer_time_wait()
-	)
+		_game.phase_timer_time_wait())
 
 func _on_Pallet_color_picked(color) -> void:
 	_drawing_board.set_brush_color(color)
@@ -162,7 +158,6 @@ func _on_ScribbleChainHandler_show_chain_part(part) -> void:
 		_drawing_board.set_image(part)
 	if part is String:
 		_header.text = part
-		print('trying to show: ' + part)
 
 func _on_Header_text_entered(new_text: String) -> void:
 	_on_done_phase_guess()
