@@ -87,8 +87,6 @@ func _phase_timeout() -> void:
 		_finish_pick_word_phase()
 	
 	rpc_players('_next_phase')
-	print(get_phase() ==  Phase_Draw)
-	print(get_phase() == Phase_ShowScribbleChain)
 
 func _on_phase_changed(old_phase : int, new_phase : int) -> void:
 	_phase_timer.stop()
@@ -189,9 +187,6 @@ func _is_valid_request(sender_id : int, valid_phase : int) -> bool:
 	return true
 
 master func pick_word(from_id : int, index : int) -> void:
-	_pick_word(from_id, index)
-
-func _pick_word(from_id : int, index : int) -> void:
 	if not is_network_master(): return
 
 	if not _is_valid_request(from_id, Phase_ChooseWord): return
@@ -200,6 +195,8 @@ func _pick_word(from_id : int, index : int) -> void:
 
 	if _words.size() < _players.size(): return
 	_finish_pick_word_phase()
+	
+	rpc_players('_next_phase')
 
 func _finish_pick_word_phase() -> void:
 	if not is_network_master(): return
