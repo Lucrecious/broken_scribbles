@@ -52,6 +52,7 @@ func init(room_settings : Dictionary) -> void:
 
 		_holding_map[id] = id
 	
+	print(_draw_sec_time)
 	_draw_sec_time = room_settings.get('draw_sec', 15)
 
 func _ready():
@@ -85,7 +86,6 @@ func _phase_timeout() -> void:
 	if get_phase() == Phase_ChooseWord:
 		_finish_pick_word_phase()
 		return
-
 
 func _on_phase_changed(old_phase : int, new_phase : int) -> void:
 	_phase_timer.stop()
