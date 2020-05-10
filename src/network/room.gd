@@ -40,6 +40,8 @@ master func change_drawing_time(index : int) -> void:
 	var sender_id := get_tree().get_rpc_sender_id()
 	if sender_id != _clients[0]: return
 
+	print('changing the time...')
+
 	_change_drawing_time(index)
 
 func _change_drawing_time(index : int) -> void:
