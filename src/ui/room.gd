@@ -114,7 +114,5 @@ func _on_TimeCycle_pressed() -> void:
 	
 	_room.rpc_id(Network.server_id, 'change_drawing_time', _time_index)
 
-func _on_draw_sec_changed(index : int) -> void:
-	var sec := Room.get_draw_sec(index) as float
-	if sec == -1: return
+func _on_draw_sec_changed(sec : float) -> void:
 	_time_cycle.text = str(sec)
