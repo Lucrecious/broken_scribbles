@@ -191,6 +191,8 @@ func _finish_pick_word_phase() -> void:
 		
 	for id in _players:
 		if not id in _words: continue
+		var forced_choice := _word_choices[id][0] as String
+		print(forced_choice)
 		rpc_players('_set_word_choice', [id, _word_choices[id][0]])
 
 	rpc_players('_init_guesses')

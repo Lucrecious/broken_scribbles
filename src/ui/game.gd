@@ -27,7 +27,7 @@ func init(room : Room, game : Game) -> void:
 func _phase_timer_started() -> void:
 	print('phase timer started!')
 
-func _phase_timeout(prev_phase) -> void:
+func _phase_timeout() -> void:
 	print('phase timeout')
 	if _game.get_phase() == Game.Phase_Draw:
 		_game.rpc_id(Network.server_id, 'update_current_drawing', _drawing_board.get_image_info())
