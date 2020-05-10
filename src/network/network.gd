@@ -138,25 +138,21 @@ func _create_random_name() -> String:
 	return '%s %s' % [adjective, animal]
 
 func _abort_enter_room(client_id : int, room_id : String) -> bool:
-	var is_local := client_id == get_tree().get_network_unique_id()
-
 	if not room_id in _rooms:
-		rpc_id(client_id, '_signal_entered_room', false, room_id, Error_room_does_not_exist, is_local)
+		rpc_id(client_id, '_signal_entered_room', false, room_id, Error_room_does_not_exist)
 		return true
 	
 	var in_room := _get_room_for_id(client_id)
 	if in_room != '':
-		rpc_id(client_id, '_signal_entered_room', false, in_room, Error_client_already_in_room, is_local)
+		rpc_id(client_id, '_signal_entered_room', false, in_room, Error_client_already_in_room)
 		return true
 	
 	return false
 
 func _abort_create_room(client_id : int) -> bool:
-	var is_local := client_id == get_tree().get_network_unique_id()
-
 	var in_room := _get_room_for_id(client_id)
 	if in_room != '':
-		rpc_id(client_id, '_signal_entered_room', false, in_room, Error_client_already_in_room, is_local)
+		rpc_id(client_id, '_signal_entered_room', false, in_room, Error_client_already_in_room)
 		return true
 	
 	return false
