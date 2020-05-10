@@ -73,24 +73,20 @@ func is_phase_timer_ticking() -> bool:
 	return not _phase_timer.is_stopped()
 
 func _phase_timeout() -> void:
-	print(get_tree().get_network_unique_id())
 	emit_signal('phase_timeout')
-
-	call_deferred('rpc_players', '_next_phase', [])
 
 	if not is_network_master(): return
 
 	if get_phase() == Phase_Draw:
 		_finish_drawing_phase()
-		return
 	
 	if get_phase() == Phase_Guess:
 		_finish_guessing_phase()
-		return
 	
 	if get_phase() == Phase_ChooseWord:
 		_finish_pick_word_phase()
-		return
+	
+	rpc_players('_next_phase', [])
 
 func _on_phase_changed(old_phase : int, new_phase : int) -> void:
 	_phase_timer.stop()
