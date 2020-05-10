@@ -41,7 +41,6 @@ master func change_drawing_time(index : int) -> void:
 	if sender_id != _clients[0]: return
 
 	_change_drawing_time(index)
-	print(index)
 
 func _change_drawing_time(index : int) -> void:
 	if not is_network_master(): return
@@ -52,8 +51,11 @@ func _change_drawing_time(index : int) -> void:
 		rpc_id(id, '_set_draw_sec_index', index)
 
 remotesync func _set_draw_sec_index(index : int) -> void:
+	var sec := Room.get_draw_sec(index)
+	if sec == -1: return
+
 	_draw_sec_index = index
-	emit_signal('draw_sec_changed', index)
+	emit_signal('draw_sec_changed', sec)
 
 master func play_game() -> void:
 	if _clients.empty(): return
