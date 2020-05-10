@@ -14,7 +14,7 @@ var _nickname := ''
 var _clients := []
 
 var _valid_draw_sec := [15, 30, 60, 90]
-var _draw_sec_index := 2
+remotesync var _draw_sec_index := 2
 
 onready var _game := preload('res://src/game/game.tscn')
 
