@@ -1,10 +1,13 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://src/ui/room.gd" type="Script" id=1]
+[ext_resource path="res://assets/ui/borders/border_c.tscn" type="PackedScene" id=2]
 [ext_resource path="res://src/ui/game.gd" type="Script" id=3]
 [ext_resource path="res://src/ui/drawing_canvas.tscn" type="PackedScene" id=4]
 [ext_resource path="res://assets/ui/background.tscn" type="PackedScene" id=5]
 [ext_resource path="res://assets/ui/borders/border_a.tscn" type="PackedScene" id=6]
+[ext_resource path="res://assets/ui/header/header_a.tscn" type="PackedScene" id=7]
+[ext_resource path="res://src/ui/pallet/pallet.tscn" type="PackedScene" id=8]
 
 [node name="Room" type="Control"]
 anchor_right = 1.0
@@ -26,29 +29,37 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource( 3 )
 __meta__ = {
+"_edit_lock_": true,
 "_edit_use_anchors_": false
 }
 
+[node name="RoomInfoBorder" parent="Game" instance=ExtResource( 6 )]
+margin_left = 929.874
+margin_top = 40.0
+margin_right = 1409.87
+margin_bottom = 1351.0
+rect_scale = Vector2( 0.5, 0.5 )
+
 [node name="Header" type="TextEdit" parent="Game"]
-margin_left = 426.787
-margin_top = 77.2926
-margin_right = 772.787
-margin_bottom = 139.293
+margin_left = 351.159
+margin_top = 138.0
+margin_right = 653.159
+margin_bottom = 188.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Pallet" type="ItemList" parent="Game"]
-margin_left = 1085.44
-margin_top = 156.53
-margin_right = 1122.45
-margin_bottom = 532.53
+[node name="Pallet" type="HBoxContainer" parent="Game"]
+margin_left = 38.0
+margin_top = 242.0
+margin_right = 122.0
+margin_bottom = 588.0
 
 [node name="TimeLeft" type="Label" parent="Game"]
-margin_left = 357.0
-margin_top = 86.0
-margin_right = 398.0
-margin_bottom = 128.0
+margin_left = 184.234
+margin_top = 118.0
+margin_right = 225.234
+margin_bottom = 160.0
 text = "time"
 __meta__ = {
 "_edit_use_anchors_": false
@@ -59,29 +70,29 @@ wait_time = 0.1
 autostart = true
 
 [node name="Done" type="Button" parent="Game"]
-margin_left = 792.364
-margin_top = 72.3637
-margin_right = 901.364
-margin_bottom = 131.364
+margin_left = 438.544
+margin_top = 58.5147
+margin_right = 547.544
+margin_bottom = 117.515
 text = "Done"
 
 [node name="DrawingCanvas" parent="Game" instance=ExtResource( 4 )]
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 372.0
-margin_top = 269.0
-margin_right = 935.0
-margin_bottom = 533.0
+margin_left = 225.562
+margin_top = 239.3
+margin_right = 847.562
+margin_bottom = 600.3
 size_flags_horizontal = 3
 size_flags_vertical = 3
-pixel_scale_factor = 2.0
 
 [node name="InfoPanel" type="Panel" parent="."]
-margin_left = 10.0
-margin_top = 10.0
-margin_right = 190.0
-margin_bottom = 210.0
+margin_left = 966.0
+margin_top = 128.0
+margin_right = 1146.0
+margin_bottom = 328.0
 __meta__ = {
+"_edit_group_": true,
 "_edit_use_anchors_": false
 }
 
@@ -130,19 +141,20 @@ margin_bottom = 68.0
 text = "Time"
 
 [node name="Chat" type="PanelContainer" parent="."]
-margin_left = 18.0
-margin_top = 233.0
-margin_right = 245.0
-margin_bottom = 569.0
+margin_left = 966.0
+margin_top = 347.0
+margin_right = 1146.0
+margin_bottom = 614.0
 __meta__ = {
+"_edit_group_": true,
 "_edit_use_anchors_": false
 }
 
 [node name="Panel" type="Panel" parent="Chat"]
 margin_left = 7.0
 margin_top = 7.0
-margin_right = 220.0
-margin_bottom = 329.0
+margin_right = 173.0
+margin_bottom = 260.0
 
 [node name="VBox" type="VBoxContainer" parent="Chat/Panel"]
 anchor_right = 1.0
@@ -152,15 +164,15 @@ __meta__ = {
 }
 
 [node name="HistoryBorder" type="PanelContainer" parent="Chat/Panel/VBox"]
-margin_right = 213.0
-margin_bottom = 218.0
+margin_right = 166.0
+margin_bottom = 149.0
 size_flags_vertical = 3
 
 [node name="HistoryPanel" type="Panel" parent="Chat/Panel/VBox/HistoryBorder"]
 margin_left = 7.0
 margin_top = 7.0
-margin_right = 206.0
-margin_bottom = 211.0
+margin_right = 159.0
+margin_bottom = 142.0
 
 [node name="Chat" type="Label" parent="Chat/Panel/VBox/HistoryBorder/HistoryPanel"]
 anchor_right = 1.0
@@ -174,15 +186,15 @@ __meta__ = {
 }
 
 [node name="TypingBorder" type="PanelContainer" parent="Chat/Panel/VBox"]
-margin_top = 222.0
-margin_right = 213.0
-margin_bottom = 322.0
+margin_top = 153.0
+margin_right = 166.0
+margin_bottom = 253.0
 rect_min_size = Vector2( 0, 100 )
 
 [node name="TypingPanel" type="Panel" parent="Chat/Panel/VBox/TypingBorder"]
 margin_left = 7.0
 margin_top = 7.0
-margin_right = 206.0
+margin_right = 159.0
 margin_bottom = 93.0
 
 [node name="TextEdit" type="TextEdit" parent="Chat/Panel/VBox/TypingBorder/TypingPanel"]
@@ -193,12 +205,25 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Control" parent="." instance=ExtResource( 6 )]
-margin_left = 268.0
-margin_top = 169.0
-margin_right = 1032.0
-margin_bottom = 621.0
-[connection signal="item_selected" from="Game/Pallet" to="Game" method="_on_Pallet_item_selected"]
+[node name="DrawingBorder" parent="." instance=ExtResource( 2 )]
+margin_left = 181.765
+margin_top = 199.786
+margin_right = 1598.76
+margin_bottom = 1075.79
+rect_scale = Vector2( 0.5, 0.5 )
+
+[node name="HeaderA" parent="." instance=ExtResource( 7 )]
+margin_left = 209.504
+margin_top = 90.9984
+margin_right = 123.504
+margin_bottom = -306.002
+rect_scale = Vector2( 0.5, 0.5 )
+
+[node name="Pallet" parent="." instance=ExtResource( 8 )]
+margin_left = 38.0
+margin_top = 176.0
+margin_right = 132.0
+margin_bottom = 654.0
 [connection signal="timeout" from="Game/TimeLeft/UpdateTimerTick" to="Game" method="_on_UpdateTimerTick_timeout"]
 [connection signal="pressed" from="Game/Done" to="Game" method="_on_Done_pressed"]
 [connection signal="canvas_changed" from="Game/DrawingCanvas" to="Game" method="_on_DrawingCanvas_canvas_changed"]
@@ -208,3 +233,7 @@ margin_bottom = 621.0
 [connection signal="pressed" from="InfoPanel/Buttons/Play" to="." method="_on_Play_pressed"]
 [connection signal="pressed" from="InfoPanel/Buttons/TimeCycle" to="." method="_on_TimeCycle_pressed"]
 [connection signal="text_changed" from="Chat/Panel/VBox/TypingBorder/TypingPanel/TextEdit" to="." method="_on_TextEdit_text_changed"]
+[connection signal="color_picked" from="Pallet" to="Game" method="_on_Pallet_color_picked"]
+[connection signal="eraser_picked" from="Pallet" to="Game" method="_on_Pallet_eraser_picked"]
+[connection signal="pencil_picked" from="Pallet" to="Game" method="_on_Pallet_pencil_picked"]
+[connection signal="scrap_picked" from="Pallet" to="Game" method="_on_Pallet_scrap_picked"]

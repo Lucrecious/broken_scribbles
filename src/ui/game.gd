@@ -15,10 +15,6 @@ onready var _time_left_label := $TimeLeft as Label
 
 var _pick_a_word_instance : Control
 
-func _ready() -> void:
-	for n in _pallet_names:
-		_pallet.add_item(n)
-
 func init(room : Room, game : Game) -> void:
 	_room = room;
 	_game = game
@@ -178,11 +174,6 @@ func _on_done_phase_draw() -> void:
 func _on_done_phase_guess() -> void:
 	_game.rpc_id(Network.server_id, 'done_guess', _header.text)
 
-var _pallet_colors := [Color.blue, Color.black, Color.green, Color.red]
-var _pallet_names := 'blue,black,green,red'.split(',')
-func _on_Pallet_item_selected(index: int) -> void:
-	_drawing_board.set_brush_color(_pallet_colors[index])
-
 func _on_DrawingCanvas_mouse_entered() -> void:
 	_drawing_board.set_cursor_as_brush()
 
@@ -190,6 +181,7 @@ func _on_DrawingCanvas_mouse_exited() -> void:
 	Input.set_custom_mouse_cursor(null, 0)
 
 func _on_DrawingCanvas_canvas_changed() -> void:
+	if not _game: return
 	_game.rpc_unreliable_id(Network.server_id, 'update_current_drawing', _drawing_board.get_image_info())
 
 func _on_UpdateTimerTick_timeout() -> void:
@@ -200,4 +192,15 @@ func _on_UpdateTimerTick_timeout() -> void:
 	if not _game.is_phase_timer_ticking(): return
 	
 	_time_left_label.text = str(_game.phase_timer_time_left())
-	
+
+func _on_Pallet_color_picked(color) -> void:
+	_drawing_board.set_brush_color(color)
+
+func _on_Pallet_eraser_picked() -> void:
+	_drawing_board.set_brush_as_eraser()
+
+func _on_Pallet_pencil_picked() -> void:
+	_drawing_board.set_brush_as_pencil()
+
+func _on_Pallet_scrap_picked() -> void:
+	_drawing_board.clear()

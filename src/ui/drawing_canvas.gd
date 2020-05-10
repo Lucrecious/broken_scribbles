@@ -85,8 +85,21 @@ func set_brush_color(color : Color) -> void:
 	tex_image.unlock()
 	_brush_cursor_icon.set_data(tex_image)
 
+func _add_colors(front : Color, back : Color) -> Color:
+	var A := front.a
+	return Color(
+		front.r * A + back.r * (1 - A),
+		front.b * A + back.b * (1 - A),
+		front.g * A + back.g * (1 - A),
+		A
+	)
+
+var _is_brush_eraser := false
 func set_brush_as_eraser() -> void:
-	pass
+	_is_brush_eraser = true
+
+func set_brush_as_pencil() -> void:
+	_is_brush_eraser = false
 
 func set_brush(image : Image) -> void:
 	var new := image.get_rect(image.get_used_rect())
@@ -95,7 +108,7 @@ func set_brush(image : Image) -> void:
 	_brush_blit.convert(texture.get_data().get_format())
 	
 	var size := new.get_size() * _unit_size
-	new.resize(int(size.x), int(size.y), Image.INTERPOLATE_NEAREST)
+	new.resize(int(size.x), int(size.y), Image.INTERPOLATE_CUBIC)
 	new.convert(texture.get_data().get_format())
 	
 	var tex := ImageTexture.new()
@@ -110,12 +123,12 @@ func _ready() -> void:
 	_unit_size.y = pixel_scale_factor
 	
 	var image = Image.new()
-	image.create(_size.x, _size.y, false, Image.FORMAT_RGBA4444)
+	image.create(_size.x, _size.y, false, Image.FORMAT_RGBA8)
 	var tex := ImageTexture.new()
 	tex.create_from_image(image, 0)
 	texture = tex
 	
-	var brush := load('res://assets/brushes/plus_5x5.png') as Image
+	var brush := load('res://assets/brushes/chalk.png') as Image
 	
 	set_brush(brush)
 	set_brush_color(Color.blue)
@@ -155,16 +168,30 @@ func _add_pixels(mouse_pos : Vector2, delta : Vector2) -> bool:
 	var drag := _get_line_points(mouse_pos - delta, mouse_pos, delta_abs * 20) 
 	var image := texture.get_data()
 	
+	var mask := _brush_blit
+	var a := Image.new()
+	a.create(
+			int(mask.get_size().x), int(mask.get_size().y),
+			false, mask.get_format())
+	if _is_brush_eraser:
+		a.fill(Color.transparent)
+	else:
+		a.fill(_brush_color)
+		
+	var use_rect := mask.get_used_rect()
+	
+	changed = true
 	
 	image.lock()
+	
 	for pos in drag:
 		var p := pos as Vector2
 		if not _has_point(p): continue
-		image.blend_rect(
-			_brush_blit,
-			_brush_blit.get_used_rect(),
-			pos)
-		changed = true
+		if not _is_brush_eraser:
+			image.blend_rect(mask, use_rect, pos)
+			continue
+		
+		image.blit_rect_mask(a, mask, use_rect, pos)
 	
 	image.unlock()
 	

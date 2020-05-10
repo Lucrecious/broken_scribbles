@@ -1,0 +1,95 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://assets/ui/borders/border_B_corner.png" type="Texture" id=1]
+[ext_resource path="res://assets/ui/borders/border_B_mid.png" type="Texture" id=3]
+
+[node name="PalletBorder" type="Control"]
+margin_right = 94.0
+margin_bottom = 330.0
+rect_clip_content = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BorderB" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_clip_content = true
+mouse_filter = 2
+custom_constants/separation = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="HBoxContainer" parent="BorderB"]
+margin_right = 94.0
+margin_bottom = 82.0
+mouse_filter = 2
+custom_constants/separation = -70
+
+[node name="TL" type="TextureRect" parent="BorderB/VBoxContainer"]
+margin_right = 82.0
+margin_bottom = 82.0
+mouse_filter = 2
+texture = ExtResource( 1 )
+stretch_mode = 3
+
+[node name="TR" type="TextureRect" parent="BorderB/VBoxContainer"]
+margin_left = 12.0
+margin_right = 94.0
+margin_bottom = 82.0
+mouse_filter = 2
+size_flags_horizontal = 3
+texture = ExtResource( 1 )
+stretch_mode = 3
+flip_h = true
+
+[node name="VBoxContainer3" type="HBoxContainer" parent="BorderB"]
+margin_top = 82.0
+margin_right = 94.0
+margin_bottom = 248.0
+mouse_filter = 2
+size_flags_vertical = 3
+custom_constants/separation = -70
+
+[node name="TL" type="TextureRect" parent="BorderB/VBoxContainer3"]
+margin_right = 82.0
+margin_bottom = 166.0
+mouse_filter = 2
+size_flags_horizontal = 3
+texture = ExtResource( 3 )
+expand = true
+stretch_mode = 2
+
+[node name="TR" type="TextureRect" parent="BorderB/VBoxContainer3"]
+margin_left = 12.0
+margin_right = 94.0
+margin_bottom = 166.0
+mouse_filter = 2
+size_flags_horizontal = 3
+texture = ExtResource( 3 )
+expand = true
+flip_h = true
+
+[node name="VBoxContainer2" type="HBoxContainer" parent="BorderB"]
+margin_top = 248.0
+margin_right = 94.0
+margin_bottom = 330.0
+mouse_filter = 2
+custom_constants/separation = -70
+
+[node name="BL" type="TextureRect" parent="BorderB/VBoxContainer2"]
+margin_right = 82.0
+margin_bottom = 82.0
+mouse_filter = 2
+texture = ExtResource( 1 )
+flip_v = true
+
+[node name="BR" type="TextureRect" parent="BorderB/VBoxContainer2"]
+margin_left = 12.0
+margin_right = 94.0
+margin_bottom = 82.0
+mouse_filter = 2
+texture = ExtResource( 1 )
+flip_h = true
+flip_v = true

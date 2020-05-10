@@ -1,0 +1,93 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://assets/ui/borders/border_E_mid.png" type="Texture" id=1]
+[ext_resource path="res://assets/ui/borders/border_E_corner.png" type="Texture" id=2]
+[ext_resource path="res://assets/ui/borders/border_E_mid_rotated.png" type="Texture" id=3]
+
+[node name="BorderE" type="GridContainer"]
+margin_left = 15.0
+margin_top = -5.0
+margin_right = 1157.0
+margin_bottom = 1137.0
+rect_clip_content = true
+custom_constants/vseparation = 0
+custom_constants/hseparation = 0
+columns = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TL" type="TextureRect" parent="."]
+margin_right = 571.0
+margin_bottom = 571.0
+texture = ExtResource( 2 )
+
+[node name="TM" type="TextureRect" parent="."]
+margin_left = 571.0
+margin_right = 571.0
+margin_bottom = 571.0
+size_flags_horizontal = 3
+texture = ExtResource( 1 )
+expand = true
+stretch_mode = 2
+
+[node name="TR" type="TextureRect" parent="."]
+margin_left = 571.0
+margin_right = 1142.0
+margin_bottom = 571.0
+texture = ExtResource( 2 )
+flip_h = true
+
+[node name="L" type="TextureRect" parent="."]
+margin_top = 571.0
+margin_right = 571.0
+margin_bottom = 571.0
+size_flags_vertical = 3
+texture = ExtResource( 3 )
+expand = true
+stretch_mode = 2
+
+[node name="M" type="TextureRect" parent="."]
+margin_left = 571.0
+margin_top = 571.0
+margin_right = 571.0
+margin_bottom = 571.0
+expand = true
+stretch_mode = 2
+
+[node name="R" type="TextureRect" parent="."]
+margin_left = 571.0
+margin_top = 571.0
+margin_right = 1142.0
+margin_bottom = 571.0
+size_flags_vertical = 3
+texture = ExtResource( 3 )
+expand = true
+stretch_mode = 2
+flip_h = true
+
+[node name="BL" type="TextureRect" parent="."]
+margin_top = 571.0
+margin_right = 571.0
+margin_bottom = 1142.0
+texture = ExtResource( 2 )
+flip_v = true
+
+[node name="BM" type="TextureRect" parent="."]
+margin_left = 571.0
+margin_top = 571.0
+margin_right = 571.0
+margin_bottom = 1142.0
+texture = ExtResource( 1 )
+expand = true
+stretch_mode = 2
+flip_v = true
+
+[node name="BR" type="TextureRect" parent="."]
+margin_left = 571.0
+margin_top = 571.0
+margin_right = 1142.0
+margin_bottom = 1142.0
+texture = ExtResource( 2 )
+flip_h = true
+flip_v = true

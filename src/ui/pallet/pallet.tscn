@@ -1,0 +1,125 @@
+[gd_scene load_steps=10 format=2]
+
+[ext_resource path="res://assets/ui/borders/pallet_border.tscn" type="PackedScene" id=1]
+[ext_resource path="res://src/ui/color_icon.tscn" type="PackedScene" id=2]
+[ext_resource path="res://src/ui/pallet/pallet.gd" type="Script" id=3]
+[ext_resource path="res://assets/ui/icons/pencil.png" type="Texture" id=4]
+[ext_resource path="res://assets/ui/icons/scrap.png" type="Texture" id=5]
+[ext_resource path="res://assets/ui/icons/eraser.png" type="Texture" id=6]
+[ext_resource path="res://assets/ui/icons/pencil-hover.png" type="Texture" id=7]
+[ext_resource path="res://assets/ui/icons/scrap_hover.png" type="Texture" id=8]
+[ext_resource path="res://assets/ui/icons/eraser_hover.png" type="Texture" id=9]
+
+[node name="Pallet" type="Control"]
+margin_right = 94.0
+margin_bottom = 477.0
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PalletBorder" parent="." instance=ExtResource( 1 )]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = 0.0
+margin_bottom = 0.0
+mouse_filter = 2
+
+[node name="Colors" type="VBoxContainer" parent="."]
+margin_left = 21.5734
+margin_top = 19.0106
+margin_right = 71.5734
+margin_bottom = 285.011
+mouse_filter = 2
+__meta__ = {
+"_edit_group_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="ColorIcon" parent="Colors" instance=ExtResource( 2 )]
+modulate = Color( 0.972549, 0.670588, 0.670588, 1 )
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 50.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 50, 50 )
+_color = Color( 0.972549, 0.670588, 0.670588, 1 )
+
+[node name="ColorIcon2" parent="Colors" instance=ExtResource( 2 )]
+modulate = Color( 0.462745, 0.623529, 0.960784, 1 )
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 54.0
+margin_right = 50.0
+margin_bottom = 104.0
+rect_min_size = Vector2( 50, 50 )
+_color = Color( 0.462745, 0.623529, 0.960784, 1 )
+
+[node name="ColorIcon3" parent="Colors" instance=ExtResource( 2 )]
+modulate = Color( 0.580392, 0.988235, 0.635294, 1 )
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 108.0
+margin_right = 50.0
+margin_bottom = 158.0
+rect_min_size = Vector2( 50, 50 )
+_color = Color( 0.580392, 0.988235, 0.635294, 1 )
+
+[node name="ColorIcon4" parent="Colors" instance=ExtResource( 2 )]
+modulate = Color( 0.901961, 0.929412, 0.560784, 1 )
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 162.0
+margin_right = 50.0
+margin_bottom = 212.0
+rect_min_size = Vector2( 50, 50 )
+_color = Color( 0.901961, 0.929412, 0.560784, 1 )
+
+[node name="ColorIcon5" parent="Colors" instance=ExtResource( 2 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 216.0
+margin_right = 50.0
+margin_bottom = 266.0
+rect_min_size = Vector2( 50, 50 )
+
+[node name="Tools" type="VBoxContainer" parent="."]
+margin_top = 292.0
+margin_right = 94.0
+margin_bottom = 459.0
+__meta__ = {
+"_edit_group_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Pencil" type="TextureButton" parent="Tools"]
+margin_right = 94.0
+margin_bottom = 53.0
+size_flags_vertical = 3
+texture_normal = ExtResource( 4 )
+texture_hover = ExtResource( 7 )
+expand = true
+stretch_mode = 5
+
+[node name="Eraser" type="TextureButton" parent="Tools"]
+margin_top = 57.0
+margin_right = 94.0
+margin_bottom = 110.0
+size_flags_vertical = 3
+texture_normal = ExtResource( 6 )
+texture_hover = ExtResource( 9 )
+expand = true
+stretch_mode = 5
+
+[node name="Scrap" type="TextureButton" parent="Tools"]
+margin_top = 114.0
+margin_right = 94.0
+margin_bottom = 167.0
+size_flags_vertical = 3
+texture_normal = ExtResource( 5 )
+texture_hover = ExtResource( 8 )
+expand = true
+stretch_mode = 5
+[connection signal="pressed" from="Tools/Pencil" to="." method="_on_Pencil_pressed"]
+[connection signal="pressed" from="Tools/Eraser" to="." method="_on_Eraser_pressed"]
+[connection signal="pressed" from="Tools/Scrap" to="." method="_on_Scrap_pressed"]
