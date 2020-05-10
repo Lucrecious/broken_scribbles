@@ -51,6 +51,13 @@ Network="*res://src/network/network.tscn"
 gdscript/warnings/unused_argument=false
 gdscript/warnings/return_value_discarded=false
 
+[display]
+
+window/size/width=1280
+window/size/height=720
+window/stretch/mode="2d"
+window/stretch/aspect="keep"
+
 [input]
 
 ui_draw={
@@ -74,6 +81,9 @@ limits/websocket_server/max_out_buffer_kb=1024
 [rendering]
 
 quality/driver/driver_name="GLES2"
+quality/intended_usage/framebuffer_allocation=0
+quality/2d/use_pixel_snap=true
 vram_compression/import_etc=true
 vram_compression/import_etc2=false
+environment/default_clear_color=Color( 0, 0, 0, 1 )
 environment/default_environment="res://default_env.tres"

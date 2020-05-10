@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://assets/ui/borders/border_a.png" type="Texture" id=1]
+
+[node name="Control" type="NinePatchRect"]
+margin_left = 75.0
+margin_top = -13.0
+margin_right = 772.0
+margin_bottom = 505.0
+rect_clip_content = true
+texture = ExtResource( 1 )
+patch_margin_left = 240
+patch_margin_top = 226
+patch_margin_right = 240
+patch_margin_bottom = 226
+__meta__ = {
+"_edit_use_anchors_": false
+}

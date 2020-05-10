@@ -15,7 +15,7 @@ onready var _game_ui := $Game as Control
 
 onready var _play_button := $InfoPanel/Buttons/Play as Button
 onready var _time_cycle := $InfoPanel/Buttons/TimeCycle as Button
-onready var _time_index := _room._draw_sec_index
+onready var _time_index := 0 if not _room else _room._draw_sec_index
 
 func init(room_id : String) -> void:
 	_room_id = room_id
@@ -28,7 +28,6 @@ func _gui_input(event: InputEvent) -> void:
 	if not _text_edit.has_focus(): return
 
 func _ready() -> void:
-	$Game/Center/DrawingPanel/Center/Background.self_modulate = Color.black
 	if not _room: return
 	
 	_game_ui.visible = false

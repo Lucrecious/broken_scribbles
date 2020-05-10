@@ -8,7 +8,7 @@ var _room : Room
 onready var _pick_a_word := preload('res://src/ui/pick_a_word.tscn')
 
 onready var _header := $Header as TextEdit
-onready var _drawing_board := $Center/DrawingPanel/Center/Background/DrawingCanvas
+onready var _drawing_board := $DrawingCanvas
 onready var _done_button := $Done
 onready var _pallet := $Pallet
 onready var _time_left_label := $TimeLeft as Label

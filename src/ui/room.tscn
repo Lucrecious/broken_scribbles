@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://src/ui/room.gd" type="Script" id=1]
-[ext_resource path="res://assets/drawing_background.png" type="Texture" id=2]
 [ext_resource path="res://src/ui/game.gd" type="Script" id=3]
 [ext_resource path="res://src/ui/drawing_canvas.tscn" type="PackedScene" id=4]
+[ext_resource path="res://assets/ui/background.tscn" type="PackedScene" id=5]
+[ext_resource path="res://assets/ui/borders/border_a.tscn" type="PackedScene" id=6]
 
 [node name="Room" type="Control"]
 anchor_right = 1.0
@@ -13,6 +14,12 @@ script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Background" parent="." instance=ExtResource( 5 )]
+margin_left = 0.0
+margin_top = 0.0
+margin_right = 0.0
+margin_bottom = 0.0
 
 [node name="Game" type="Control" parent="."]
 anchor_right = 1.0
@@ -31,59 +38,18 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Center" type="CenterContainer" parent="Game"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 192.0
-margin_top = 132.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="DrawingPanel" type="Panel" parent="Game/Center"]
-margin_left = 66.0
-margin_top = 34.0
-margin_right = 766.0
-margin_bottom = 434.0
-rect_min_size = Vector2( 700, 400 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Center" type="CenterContainer" parent="Game/Center/DrawingPanel"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Background" type="TextureRect" parent="Game/Center/DrawingPanel/Center"]
-margin_left = 25.0
-margin_top = 25.0
-margin_right = 675.0
-margin_bottom = 375.0
-rect_min_size = Vector2( 650, 350 )
-texture = ExtResource( 2 )
-expand = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="DrawingCanvas" parent="Game/Center/DrawingPanel/Center/Background" instance=ExtResource( 4 )]
+[node name="DrawingCanvas" parent="Game" instance=ExtResource( 4 )]
+margin_left = 354.0
+margin_top = 255.0
+margin_right = -336.0
+margin_bottom = -194.0
 pixel_scale_factor = 2.0
 
-[node name="Done" type="Button" parent="Game"]
-margin_left = 789.0
-margin_top = 86.0
-margin_right = 880.0
-margin_bottom = 128.0
-text = "Done"
-
 [node name="Pallet" type="ItemList" parent="Game"]
-margin_left = 969.925
-margin_top = 170.323
-margin_right = 1006.93
-margin_bottom = 546.323
+margin_left = 1085.44
+margin_top = 156.53
+margin_right = 1122.45
+margin_bottom = 532.53
 
 [node name="TimeLeft" type="Label" parent="Game"]
 margin_left = 357.0
@@ -98,6 +64,13 @@ __meta__ = {
 [node name="UpdateTimerTick" type="Timer" parent="Game/TimeLeft"]
 wait_time = 0.1
 autostart = true
+
+[node name="Done" type="Button" parent="Game"]
+margin_left = 792.364
+margin_top = 72.3637
+margin_right = 901.364
+margin_bottom = 131.364
+text = "Done"
 
 [node name="InfoPanel" type="Panel" parent="."]
 margin_left = 10.0
@@ -215,12 +188,18 @@ wrap_enabled = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
-[connection signal="canvas_changed" from="Game/Center/DrawingPanel/Center/Background/DrawingCanvas" to="Game" method="_on_DrawingCanvas_canvas_changed"]
-[connection signal="mouse_entered" from="Game/Center/DrawingPanel/Center/Background/DrawingCanvas" to="Game" method="_on_DrawingCanvas_mouse_entered"]
-[connection signal="mouse_exited" from="Game/Center/DrawingPanel/Center/Background/DrawingCanvas" to="Game" method="_on_DrawingCanvas_mouse_exited"]
-[connection signal="pressed" from="Game/Done" to="Game" method="_on_Done_pressed"]
+
+[node name="Control" parent="." instance=ExtResource( 6 )]
+margin_left = 268.0
+margin_top = 169.0
+margin_right = 1032.0
+margin_bottom = 621.0
+[connection signal="canvas_changed" from="Game/DrawingCanvas" to="Game" method="_on_DrawingCanvas_canvas_changed"]
+[connection signal="mouse_entered" from="Game/DrawingCanvas" to="Game" method="_on_DrawingCanvas_mouse_entered"]
+[connection signal="mouse_exited" from="Game/DrawingCanvas" to="Game" method="_on_DrawingCanvas_mouse_exited"]
 [connection signal="item_selected" from="Game/Pallet" to="Game" method="_on_Pallet_item_selected"]
 [connection signal="timeout" from="Game/TimeLeft/UpdateTimerTick" to="Game" method="_on_UpdateTimerTick_timeout"]
+[connection signal="pressed" from="Game/Done" to="Game" method="_on_Done_pressed"]
 [connection signal="pressed" from="InfoPanel/Buttons/Leave" to="." method="_on_Leave_pressed"]
 [connection signal="pressed" from="InfoPanel/Buttons/Play" to="." method="_on_Play_pressed"]
 [connection signal="pressed" from="InfoPanel/Buttons/TimeCycle" to="." method="_on_TimeCycle_pressed"]
