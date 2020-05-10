@@ -191,12 +191,14 @@ master func pick_word(from_id : int, index : int) -> void:
 
 	if not _is_valid_request(from_id, Phase_ChooseWord): return
 	if from_id in _words: return
+
 	rpc_players('_set_word_choice', [from_id, _word_choices[from_id][index]])
 
 	if _words.size() < _players.size(): return
 	_finish_pick_word_phase()
-	
+
 	rpc_players('_next_phase')
+	print_debug(get_phase() == Phase_Draw)
 
 func _finish_pick_word_phase() -> void:
 	if not is_network_master(): return
