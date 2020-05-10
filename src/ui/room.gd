@@ -102,11 +102,11 @@ func _on_TimeCycle_pressed() -> void:
 	if _room.clients().empty(): return
 	if _room.clients()[0] != get_tree().get_network_unique_id(): return
 	
-	var sec := Room.get_draw_sec(_time_index) as float
+	var sec := Constants.get_draw_seconds(_time_index) as float
 	if sec == -1: return
 		
 	_time_cycle.text = str(sec)
-	_time_index = (_time_index + 1) % Room.valid_draw_sec.size()
+	_time_index = (_time_index + 1) % Constants.VALID_DRAW_SECONDS.size()
 	
 	_room.rpc_id(Network.server_id, 'change_drawing_time', _time_index)
 

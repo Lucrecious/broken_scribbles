@@ -28,7 +28,7 @@ func stop() -> void:
 func set_chain(scribble_chain : Array) -> void:
 	_started = false
 	for e in scribble_chain:
-		if not e is String && not e is Image: return
+		if not e is String && not e is Dictionary: return
 		_scribble_chain.append(e)
 
 func total_time() -> float:
@@ -37,15 +37,20 @@ func total_time() -> float:
 	var count := 0.0
 	for e in _scribble_chain:
 		if e is String: count += sec_per_words
-		if e is Image: count += sec_per_picture
+		if e is Dictionary: count += sec_per_picture
 	
 	return count
+	
 func _ready() -> void:
 	_word_timer.connect('timeout', self, '_finished_show')
 	_draw_timer.connect('timeout', self, '_finished_show')
+	
+	_word_timer.wait_time = sec_per_words
+	_draw_timer.wait_time = sec_per_picture
 
 func _finished_show() -> bool:
 	_index_part += 1
+	printt(_index_part, _scribble_chain)
 	
 	if not _signal_next_chain(_index_part): return false
 	

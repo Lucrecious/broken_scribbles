@@ -24,10 +24,10 @@ func init(room : Room, game : Game) -> void:
 	_game.connect('received_scribble_chain', self, '_on_received_scribble_chain')
 	_game.connect('phase_timeout', self, '_phase_timeout')
 	_game.connect('phase_timer_started', self, '_phase_timer_started')
-
+	
 func _ready() -> void:
 	_time_left_label.clear()
-
+	
 func _phase_timer_started() -> void:
 	if _game.get_phase() != Game.Phase_Draw: return
 	emit_signal('drawing_just_started')
@@ -72,7 +72,8 @@ func _phase_changed(old_phase : int, new_phase : int) -> void:
 		_header.text = ''
 		_drawing_board.drawable = false
 		_drawing_board.clear()
-		_done_button.disabled = true
+		#_done_button.disabled = true
+		_done_button.disabled = false
 		return
 
 	if new_phase == Game.Phase_End:
@@ -202,7 +203,7 @@ func _on_Pallet_scrap_picked() -> void:
 	_drawing_board.clear()
 
 func _on_ScribbleChainHandler_show_chain_part(part) -> void:
-	if part is Image:
-		_drawing_board.set_image_from(part)
+	if part is Dictionary:
+		_drawing_board.set_image(part)
 	if part is String:
 		_header.text = part
