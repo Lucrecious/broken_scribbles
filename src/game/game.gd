@@ -54,9 +54,7 @@ func _ready():
 	get_tree().connect('network_peer_disconnected', self, '_player_left')
 
 	_phase_timer.connect('timeout', self, '_phase_timeout')
-
-	if is_network_master():
-		connect('phase_changed', self, '_on_phase_changed')
+	connect('phase_changed', self, '_on_phase_changed')
 
 	_phases = _build_phases()
 
@@ -66,28 +64,35 @@ func _phase_timeout() -> void:
 	if not is_network_master(): return
 
 	if get_phase() == Phase_Draw:
-		finish_drawing_phase()
+		_finish_drawing_phase()
 		return
 	
 	if get_phase() == Phase_Guess:
-		finish_guessing_phase()
+		_finish_guessing_phase()
+		return
+	
+	if get_phase() == Phase_ChooseWord:
+		_finish_pick_word_phase()
 		return
 
 
 func _on_phase_changed(old_phase : int, new_phase : int) -> void:
+	_phase_timer.stop()
+
 	_phase_timer.wait_time = _get_wait_time(30)
 
+	if new_phase == Phase_ChooseWord: _phase_timer.wait_time = _get_wait_time(10)
 	if new_phase == Phase_Draw: _phase_timer.wait_time = _get_wait_time(15)
 	if new_phase == Phase_Guess: _phase_timer.wait_time = _get_wait_time(30)
-	if new_phase == Phase_ChooseWord: _phase_timer.wait_time = _get_wait_time(10)
 	if new_phase == Phase_ShowScribbleChain: _phase_timer.wait_time = _get_wait_time(30)
 		
+	_phase_timer.start()
+	emit_signal('phase_timer_started')
+
+	if not is_network_master(): return
 
 	if new_phase == Phase_ShowScribbleChain:
 		_send_one_scribble_chain_in_parts()
-
-	_phase_timer.start()
-	emit_signal('phase_timer_started')
 
 # The server waits an extra X seconds before switching phases...
 # This gives the client time to send in their data before the phase ends
@@ -169,20 +174,31 @@ func _is_valid_request(sender_id : int, valid_phase : int) -> bool:
 	return true
 
 master func pick_word(from_id : int, index : int) -> void:
-	print('picked word')
+	_pick_word(from_id, index)
+
+func _pick_word(from_id : int, index : int) -> void:
+	if not is_network_master(): return
+
 	if not _is_valid_request(from_id, Phase_ChooseWord): return
 	if from_id in _words: return
-	print('setting word everywhere')
 	rpc_players('_set_word_choice', [from_id, _word_choices[from_id][index]])
 
 	if _words.size() < _players.size(): return
+	_finish_pick_word_phase()
+
+func _finish_pick_word_phase() -> void:
+	if not is_network_master(): return
+		
+	for id in _players:
+		if not id in _words: continue
+		rpc_players('_set_word_choice', [id, _word_choices[id][0]])
+
 	rpc_players('_init_guesses')
 
 	if _players.size() % 2 != 0:
 		rpc_players('_pass')
 
 	rpc_players('_next_phase')
-	print('went to next phase')
 
 master func update_current_drawing(image_info : Dictionary) -> void:
 	var sender_id := get_tree().get_rpc_sender_id()
@@ -194,12 +210,17 @@ master func update_current_drawing(image_info : Dictionary) -> void:
 	else:
 		_drawings[holding_id][_draw_round] = image_info
 
-func finish_drawing_phase() -> void:
+func _finish_drawing_phase() -> void:
 	if not is_network_master(): return
+
 	rpc_players('_pass')
 	
 	for id in _players:
 		var holding_id := _holding_map[id] as int
+
+		if _drawings[holding_id].size() <= _draw_round:
+			_drawings[holding_id].append({})
+
 		rpc_id(id, '_on_done_drawing', _drawings[holding_id][-1])
 	
 	rpc_players('_next_phase')
@@ -214,15 +235,29 @@ master func done_guess(guess : String) -> void:
 	else:
 		_guesses[holding_id][_guess_round] = guess
 
-func finish_guessing_phase() -> void:
+	if not _players_all_guessed(): return
+
+	_finish_guessing_phase()
+
+func _players_all_guessed() -> bool:
+	for id in _players:
+		var holding_id := _holding_map[id] as int
+		if _guesses[holding_id].size() <= _guess_round:
+			return false
+	
+	return true
+
+func _finish_guessing_phase() -> void:
 	if not is_network_master(): return
 
 	rpc_players('_pass')
 
 	for id in _players:
 		var holding_id := _holding_map[id] as int
+
 		if _guesses[holding_id].size() <= _guess_round:
 			_guesses[holding_id].append('<missed the guess>')
+
 		rpc_id(id, '_on_done_guessing', _guesses[holding_id][-1])
 	
 	rpc_players('_next_phase')

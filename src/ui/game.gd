@@ -72,7 +72,7 @@ func _on_guess_drawing() -> void:
 	_header.readonly = false
 	_header.text = ''
 
-	_drawing_board.drawable = true
+	_drawing_board.drawable = false
 	_drawing_board.set_image(_game.get_local_image())
 
 func _on_choose_word() -> void:
