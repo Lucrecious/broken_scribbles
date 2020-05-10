@@ -6,6 +6,7 @@ signal client_added(id)
 signal client_left(id)
 signal just_emptied(room_id)
 signal received_message(id, message)
+signal draw_sec_changed(new_sec)
 signal game_created
 
 # State
@@ -14,7 +15,7 @@ var _nickname := ''
 var _clients := []
 
 var _valid_draw_sec := [15, 30, 60, 90]
-remotesync var _draw_sec_index := 2
+var _draw_sec_index := 2
 
 onready var _game := preload('res://src/game/game.tscn')
 
@@ -37,14 +38,17 @@ master func change_drawing_time(index : int) -> void:
 
 func _change_drawing_time(index : int) -> void:
 	if not is_network_master(): return
-	if index <= 0: return
-	if index >= _valid_draw_sec.size(): return
-	_draw_sec_index = index
+
+	_set_draw_sec_index(index)
 
 	for id in _clients:
-		rset_id(id, '_draw_sec_index', index)
+		rpc_id(id, '_set_draw_sec_index', index)
 
-	
+
+remotesync func _set_draw_sec_index(index : int) -> void:
+	_draw_sec_index = index
+	emit_signal('draw_sec_changed', index)
+
 master func play_game() -> void:
 	if _clients.empty(): return
 	var sender_id := get_tree().get_rpc_sender_id()

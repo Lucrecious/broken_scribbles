@@ -36,6 +36,7 @@ func _ready() -> void:
 	_room.connect('client_left', self, '_on_client_left')
 	_room.connect('game_created', self, '_on_game_created')
 	_room.connect('received_message', self, '_on_received_message')
+	_room.connect('draw_sec_changed', self, '_on_draw_sec_changed')
 	
 	_nickname.text = _room.nickname()
 
@@ -104,3 +105,8 @@ func _on_TimeCycle_pressed() -> void:
 	_time_index = (_time_index + 1) % _valid_times.size()
 	
 	_room.rpc_id(Network.server_id, 'change_drawing_time', _time_index)
+
+func _on_draw_sec_changed(index : int) -> void:
+	if index < 0: return
+	if index >= _valid_times.size(): return
+	_time_cycle.text = str(_valid_times[index])
