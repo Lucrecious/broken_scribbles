@@ -40,7 +40,7 @@ func total_time() -> float:
 		if e is Dictionary: count += sec_per_picture
 	
 	return count
-	
+
 func _ready() -> void:
 	_word_timer.connect('timeout', self, '_finished_show')
 	_draw_timer.connect('timeout', self, '_finished_show')
@@ -50,7 +50,6 @@ func _ready() -> void:
 
 func _finished_show() -> bool:
 	_index_part += 1
-	printt(_index_part, _scribble_chain)
 	
 	if not _signal_next_chain(_index_part): return false
 	
