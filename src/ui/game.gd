@@ -47,7 +47,6 @@ func _phase_timeout() -> void:
 		_game.rpc_id(Network.server_id, 'done_guess', _header.text)
 		return
 
-
 func _on_received_scribble_chain(player_id : int) -> void:
 	_scribble_chain = _game._scribble_chains[player_id]
 	_done_button.disabled = false

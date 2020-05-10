@@ -48,6 +48,7 @@ func _entered_room(success : bool, room_id : String, reason : int, is_local: boo
 	add_child(room)
 	_current_room = room
 
+	_sound_control.set_end_draw_sec(_current_room.game().get_draw_sec())
 	_current_room.game().connect('drawing_just_started', _sound_control, 'on_drawing_just_started')
 
 

@@ -40,6 +40,10 @@ var _guess_round := 0
 
 onready var _phase_timer := $PhaseTimer as Timer
 
+var _draw_sec_time := 15.0
+
+func get_draw_sec() -> float: return _draw_sec_time
+
 func init(room_settings : Dictionary) -> void:
 	for i in range(room_settings.players.size()):
 		var id := room_settings.players[i] as int
@@ -49,6 +53,8 @@ func init(room_settings : Dictionary) -> void:
 		_guesses[id] = []
 
 		_holding_map[id] = id
+	
+	_draw_sec_time = room_settings.get('draw_sec', 15)
 
 func _ready():
 	get_tree().connect('network_peer_disconnected', self, '_player_left')
@@ -89,7 +95,7 @@ func _on_phase_changed(old_phase : int, new_phase : int) -> void:
 	_phase_timer.wait_time = _get_wait_time(30)
 
 	if new_phase == Phase_ChooseWord: _phase_timer.wait_time = _get_wait_time(10)
-	if new_phase == Phase_Draw: _phase_timer.wait_time = _get_wait_time(30)
+	if new_phase == Phase_Draw: _phase_timer.wait_time = _get_wait_time(_draw_sec_time)
 	if new_phase == Phase_Guess: _phase_timer.wait_time = _get_wait_time(30)
 	if new_phase == Phase_ShowScribbleChain: _phase_timer.wait_time = _get_wait_time(30)
 		
