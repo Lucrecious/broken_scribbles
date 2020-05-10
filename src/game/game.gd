@@ -73,7 +73,6 @@ func _phase_timeout() -> void:
 		return
 	
 	if get_phase() == Phase_ChooseWord:
-		print('HEREEE')
 		_finish_pick_word_phase()
 		return
 
@@ -192,10 +191,9 @@ func _finish_pick_word_phase() -> void:
 	if not is_network_master(): return
 		
 	for id in _players:
-		if not id in _words: continue
+		if id in _words: continue
 		var forced_choice := _word_choices[id][0] as String
-		print(forced_choice)
-		rpc_players('_set_word_choice', [id, _word_choices[id][0]])
+		rpc_players('_set_word_choice', [id, forced_choice])
 
 	rpc_players('_init_guesses')
 
