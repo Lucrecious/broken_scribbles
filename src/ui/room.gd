@@ -44,7 +44,7 @@ func _ready() -> void:
 	_time_cycle.text = str(Constants.get_draw_seconds(-1))
 
 func _send_info() -> void:
-	send_chat_message(get_tree().get_network_unique_id(), 'Enter: /play to start game'
+	send_chat_message('/play to start game')
 
 func _on_received_message(from_id : int, message : String) -> void:
 	var names := _room.client_nickname(from_id).split(' ', false)
