@@ -40,6 +40,9 @@ onready var _phase_timer := $PhaseTimer as Timer
 
 var _draw_sec_index := Constants.DEFAULT_DRAW_SECOND_INDEX
 
+func players() -> Array:
+	return _players.duplicate()
+
 func init(room_settings : Dictionary) -> void:
 	for i in range(room_settings.players.size()):
 		var id := room_settings.players[i] as int
@@ -97,8 +100,8 @@ func _on_phase_changed(old_phase : int, new_phase : int) -> void:
 	_phase_timer.wait_time = _get_wait_time(30)
 
 	if new_phase == Phase_ChooseWord: _phase_timer.wait_time = _get_wait_time(10)
-	if new_phase == Phase_Draw: _phase_timer.wait_time = _get_wait_time(Constants.get_draw_seconds(_draw_sec_index))
-	if new_phase == Phase_Guess: _phase_timer.wait_time = _get_wait_time(30)
+	if new_phase == Phase_Draw: _phase_timer.wait_time = _get_wait_time(5)#Constants.get_draw_seconds(_draw_sec_index))
+	if new_phase == Phase_Guess: _phase_timer.wait_time = _get_wait_time(5)#30)
 
 	var phases := int(_players.size() / 2.0)
 	var show_scribble_time := Constants.ShowGuessSec * (phases + 1) + Constants.ShowGuessSec * phases
@@ -271,7 +274,7 @@ func _finish_guessing_phase() -> void:
 		var holding_id := _holding_map[id] as int
 
 		if _guesses[holding_id].size() <= _guess_round:
-			_guesses[holding_id].append('<missed the guess>')
+			_guesses[holding_id].append('( no guess ]= )')
 
 		rpc_id(id, '_on_done_guessing', _guesses[holding_id][-1])
 	

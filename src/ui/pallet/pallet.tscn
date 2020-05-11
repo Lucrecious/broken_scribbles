@@ -97,7 +97,9 @@ margin_right = 94.0
 margin_bottom = 53.0
 size_flags_vertical = 3
 texture_normal = ExtResource( 4 )
+texture_pressed = ExtResource( 7 )
 texture_hover = ExtResource( 7 )
+texture_disabled = ExtResource( 7 )
 expand = true
 stretch_mode = 5
 
@@ -107,7 +109,9 @@ margin_right = 94.0
 margin_bottom = 110.0
 size_flags_vertical = 3
 texture_normal = ExtResource( 6 )
+texture_pressed = ExtResource( 9 )
 texture_hover = ExtResource( 9 )
+texture_disabled = ExtResource( 9 )
 expand = true
 stretch_mode = 5
 

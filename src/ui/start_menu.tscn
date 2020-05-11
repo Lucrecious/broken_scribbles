@@ -37,10 +37,10 @@ margin_right = 1.44165
 margin_bottom = 1.44159
 
 [node name="TakeASeat" type="TextureButton" parent="."]
-margin_left = 394.186
-margin_top = 203.226
-margin_right = 944.186
-margin_bottom = 334.226
+margin_left = 357.07
+margin_top = 209.412
+margin_right = 907.07
+margin_bottom = 340.412
 texture_normal = ExtResource( 4 )
 texture_hover = ExtResource( 3 )
 expand = true

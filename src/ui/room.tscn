@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=2]
+[gd_scene load_steps=24 format=2]
 
 [ext_resource path="res://src/ui/room.gd" type="Script" id=1]
 [ext_resource path="res://assets/ui/borders/border_c.tscn" type="PackedScene" id=2]
@@ -21,6 +21,7 @@
 [ext_resource path="res://assets/ui/interactables/mermaid/mermaid_5.png" type="Texture" id=19]
 [ext_resource path="res://src/ui/interactables/animator.tscn" type="PackedScene" id=20]
 [ext_resource path="res://src/ui/pick_a_word.tscn" type="PackedScene" id=21]
+[ext_resource path="res://assets/ui/icons/arrow.png" type="Texture" id=22]
 
 [sub_resource type="SpriteFrames" id=1]
 animations = [ {
@@ -59,7 +60,7 @@ anchor_right = 0.0
 anchor_bottom = 0.0
 margin_left = 199.0
 margin_top = 258.0
-margin_right = 842.0
+margin_right = 795.0
 margin_bottom = 612.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -75,10 +76,11 @@ wait_time = 0.1
 autostart = true
 
 [node name="Header" parent="Game" instance=ExtResource( 9 )]
-margin_left = 226.0
+margin_left = 199.0
 margin_top = 128.0
-margin_right = 842.0
+margin_right = 795.0
 margin_bottom = 195.0
+text = "Header text"
 
 [node name="ScribbleChainHandler" parent="Game" instance=ExtResource( 11 )]
 
@@ -103,6 +105,16 @@ margin_left = 38.0
 margin_top = 176.0
 margin_right = 132.0
 margin_bottom = 654.0
+
+[node name="FromArrow" type="TextureRect" parent="Game"]
+margin_left = 854.33
+margin_top = 183.319
+margin_right = 936.33
+margin_bottom = 265.319
+texture = ExtResource( 22 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="LeaveRoomButton" type="TextureButton" parent="."]
 margin_right = 120.0

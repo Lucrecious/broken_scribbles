@@ -9,6 +9,9 @@ onready var _header := $Header as LineEdit
 onready var _drawing_board := $DrawingCanvas
 onready var _pallet := $Pallet
 onready var _time_left_label := $TimeLeft as TimeLeftControl
+onready var _player_list := $PlayerList
+
+onready var _from_arrow := $FromArrow
 
 onready var _pick_a_word := $PickAWord
 
@@ -25,6 +28,7 @@ func init(room : Room, game : Game) -> void:
 func _ready() -> void:
 	_time_left_label.clear()
 	_pallet.init()
+	_from_arrow.visible = false
 	
 func _phase_timer_started() -> void:
 	if _game.get_phase() == Game.Phase_Draw:
@@ -43,10 +47,13 @@ func _phase_timeout() -> void:
 
 func _on_received_scribble_chain(player_id : int) -> void:
 	_scribble_chain = _game._scribble_chains[player_id]
+	_scribble_chain_id = player_id
 
 func _phase_changed(old_phase : int, new_phase : int) -> void:
 	if old_phase == Game.Phase_ChooseWord:
 		_pick_a_word.visible = false
+	
+	_header.placeholder_text = ''
 
 	if new_phase == Game.Phase_ChooseWord:
 		_on_choose_word()
@@ -80,6 +87,7 @@ func _on_draw_guess() -> void:
 	_drawing_board.clear()
 
 func _on_guess_drawing() -> void:
+	_header.placeholder_text = 'Guess the drawing here'
 	_header.editable = true
 	_header.text = ''
 
@@ -95,10 +103,13 @@ func _on_choose_word() -> void:
 func _word_picked(index : int) -> void:
 	_game.rpc_id(Network.server_id, 'pick_word', get_tree().get_network_unique_id(), index)
 
+var _scribble_chain_id := -1
 var _scribble_chain := []
 func _on_done_show_scribble_chain() -> void:
 	if _scribble_chain.empty(): return
 	
+	_from_arrow.visible = true
+	_player_list.select(_game.players().find(_scribble_chain_id))
 	_scribble_chain_handler.set_chain(_scribble_chain)
 	_scribble_chain_handler.start()
 
@@ -145,6 +156,16 @@ func _on_ScribbleChainHandler_show_chain_part(part) -> void:
 		_drawing_board.set_image(part)
 	if part is String:
 		_header.text = part
+	
+	# This just skips the first part...
+	if not _from_arrow.visible:
+		if not _from_arrow.flip_v:
+			_from_arrow.flip_v = true
+			return
+			
+		_from_arrow.visible = true
+	
+	_from_arrow.flip_v = not _from_arrow.flip_v
 
 func _on_Header_text_entered(new_text: String) -> void:
 	if not _game: return
