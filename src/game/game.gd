@@ -26,8 +26,6 @@ var _drawings := {}
 var _guesses := {}
 var _words := {}
 
-var _phase_done := {}
-
 var _holding_map := {}
 
 var _word_choices := {}
@@ -74,6 +72,10 @@ func is_phase_timer_ticking() -> bool:
 
 func _phase_timeout() -> void:
 	emit_signal('phase_timeout')
+	
+	if get_phase() == Phase_End:
+		_phase_timer.stop()
+		return
 
 	if not is_network_master(): return
 
@@ -117,7 +119,6 @@ func _get_wait_time(sec : float) -> float:
 
 func _send_one_scribble_chain_in_parts() -> void:
 	var player_id := _players[_scribble_chains.size()] as int
-	print(player_id)
 
 	var parts := _interlace_guesses_and_drawings(player_id)
 
@@ -277,9 +278,6 @@ master func done_show_scribble_chain() -> void:
 	var sender_id := get_tree().get_rpc_sender_id()
 	if not _is_valid_request(sender_id, Phase_ShowScribbleChain): return
 
-func _players_done() -> bool:
-	return _phase_done.size() == _players.size()
-
 remotesync func _init_guesses() -> void:
 	for id in _words: _guesses[id].append(_words[id])
 	_guess_round = 1
@@ -358,12 +356,13 @@ remotesync func _reset_game() -> void:
 	_phase = 0
 
 remotesync func _next_phase() -> void:
+	if _phase >= _phases.size() - 1: return
+
 	if get_phase() == Phase_Guess:
 		_guess_round += 1
 	elif get_phase() == Phase_Draw:
 		_draw_round += 1
 
-	_phase_done.clear()
 	_phase += 1
 	emit_signal('phase_changed', _phases[_phase - 1], _phases[_phase])
 

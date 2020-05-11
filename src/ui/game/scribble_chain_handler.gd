@@ -7,7 +7,6 @@ var _scribble_chain := []
 var _started := false
 var _index_part := 0
 
-
 onready var _word_timer := $ShowWordTimer as Timer
 onready var _draw_timer := $ShowDrawingTimer as Timer
 
@@ -24,6 +23,7 @@ func stop() -> void:
 
 func set_chain(scribble_chain : Array) -> void:
 	_started = false
+	_scribble_chain.clear()
 	for e in scribble_chain:
 		if not e is String && not e is Dictionary: return
 		_scribble_chain.append(e)
