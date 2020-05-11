@@ -230,7 +230,6 @@ func _sync(id : int) -> void:
 	var room_states := {}
 	for id in _rooms:
 		var r = _rooms[id] as Room
-		print("room: ", r._client_2_nickname)
 		room_states[id] = {
 			nickname = r.nickname(),
 			clients = r.clients(),
