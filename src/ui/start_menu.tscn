@@ -1,8 +1,24 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://src/ui/start_menu.gd" type="Script" id=1]
+[ext_resource path="res://assets/ui/background.tscn" type="PackedScene" id=2]
+[ext_resource path="res://assets/ui/titles/Start_hover.png" type="Texture" id=3]
+[ext_resource path="res://assets/ui/titles/Start.png" type="Texture" id=4]
 
-[node name="StartMenu" type="CenterContainer"]
+[node name="StartMenu" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Background" parent="." instance=ExtResource( 2 )]
+margin_left = 0.0
+margin_top = 0.0
+margin_right = 0.0
+margin_bottom = 0.0
+
+[node name="StartMenu" type="CenterContainer" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
 rect_min_size = Vector2( 1026, 600 )
@@ -11,7 +27,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="VBox" type="VBoxContainer" parent="."]
+[node name="VBox" type="VBoxContainer" parent="StartMenu"]
 margin_left = 593.0
 margin_top = 317.0
 margin_right = 687.0
@@ -20,26 +36,26 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="RoomName" type="LineEdit" parent="VBox"]
+[node name="RoomName" type="LineEdit" parent="StartMenu/VBox"]
 margin_right = 94.0
 margin_bottom = 24.0
 placeholder_text = "Room Name"
 caret_blink = true
 caret_blink_speed = 0.5
 
-[node name="CreateRoom" type="Button" parent="VBox"]
+[node name="CreateRoom" type="Button" parent="StartMenu/VBox"]
 margin_top = 28.0
 margin_right = 94.0
 margin_bottom = 48.0
 text = "Create Room"
 
-[node name="EnterRoom" type="Button" parent="VBox"]
+[node name="EnterRoom" type="Button" parent="StartMenu/VBox"]
 margin_top = 52.0
 margin_right = 94.0
 margin_bottom = 72.0
 text = "Enter Room"
 
-[node name="Rooms" type="ItemList" parent="VBox"]
+[node name="Rooms" type="ItemList" parent="StartMenu/VBox"]
 margin_top = 76.0
 margin_right = 94.0
 margin_bottom = 85.0
@@ -47,5 +63,15 @@ auto_height = true
 __meta__ = {
 "_edit_group_": true
 }
-[connection signal="pressed" from="VBox/CreateRoom" to="." method="_on_CreateRoom_pressed"]
-[connection signal="pressed" from="VBox/EnterRoom" to="." method="_on_EnterRoom_pressed"]
+
+[node name="TextureButton" type="TextureButton" parent="."]
+margin_left = 356.472
+margin_top = 165.629
+margin_right = 906.472
+margin_bottom = 296.629
+texture_normal = ExtResource( 4 )
+texture_hover = ExtResource( 3 )
+expand = true
+stretch_mode = 4
+[connection signal="pressed" from="StartMenu/VBox/CreateRoom" to="StartMenu" method="_on_CreateRoom_pressed"]
+[connection signal="pressed" from="StartMenu/VBox/EnterRoom" to="StartMenu" method="_on_EnterRoom_pressed"]

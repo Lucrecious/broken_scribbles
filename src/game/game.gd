@@ -92,6 +92,7 @@ func _phase_timeout() -> void:
 
 func _on_phase_changed(old_phase : int, new_phase : int) -> void:
 	_phase_timer.stop()
+	if new_phase == Phase_End: return
 
 	_phase_timer.wait_time = _get_wait_time(30)
 
