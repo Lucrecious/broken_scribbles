@@ -168,6 +168,7 @@ func _on_ScribbleChainHandler_show_chain_part(part) -> void:
 			return
 			
 		_from_arrow.visible = true
+		_from_arrow.flip_v = false
 	
 	_from_arrow.flip_v = not _from_arrow.flip_v
 
