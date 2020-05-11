@@ -56,11 +56,15 @@ master func play_game() -> void:
 	_play_game()
 
 func _play_game() -> void:
+	if _clients.size() < 2:
+		return
+	if _game_instance: return
 	if not is_network_master(): return
 
 	if _clients.empty(): return
 	var sender_id := get_tree().get_rpc_sender_id()
 	if _clients[0] != sender_id: return
+
 	_add_game()
 
 master func leave_room() -> void:
