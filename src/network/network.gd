@@ -226,10 +226,11 @@ func _sync(id : int) -> void:
 	var room_states := {}
 	for id in _rooms:
 		var r = _rooms[id] as Room
+		print("room: ", r._client_2_nickname)
 		room_states[id] = {
 			nickname = r.nickname(),
 			clients = r.clients(),
-			client_nicknames = r.client_nicknames() }
+			client_nicknames = r._client_2_nickname }
 	
 	rpc_id(id, '_sync_rooms', room_states)
 
@@ -243,7 +244,6 @@ puppet func _sync_rooms(room_states : Dictionary) -> void:
 		_add_room_node(id, room_states[id].nickname, first, client_nicknames[first])
 		_rooms[id]._clients = clients
 		_rooms[id]._client_2_nickname = client_nicknames
-		print(client_nicknames)
 
 func _client_left(id : int) -> void:
 	_clients.erase(id)

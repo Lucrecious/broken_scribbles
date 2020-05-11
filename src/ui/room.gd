@@ -68,7 +68,12 @@ func _setup_leader() -> void:
 	_play_button.disabled = false
 
 func _update_usernames(_id := 0) -> void:
-	_players.update_list(_room.clients())
+	var nicknames := []
+	for id in _room.clients():
+		var nickname := _room.client_nickname(id)
+		nicknames.append(nickname)
+
+	_players.update_list(nicknames)
 
 func _on_game_created() -> void:
 	assert(_room.game())

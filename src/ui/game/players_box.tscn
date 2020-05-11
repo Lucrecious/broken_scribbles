@@ -1,10 +1,14 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
-[ext_resource path="res://assets/ui/fonts/comic-jens.tres" type="DynamicFont" id=1]
+[ext_resource path="res://assets/ui/fonts/small_info_text.tres" type="DynamicFontData" id=1]
 [ext_resource path="res://src/ui/game/playerlist.gd" type="Script" id=2]
 
-[sub_resource type="Theme" id=1]
-default_font = ExtResource( 1 )
+[sub_resource type="DynamicFont" id=1]
+size = 24
+font_data = ExtResource( 1 )
+
+[sub_resource type="Theme" id=2]
+default_font = SubResource( 1 )
 /icons/ = null
 ItemList/colors/font_color = Color( 0, 0, 0, 1 )
 ItemList/colors/font_color_selected = Color( 1, 1, 1, 1 )
@@ -21,27 +25,30 @@ ItemList/styles/cursor_unfocused = null
 ItemList/styles/selected = null
 ItemList/styles/selected_focus = null
 
+[sub_resource type="StyleBoxEmpty" id=3]
+
 [sub_resource type="StyleBoxEmpty" id=4]
 
 [sub_resource type="StyleBoxEmpty" id=5]
 
-[sub_resource type="StyleBoxEmpty" id=3]
-
-[sub_resource type="StyleBoxEmpty" id=2]
+[sub_resource type="StyleBoxEmpty" id=6]
 
 [node name="PlayerList" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="List" type="ItemList" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme = SubResource( 1 )
-custom_styles/selected_focus = SubResource( 4 )
-custom_styles/bg_focus = SubResource( 5 )
-custom_styles/selected = SubResource( 3 )
-custom_styles/bg = SubResource( 2 )
+theme = SubResource( 2 )
+custom_styles/selected_focus = SubResource( 3 )
+custom_styles/bg_focus = SubResource( 4 )
+custom_styles/selected = SubResource( 5 )
+custom_styles/bg = SubResource( 6 )
 custom_colors/guide_color = Color( 0, 0, 0, 0 )
 custom_colors/font_color_selected = Color( 0.980392, 0.956863, 0.827451, 1 )
 custom_colors/font_color = Color( 0.980392, 0.956863, 0.827451, 1 )
@@ -49,7 +56,7 @@ custom_constants/vseparation = 0
 custom_constants/line_separation = 0
 custom_constants/icon_margin = 0
 custom_constants/hseparation = 0
-items = [ "Test Item 1", null, false, "Test Item 2", null, false, "Test Item 3", null, false, "Test Item 4", null, false ]
+items = [ "Item 0", null, false, "Item 1", null, false, "Item 2", null, false, "Item 3", null, false ]
 auto_height = true
 __meta__ = {
 "_edit_use_anchors_": false

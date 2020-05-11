@@ -34,7 +34,7 @@ func _on_room_added(_room_id := '') -> void:
 func _on_room_removed(_room_id := '') -> void:
 	_update_room_list()
 
-func _entered_room(success : bool, room_id : String, reason : int, is_local: bool) -> void:
+func _entered_room(success : bool, room_id : String, reason : int) -> void:
 	call_deferred('_enable_ui')
 
 func _on_CreateRoom_pressed() -> void:
