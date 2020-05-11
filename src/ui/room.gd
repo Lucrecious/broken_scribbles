@@ -7,9 +7,7 @@ onready var _pick_a_word := preload('res://src/ui/pick_a_word.tscn')
 onready var _nickname := $InfoPanel/Nickname
 onready var _players := $Game/PlayerList
 onready var _room := Network.get_room(_room_id) as Room
-
-onready var _text_edit := $Chat/Panel/VBox/TypingBorder/TypingPanel/TextEdit as TextEdit
-onready var _chat_history := $Chat/Panel/VBox/HistoryBorder/HistoryPanel/Chat as Label
+onready var _chat := $Chat
 
 onready var _game_ui := $Game as Control
 
@@ -25,11 +23,12 @@ func game() -> Control:
 
 func _gui_input(event: InputEvent) -> void:
 	if not event.is_action_pressed('send_chat', false): return
-	if not _text_edit.has_focus(): return
+	#if not _text_edit.has_focus(): return
 
 func _ready() -> void:
 	if not _room: return
 	
+	_room.connect('client_added', self, '_send_info')
 	_room.connect('client_added', self, '_update_usernames')
 	_room.connect('client_left', self, '_on_client_left')
 	_room.connect('game_created', self, '_on_game_created')
@@ -44,16 +43,16 @@ func _ready() -> void:
 	
 	_time_cycle.text = str(Constants.get_draw_seconds(-1))
 
+func _send_info() -> void:
+	send_chat_message(get_tree().get_network_unique_id(), 'Enter: /play to start game'
+
 func _on_received_message(from_id : int, message : String) -> void:
-	message = '%d: %s' % [from_id, message]
-	var lines := _chat_history.text.split('\n', false)
-	lines += message.split('\n')
-	for _i in range(_chat_history.max_lines_visible, lines.size()):
-		lines.remove(0)
+	var names := _room.client_nickname(from_id).split(' ', false)
+	var initials := ''
+	for n in names:
+		initials += n[0]
 	
-	_chat_history.text = ''
-	for line in lines:
-		_chat_history.text += '%s\n' % line
+	_chat.add_text('%s:%s' % [initials, message])
 
 func _on_client_left(_id : int) -> void:
 	_update_usernames()
@@ -89,11 +88,7 @@ func _on_Play_pressed() -> void:
 	_room.rpc_id(Network.server_id, 'play_game')
 	_play_button.disabled = true
 
-func _on_TextEdit_text_changed() -> void:
-	if not Input.is_action_just_pressed('send_chat'): return
-	var message := _text_edit.text
-	_text_edit.text = ''
-	
+func send_chat_message(message : String) -> void:
 	_room.rpc_unreliable_id(Network.server_id, 'send_chat_message', message)
 
 func _on_TimeCycle_pressed() -> void:
@@ -110,7 +105,6 @@ func _on_TimeCycle_pressed() -> void:
 
 func _on_draw_sec_index_changed(index : int) -> void:
 	_time_cycle.text = str(Constants.get_draw_seconds(index))
-
 
 func _on_LeaveRoomButton_pressed() -> void:
 	_room.rpc_id(Network.server_id, 'leave_room')

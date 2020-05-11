@@ -30,7 +30,7 @@ func on_drawing_just_started() -> void:
 	timer.connect('timeout', self, '_do_fade_out')
 	_drawing.play()
 
-func on_draw_sec_index_changed(new_index : float) -> void:
+func on_draw_sec_index_changed(new_index : int) -> void:
 	_end_draw_time = Constants.get_draw_seconds(new_index)
 
 func _do_fade_out() -> void:

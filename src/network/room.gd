@@ -53,6 +53,11 @@ remotesync func _set_draw_sec_index(index : int) -> void:
 	emit_signal('draw_sec_index_changed', index)
 
 master func play_game() -> void:
+	_play_game()
+
+func _play_game() -> void:
+	if not is_network_master(): return
+
 	if _clients.empty(): return
 	var sender_id := get_tree().get_rpc_sender_id()
 	if _clients[0] != sender_id: return
@@ -67,6 +72,10 @@ master func leave_room() -> void:
 master func send_chat_message(message : String) -> void:
 	var sender_id := get_tree().get_rpc_sender_id()
 	if not sender_id in _clients: return
+	
+	if message.to_lower().strip_edges() == '/play':
+		_play_game()
+		return
 
 	for id in _clients:
 		rpc_id(id, '_receive_message', sender_id, message)
