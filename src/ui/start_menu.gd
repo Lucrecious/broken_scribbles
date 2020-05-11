@@ -16,7 +16,8 @@ func _find_a_room():
 		available.append(room)
 	
 	if available.empty():
-		Network.rpc_id(Network.server_id, 'create_room', '')
+		var room_name := _get_random_room_name()
+		Network.rpc_id(Network.server_id, 'create_room', room_name)
 		return
 	
 	var room := available[randi() % available.size()] as Room
@@ -26,6 +27,11 @@ func _find_a_room():
 	
 	Network.rpc_id(Network.server_id, 'enter_room', room.id())
 
+func _get_random_room_name() -> String:
+	var adjective := Constants.RoomAdjectives.keys()[randi() % Constants.RoomAdjectives.size()] as String
+	var noun := Constants.RoomNouns.keys()[randi() % Constants.RoomNouns.size()] as String
+
+	return '%s %s' % [adjective.replace('_', ' ').to_lower(), noun.replace('_', ' ').to_lower()]
 
 func _on_Exit_pressed() -> void:
 	emit_signal('exit_requested')

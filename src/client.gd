@@ -59,5 +59,5 @@ func _notification(what):
 	_exit_requested()
 
 func _exit_requested() -> void:
-	Network.shut_off()
+	Network.shut_down()
 	get_tree().quit()

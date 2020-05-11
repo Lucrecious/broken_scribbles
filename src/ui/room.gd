@@ -21,6 +21,8 @@ func game() -> Control:
 func _ready() -> void:
 	if not _room: return
 	
+	_game_ui._header.text = _room.nickname()
+	
 	_room.connect('client_added', self, '_send_info')
 	_room.connect('client_added', self, '_update_usernames')
 	_room.connect('client_left', self, '_on_client_left')

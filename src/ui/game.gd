@@ -102,12 +102,6 @@ func _remove_pick_a_word_dialog() -> void:
 	remove_child(_pick_a_word_instance)
 	_pick_a_word_instance.queue_free()
 	_pick_a_word_instance = null
-
-func _on_Done_pressed() -> void:
-	if not _game: return
-	
-	_drawing_board.drawable = false
-	_header.editable = false
 	
 var _scribble_chain := []
 func _on_done_show_scribble_chain() -> void:
@@ -161,5 +155,7 @@ func _on_ScribbleChainHandler_show_chain_part(part) -> void:
 		_header.text = part
 
 func _on_Header_text_entered(new_text: String) -> void:
+	if not _game: return
+	if _game.get_phase() != Game.Phase_Guess: return
 	_on_done_phase_guess()
 	_header.editable = false
