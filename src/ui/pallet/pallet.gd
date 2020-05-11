@@ -11,6 +11,9 @@ func _ready() -> void:
 	for color in _colors:
 		color.connect('color_toggled', self, '_color_toggled')
 
+func init() -> void:
+	_color_toggled(_colors[0], _colors[0].modulate)
+
 func _color_toggled(node : Control, color : Color) -> void:
 	node.disable()
 	

@@ -54,12 +54,6 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Pallet" type="HBoxContainer" parent="Game"]
-margin_left = 38.0
-margin_top = 242.0
-margin_right = 122.0
-margin_bottom = 588.0
-
 [node name="DrawingCanvas" parent="Game" instance=ExtResource( 4 )]
 anchor_right = 0.0
 anchor_bottom = 0.0
@@ -104,6 +98,12 @@ margin_top = 569.011
 margin_right = 965.377
 margin_bottom = 882.011
 
+[node name="Pallet" parent="Game" instance=ExtResource( 8 )]
+margin_left = 38.0
+margin_top = 176.0
+margin_right = 132.0
+margin_bottom = 654.0
+
 [node name="LeaveRoomButton" type="TextureButton" parent="."]
 margin_right = 120.0
 margin_bottom = 120.0
@@ -129,12 +129,6 @@ margin_right = 458.49
 margin_bottom = -405.11
 rect_scale = Vector2( 0.5, 0.5 )
 
-[node name="Pallet" parent="." instance=ExtResource( 8 )]
-margin_left = 38.0
-margin_top = 176.0
-margin_right = 132.0
-margin_bottom = 654.0
-
 [node name="Chat" parent="." instance=ExtResource( 15 )]
 margin_left = 879.708
 margin_top = 303.011
@@ -157,9 +151,9 @@ frames = SubResource( 1 )
 [connection signal="timeout" from="Game/TimeLeft/UpdateTimerTick" to="Game" method="_on_UpdateTimerTick_timeout"]
 [connection signal="text_entered" from="Game/Header" to="Game" method="_on_Header_text_entered"]
 [connection signal="show_chain_part" from="Game/ScribbleChainHandler" to="Game" method="_on_ScribbleChainHandler_show_chain_part"]
+[connection signal="color_picked" from="Game/Pallet" to="Game" method="_on_Pallet_color_picked"]
+[connection signal="eraser_picked" from="Game/Pallet" to="Game" method="_on_Pallet_eraser_picked"]
+[connection signal="pencil_picked" from="Game/Pallet" to="Game" method="_on_Pallet_pencil_picked"]
+[connection signal="scrap_picked" from="Game/Pallet" to="Game" method="_on_Pallet_scrap_picked"]
 [connection signal="pressed" from="LeaveRoomButton" to="." method="_on_LeaveRoomButton_pressed"]
-[connection signal="color_picked" from="Pallet" to="Game" method="_on_Pallet_color_picked"]
-[connection signal="eraser_picked" from="Pallet" to="Game" method="_on_Pallet_eraser_picked"]
-[connection signal="pencil_picked" from="Pallet" to="Game" method="_on_Pallet_pencil_picked"]
-[connection signal="scrap_picked" from="Pallet" to="Game" method="_on_Pallet_scrap_picked"]
 [connection signal="text_entered" from="Chat" to="." method="send_chat_message"]

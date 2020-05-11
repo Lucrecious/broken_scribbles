@@ -24,6 +24,7 @@ func init(room : Room, game : Game) -> void:
 	
 func _ready() -> void:
 	_time_left_label.clear()
+	_pallet.init()
 	
 func _phase_timer_started() -> void:
 	if _game.get_phase() == Game.Phase_Draw:
