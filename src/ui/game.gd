@@ -101,7 +101,7 @@ func _on_draw_guess() -> void:
 	_drawing_board.clear()
 
 func _on_guess_drawing() -> void:
-	_header.placeholder_text = 'Guess the drawing here'
+	_header.placeholder_text = 'Make your guess!'
 	_header.editable = true
 	_header.text = ''
 
