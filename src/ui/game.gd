@@ -5,16 +5,14 @@ signal drawing_just_started
 var _game : Game
 var _room : Room
 
-onready var _pick_a_word := preload('res://src/ui/pick_a_word.tscn')
-
 onready var _header := $Header as LineEdit
 onready var _drawing_board := $DrawingCanvas
 onready var _pallet := $Pallet
 onready var _time_left_label := $TimeLeft as TimeLeftControl
 
-onready var _scribble_chain_handler := $ScribbleChainHandler
+onready var _pick_a_word := $PickAWord
 
-var _pick_a_word_instance : Control
+onready var _scribble_chain_handler := $ScribbleChainHandler
 
 func init(room : Room, game : Game) -> void:
 	_room = room;
@@ -47,7 +45,7 @@ func _on_received_scribble_chain(player_id : int) -> void:
 
 func _phase_changed(old_phase : int, new_phase : int) -> void:
 	if old_phase == Game.Phase_ChooseWord:
-		_remove_pick_a_word_dialog()
+		_pick_a_word.visible = false
 
 	if new_phase == Game.Phase_ChooseWord:
 		_on_choose_word()
@@ -88,21 +86,14 @@ func _on_guess_drawing() -> void:
 	_drawing_board.set_image(_game.get_local_image())
 
 func _on_choose_word() -> void:
-	_pick_a_word_instance = _pick_a_word.instance()
-	_pick_a_word_instance.init(_game.local_word_choices())
-	add_child(_pick_a_word_instance)
-	_pick_a_word_instance.connect('word_picked', self, '_word_picked')
+	_pick_a_word.visible = true
+	_pick_a_word.clear()
+	_pick_a_word.init(_game.local_word_choices())
+	_pick_a_word.connect('word_picked', self, '_word_picked')
 
 func _word_picked(index : int) -> void:
 	_game.rpc_id(Network.server_id, 'pick_word', get_tree().get_network_unique_id(), index)
-	_remove_pick_a_word_dialog()
 
-func _remove_pick_a_word_dialog() -> void:
-	if not _pick_a_word_instance: return
-	remove_child(_pick_a_word_instance)
-	_pick_a_word_instance.queue_free()
-	_pick_a_word_instance = null
-	
 var _scribble_chain := []
 func _on_done_show_scribble_chain() -> void:
 	if _scribble_chain.empty(): return

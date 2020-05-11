@@ -1,33 +1,62 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://src/ui/pick_a_word.gd" type="Script" id=1]
+[ext_resource path="res://assets/ui/fonts/small_info_text.tres" type="DynamicFontData" id=2]
 
-[node name="PickAWord" type="CenterContainer"]
-anchor_right = 1.0
-anchor_bottom = 1.0
+[sub_resource type="StyleBoxEmpty" id=3]
+
+[sub_resource type="StyleBoxEmpty" id=4]
+
+[sub_resource type="StyleBoxEmpty" id=5]
+
+[sub_resource type="StyleBoxEmpty" id=6]
+
+[sub_resource type="StyleBoxEmpty" id=7]
+
+[sub_resource type="StyleBoxEmpty" id=8]
+
+[sub_resource type="DynamicFont" id=1]
+size = 24
+font_data = ExtResource( 2 )
+
+[sub_resource type="Theme" id=2]
+default_font = SubResource( 1 )
+ItemList/colors/font_color = Color( 0.980392, 0.956863, 0.827451, 1 )
+ItemList/colors/font_color_selected = Color( 0.764706, 0, 0, 1 )
+ItemList/colors/guide_color = Color( 0, 0, 0, 0 )
+ItemList/constants/hseparation = 4
+ItemList/constants/icon_margin = 4
+ItemList/constants/line_separation = 2
+ItemList/constants/vseparation = 2
+ItemList/fonts/font = null
+ItemList/styles/bg = SubResource( 3 )
+ItemList/styles/bg_focus = SubResource( 4 )
+ItemList/styles/cursor = SubResource( 5 )
+ItemList/styles/cursor_unfocused = SubResource( 6 )
+ItemList/styles/selected = SubResource( 7 )
+ItemList/styles/selected_focus = SubResource( 8 )
+
+[node name="PickAWord" type="Control"]
+margin_left = 640.0
+margin_top = 360.0
+margin_right = 640.0
+margin_bottom = 360.0
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
-margin_left = 412.0
-margin_top = 283.0
-margin_right = 612.0
-margin_bottom = 316.0
-rect_min_size = Vector2( 200, 0 )
-
-[node name="WordList" type="ItemList" parent="VBoxContainer"]
-margin_right = 200.0
-margin_bottom = 9.0
+[node name="WordList" type="ItemList" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -291.0
+margin_top = -201.0
+margin_right = 205.0
+margin_bottom = 174.0
+theme = SubResource( 2 )
+items = [ "Item 0", null, false, "Item 1", null, false, "Item 2", null, false, "Item 3", null, false ]
 auto_height = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
-
-[node name="PickButton" type="Button" parent="VBoxContainer"]
-margin_top = 13.0
-margin_right = 200.0
-margin_bottom = 33.0
-text = "Pick"
-[connection signal="pressed" from="VBoxContainer/PickButton" to="." method="_on_PickButton_pressed"]
+[connection signal="item_selected" from="WordList" to="." method="_on_WordList_item_selected"]

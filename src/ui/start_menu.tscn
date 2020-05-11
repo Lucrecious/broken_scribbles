@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=15 format=2]
 
 [ext_resource path="res://src/ui/start_menu.gd" type="Script" id=1]
 [ext_resource path="res://assets/ui/background.tscn" type="PackedScene" id=2]
@@ -9,6 +9,18 @@
 [ext_resource path="res://assets/ui/titles/Credits.png" type="Texture" id=7]
 [ext_resource path="res://assets/ui/icons/exit_hover.png" type="Texture" id=8]
 [ext_resource path="res://assets/ui/icons/exit.png" type="Texture" id=9]
+[ext_resource path="res://assets/ui/interactables/goat/goat_1.png" type="Texture" id=10]
+[ext_resource path="res://assets/ui/interactables/goat/goat_2.png" type="Texture" id=11]
+[ext_resource path="res://assets/ui/interactables/goat/goat_3.png" type="Texture" id=12]
+[ext_resource path="res://src/ui/interactables/animator.tscn" type="PackedScene" id=13]
+
+[sub_resource type="SpriteFrames" id=1]
+animations = [ {
+"frames": [ ExtResource( 10 ), ExtResource( 11 ), ExtResource( 12 ) ],
+"loop": true,
+"name": "default",
+"speed": 5.0
+} ]
 
 [node name="StartMenu" type="Control"]
 anchor_right = 1.0
@@ -25,10 +37,10 @@ margin_right = 1.44165
 margin_bottom = 1.44159
 
 [node name="TakeASeat" type="TextureButton" parent="."]
-margin_left = 400.7
-margin_top = 259.677
-margin_right = 950.7
-margin_bottom = 390.677
+margin_left = 394.186
+margin_top = 203.226
+margin_right = 944.186
+margin_bottom = 334.226
 texture_normal = ExtResource( 4 )
 texture_hover = ExtResource( 3 )
 expand = true
@@ -74,13 +86,25 @@ tslate
 For TOJam 2020"
 
 [node name="Exit" type="TextureButton" parent="."]
-margin_left = 618.69
-margin_top = 406.972
-margin_right = 710.69
-margin_bottom = 494.972
+margin_right = 120.0
+margin_bottom = 120.0
 texture_normal = ExtResource( 9 )
 texture_hover = ExtResource( 8 )
 expand = true
 stretch_mode = 4
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Animator" parent="." instance=ExtResource( 13 )]
+margin_left = 887.549
+margin_top = 447.225
+margin_right = 1104.55
+margin_bottom = 632.225
+
+[node name="AnimatedSprite" type="AnimatedSprite" parent="Animator"]
+position = Vector2( 134.308, 15.0138 )
+scale = Vector2( 0.272623, 0.272623 )
+frames = SubResource( 1 )
 [connection signal="pressed" from="TakeASeat" to="." method="_on_TakeASeat_pressed"]
 [connection signal="pressed" from="Exit" to="." method="_on_Exit_pressed"]

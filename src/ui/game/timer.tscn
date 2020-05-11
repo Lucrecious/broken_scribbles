@@ -19,21 +19,22 @@ animations = [ {
 [node name="Timer" type="Control"]
 margin_right = 40.0
 margin_bottom = 40.0
+mouse_filter = 2
 script = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Icon" type="AnimatedSprite" parent="."]
-position = Vector2( 92.525, 90.8573 )
-scale = Vector2( 0.25, 0.25 )
+position = Vector2( 73.2489, 51.1884 )
+scale = Vector2( 0.2, 0.2 )
 frames = SubResource( 1 )
 
 [node name="Display" type="Label" parent="."]
-margin_left = 120.0
-margin_top = 98.0
-margin_right = 267.0
-margin_bottom = 138.0
+margin_left = 99.8059
+margin_top = 48.4328
+margin_right = 246.806
+margin_bottom = 88.4328
 custom_fonts/font = ExtResource( 7 )
 custom_colors/font_color = Color( 0.980392, 0.956863, 0.827451, 1 )
 text = "testing "
