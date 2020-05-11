@@ -244,6 +244,7 @@ func _finish_drawing_phase() -> void:
 		rpc_id(id, '_on_done_drawing', _drawings[holding_id][-1])
 
 master func done_guess(guess : String) -> void:
+	if guess.strip_edges().empty(): return
 	var sender_id := get_tree().get_rpc_sender_id()
 	if not _is_valid_request(sender_id, Phase_Guess): return
 	

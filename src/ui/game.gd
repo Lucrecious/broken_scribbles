@@ -108,7 +108,6 @@ var _scribble_chain := []
 func _on_done_show_scribble_chain() -> void:
 	if _scribble_chain.empty(): return
 	
-	_from_arrow.visible = true
 	_player_list.select(_game.players().find(_scribble_chain_id))
 	_scribble_chain_handler.set_chain(_scribble_chain)
 	_scribble_chain_handler.start()
@@ -152,6 +151,11 @@ func _on_Pallet_scrap_picked() -> void:
 	_drawing_board.clear()
 
 func _on_ScribbleChainHandler_show_chain_part(part) -> void:
+	if not part:
+		_from_arrow.visible = false
+		_from_arrow.flip_v = false
+		return
+	
 	if part is Dictionary:
 		_drawing_board.set_image(part)
 	if part is String:
@@ -168,6 +172,7 @@ func _on_ScribbleChainHandler_show_chain_part(part) -> void:
 	_from_arrow.flip_v = not _from_arrow.flip_v
 
 func _on_Header_text_entered(new_text: String) -> void:
+	if new_text.strip_edges().empty(): return
 	if not _game: return
 	if _game.get_phase() != Game.Phase_Guess: return
 	_on_done_phase_guess()
