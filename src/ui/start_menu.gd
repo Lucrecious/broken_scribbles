@@ -1,5 +1,7 @@
 extends Control
 
+signal exit_requested
+
 func _on_TakeASeat_pressed() -> void:
 	_find_a_room()
 
@@ -24,3 +26,6 @@ func _find_a_room():
 	
 	Network.rpc_id(Network.server_id, 'enter_room', room.id())
 
+
+func _on_Exit_pressed() -> void:
+	emit_signal('exit_requested')

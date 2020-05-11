@@ -8,6 +8,9 @@ onready var _sound_control := $SoundControl
 var _current_room : Control
 
 func _ready():
+	_start_menu_instance = _start_menu.instance()
+	add_child(_start_menu_instance)
+	
 	var error := Network.init_client()
 	if error != OK:
 		var label := Label.new()
@@ -19,8 +22,7 @@ func _ready():
 	Network.connect('entered_room_callback', self, '_entered_room')
 	Network.connect('client_left_room', self, '_client_left_room')
 
-	_start_menu_instance = _start_menu.instance()
-	add_child(_start_menu_instance)
+	_start_menu_instance.connect('exit_requested', self, '_exit_requested')
 
 func _client_left_room(id : int, room_id : String) -> void:
 	if id != get_tree().get_network_unique_id(): return
@@ -31,6 +33,7 @@ func _client_left_room(id : int, room_id : String) -> void:
 
 	_start_menu_instance = _start_menu.instance()
 	add_child(_start_menu_instance)
+	_start_menu_instance.connect('exit_requested', self, '_exit_requested')
 
 func _entered_room(success : bool, room_id : String, reason : int) -> void:
 	if not success:
@@ -51,4 +54,10 @@ func _entered_room(success : bool, room_id : String, reason : int) -> void:
 	_current_room.game().connect('drawing_just_started', _sound_control, 'on_drawing_just_started')
 	_current_room._room.connect('draw_sec_index_changed', _sound_control, 'on_draw_sec_index_changed')
 
+func _notification(what):
+	if what != MainLoop.NOTIFICATION_WM_QUIT_REQUEST: return
+	_exit_requested()
 
+func _exit_requested() -> void:
+	Network.shut_off()
+	get_tree().quit()

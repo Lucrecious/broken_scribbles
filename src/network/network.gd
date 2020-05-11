@@ -56,6 +56,10 @@ func _listen_client(client : WebSocketClient) -> void:
 	
 	client.poll()
 
+func shut_down() ->  void:
+	if not _local_peer is WebSocketClient: return
+	(_local_peer as WebSocketClient).disconnect_from_host()
+
 func init_client() -> int:
 	var client := WebSocketClient.new()
 	var url := 'ws://' + DEFAULT_IP + ':' + str(DEFAULT_PORT)

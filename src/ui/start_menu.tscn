@@ -1,9 +1,14 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://src/ui/start_menu.gd" type="Script" id=1]
 [ext_resource path="res://assets/ui/background.tscn" type="PackedScene" id=2]
 [ext_resource path="res://assets/ui/titles/Start_hover.png" type="Texture" id=3]
 [ext_resource path="res://assets/ui/titles/Start.png" type="Texture" id=4]
+[ext_resource path="res://src/ui/guessing_text.tscn" type="PackedScene" id=5]
+[ext_resource path="res://assets/ui/fonts/small_test_theme.tres" type="Theme" id=6]
+[ext_resource path="res://assets/ui/titles/Credits.png" type="Texture" id=7]
+[ext_resource path="res://assets/ui/icons/exit_hover.png" type="Texture" id=8]
+[ext_resource path="res://assets/ui/icons/exit.png" type="Texture" id=9]
 
 [node name="StartMenu" type="Control"]
 anchor_right = 1.0
@@ -14,16 +19,16 @@ __meta__ = {
 }
 
 [node name="Background" parent="." instance=ExtResource( 2 )]
-margin_left = 0.0
-margin_top = 0.0
-margin_right = 0.0
-margin_bottom = 0.0
+margin_left = 1.44162
+margin_top = 1.44159
+margin_right = 1.44165
+margin_bottom = 1.44159
 
 [node name="TakeASeat" type="TextureButton" parent="."]
-margin_left = 356.472
-margin_top = 165.629
-margin_right = 906.472
-margin_bottom = 296.629
+margin_left = 400.7
+margin_top = 259.677
+margin_right = 950.7
+margin_bottom = 390.677
 texture_normal = ExtResource( 4 )
 texture_hover = ExtResource( 3 )
 expand = true
@@ -31,4 +36,51 @@ stretch_mode = 4
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="GuessingText" parent="." instance=ExtResource( 5 )]
+margin_left = 162.111
+margin_top = 74.2471
+margin_right = 593.111
+margin_bottom = 188.247
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+custom_colors/font_color_uneditable = Color( 0.756863, 0.741176, 0.639216, 1 )
+text = "Highmeh's Cafe"
+editable = false
+context_menu_enabled = false
+shortcut_keys_enabled = false
+selecting_enabled = false
+
+[node name="TextureRect" type="TextureRect" parent="."]
+margin_left = 81.3201
+margin_top = 425.183
+margin_right = 342.32
+margin_bottom = 535.183
+texture = ExtResource( 7 )
+expand = true
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="."]
+margin_left = 202.28
+margin_top = 512.707
+margin_right = 394.28
+margin_bottom = 632.707
+theme = ExtResource( 6 )
+custom_colors/font_color = Color( 0.756863, 0.741176, 0.639216, 1 )
+text = "lucrecious
+kelp
+tslate
+
+For TOJam 2020"
+
+[node name="Exit" type="TextureButton" parent="."]
+margin_left = 618.69
+margin_top = 406.972
+margin_right = 710.69
+margin_bottom = 494.972
+texture_normal = ExtResource( 9 )
+texture_hover = ExtResource( 8 )
+expand = true
+stretch_mode = 4
 [connection signal="pressed" from="TakeASeat" to="." method="_on_TakeASeat_pressed"]
+[connection signal="pressed" from="Exit" to="." method="_on_Exit_pressed"]
