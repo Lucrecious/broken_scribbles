@@ -8,6 +8,7 @@
 [node name="StartMenu" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -18,53 +19,7 @@ margin_top = 0.0
 margin_right = 0.0
 margin_bottom = 0.0
 
-[node name="StartMenu" type="CenterContainer" parent="."]
-anchor_right = 1.0
-anchor_bottom = 1.0
-rect_min_size = Vector2( 1026, 600 )
-script = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="VBox" type="VBoxContainer" parent="StartMenu"]
-margin_left = 593.0
-margin_top = 317.0
-margin_right = 687.0
-margin_bottom = 402.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="RoomName" type="LineEdit" parent="StartMenu/VBox"]
-margin_right = 94.0
-margin_bottom = 24.0
-placeholder_text = "Room Name"
-caret_blink = true
-caret_blink_speed = 0.5
-
-[node name="CreateRoom" type="Button" parent="StartMenu/VBox"]
-margin_top = 28.0
-margin_right = 94.0
-margin_bottom = 48.0
-text = "Create Room"
-
-[node name="EnterRoom" type="Button" parent="StartMenu/VBox"]
-margin_top = 52.0
-margin_right = 94.0
-margin_bottom = 72.0
-text = "Enter Room"
-
-[node name="Rooms" type="ItemList" parent="StartMenu/VBox"]
-margin_top = 76.0
-margin_right = 94.0
-margin_bottom = 85.0
-auto_height = true
-__meta__ = {
-"_edit_group_": true
-}
-
-[node name="TextureButton" type="TextureButton" parent="."]
+[node name="TakeASeat" type="TextureButton" parent="."]
 margin_left = 356.472
 margin_top = 165.629
 margin_right = 906.472
@@ -73,5 +28,7 @@ texture_normal = ExtResource( 4 )
 texture_hover = ExtResource( 3 )
 expand = true
 stretch_mode = 4
-[connection signal="pressed" from="StartMenu/VBox/CreateRoom" to="StartMenu" method="_on_CreateRoom_pressed"]
-[connection signal="pressed" from="StartMenu/VBox/EnterRoom" to="StartMenu" method="_on_EnterRoom_pressed"]
+__meta__ = {
+"_edit_use_anchors_": false
+}
+[connection signal="pressed" from="TakeASeat" to="." method="_on_TakeASeat_pressed"]

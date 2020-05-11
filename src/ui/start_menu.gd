@@ -1,53 +1,26 @@
 extends Control
 
-onready var _room_name_edit := $VBox/RoomName as LineEdit
-onready var _create_room_button := $VBox/CreateRoom as Button
-onready var _enter_room_button := $VBox/EnterRoom as Button
-onready var _room_list_select := $VBox/Rooms as ItemList
+func _on_TakeASeat_pressed() -> void:
+	_find_a_room()
 
-func _ready() -> void:
-	Network.connect('entered_room_callback', self, '_entered_room')
-	Network.connect('room_added', self, '_on_room_added')
-	Network.connect('room_removed', self, '_on_room_removed')
-
-	_update_room_list()
-
-func _disable_ui():
-	_create_room_button.disabled = true
-	_enter_room_button.disabled = true
-	_room_name_edit.editable = false
-
-func _enable_ui():
-	_create_room_button.disabled = false
-	_enter_room_button.disabled = false
-	_room_name_edit.editable = true
-
-func _update_room_list() -> void:
-	_room_list_select.clear()
-	for id in Network.get_room_ids():
-		var nickname := Network.get_room(id).nickname()
-		_room_list_select.add_item(nickname)
+func _find_a_room():
+	var rooms := Network.get_room_ids()
+	var available := []
+	for id in rooms:
+		var room := Network.get_room(id)
+		if not room: continue
+		if room.game_started(): continue
+		if room.clients().size() > 7: continue
+		available.append(room)
 	
-func _on_room_added(_room_id := '') -> void:
-	_update_room_list()
-
-func _on_room_removed(_room_id := '') -> void:
-	_update_room_list()
-
-func _entered_room(success : bool, room_id : String, reason : int) -> void:
-	call_deferred('_enable_ui')
-
-func _on_CreateRoom_pressed() -> void:
-	Network.rpc_id(Network.server_id, 'create_room', _room_name_edit.text)
-	_disable_ui()
+	if available.empty():
+		Network.rpc_id(Network.server_id, 'create_room', '')
+		return
 	
-func _on_EnterRoom_pressed() -> void:
-	var items := _room_list_select.get_selected_items()
-	if items.empty(): return
+	var room := available[randi() % available.size()] as Room
+	if not room:
+		assert(false)
+		return
 	
-	var room_ids := Network.get_room_ids()
-	if items[0] >= room_ids.size(): return
-	var room_id := room_ids[items[0]] as String
-	
-	Network.rpc_id(Network.server_id, 'enter_room', room_id)
-	_disable_ui()
+	Network.rpc_id(Network.server_id, 'enter_room', room.id())
+

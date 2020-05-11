@@ -15,6 +15,10 @@ var _nickname := ''
 var _clients := []
 var _client_2_nickname := {}
 
+remotesync var _game_started := false
+func game_started() -> bool:
+	return _game_started
+
 var _draw_sec_index := Constants.DEFAULT_DRAW_SECOND_INDEX as int
 
 onready var _game := preload('res://src/game/game.tscn')
@@ -65,6 +69,7 @@ func _play_game() -> void:
 	var sender_id := get_tree().get_rpc_sender_id()
 	if _clients[0] != sender_id: return
 
+	rset('_game_started', true)
 	_add_game()
 
 master func leave_room() -> void:
