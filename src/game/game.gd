@@ -100,8 +100,8 @@ func _on_phase_changed(old_phase : int, new_phase : int) -> void:
 	_phase_timer.wait_time = _get_wait_time(30)
 
 	if new_phase == Phase_ChooseWord: _phase_timer.wait_time = _get_wait_time(10)
-	if new_phase == Phase_Draw: _phase_timer.wait_time = _get_wait_time(5)#Constants.get_draw_seconds(_draw_sec_index))
-	if new_phase == Phase_Guess: _phase_timer.wait_time = _get_wait_time(5)#30)
+	if new_phase == Phase_Draw: _phase_timer.wait_time = _get_wait_time(Constants.get_draw_seconds(_draw_sec_index))
+	if new_phase == Phase_Guess: _phase_timer.wait_time = _get_wait_time(30)
 
 	var phases := int(_players.size() / 2.0)
 	var show_scribble_time := Constants.ShowGuessSec * (phases + 1) + Constants.ShowGuessSec * phases
