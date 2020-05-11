@@ -2,6 +2,9 @@ extends Reference
 
 class_name Constants
 
+const ShowPictureSec := 5.0
+const ShowGuessSec := 5.0
+
 const VALID_DRAW_SECONDS := [15.0, 30.0, 60.0, 90.0]
 const DEFAULT_DRAW_SECOND_INDEX := 1
 static func get_draw_seconds(index : int) -> float:

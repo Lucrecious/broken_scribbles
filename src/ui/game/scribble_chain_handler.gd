@@ -2,9 +2,6 @@ extends Node
 
 signal show_chain_part(part)
 
-export(float) var sec_per_words := 5
-export(float) var sec_per_picture := 5
-
 var _scribble_chain := []
 
 var _started := false
@@ -36,8 +33,8 @@ func total_time() -> float:
 	
 	var count := 0.0
 	for e in _scribble_chain:
-		if e is String: count += sec_per_words
-		if e is Dictionary: count += sec_per_picture
+		if e is String: count += Constants.ShowGuessSec
+		if e is Dictionary: count += Constants.ShowPictureSec
 	
 	return count
 
@@ -45,8 +42,8 @@ func _ready() -> void:
 	_word_timer.connect('timeout', self, '_finished_show')
 	_draw_timer.connect('timeout', self, '_finished_show')
 	
-	_word_timer.wait_time = sec_per_words
-	_draw_timer.wait_time = sec_per_picture
+	_word_timer.wait_time = Constants.ShowGuessSec
+	_draw_timer.wait_time = Constants.ShowPictureSec
 
 func _finished_show() -> bool:
 	_index_part += 1

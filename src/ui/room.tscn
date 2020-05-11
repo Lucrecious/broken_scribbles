@@ -1,11 +1,10 @@
-[gd_scene load_steps=16 format=2]
+[gd_scene load_steps=15 format=2]
 
 [ext_resource path="res://src/ui/room.gd" type="Script" id=1]
 [ext_resource path="res://assets/ui/borders/border_c.tscn" type="PackedScene" id=2]
 [ext_resource path="res://src/ui/game.gd" type="Script" id=3]
 [ext_resource path="res://src/ui/drawing_canvas.tscn" type="PackedScene" id=4]
 [ext_resource path="res://assets/ui/background.tscn" type="PackedScene" id=5]
-[ext_resource path="res://assets/ui/borders/border_a.tscn" type="PackedScene" id=6]
 [ext_resource path="res://assets/ui/header/header_a.tscn" type="PackedScene" id=7]
 [ext_resource path="res://src/ui/pallet/pallet.tscn" type="PackedScene" id=8]
 [ext_resource path="res://src/ui/guessing_text.tscn" type="PackedScene" id=9]
@@ -39,13 +38,6 @@ __meta__ = {
 "_edit_lock_": true,
 "_edit_use_anchors_": false
 }
-
-[node name="RoomInfoBorder" parent="Game" instance=ExtResource( 6 )]
-margin_left = 1356.5
-margin_top = -61.0935
-margin_right = 1836.5
-margin_bottom = 418.907
-rect_scale = Vector2( 0.5, 0.5 )
 
 [node name="Pallet" type="HBoxContainer" parent="Game"]
 margin_left = 38.0
@@ -102,54 +94,6 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="InfoPanel" type="Panel" parent="."]
-margin_left = 1123.41
-margin_top = -289.014
-margin_right = 1303.41
-margin_bottom = -89.0141
-__meta__ = {
-"_edit_group_": true,
-"_edit_use_anchors_": false
-}
-
-[node name="Nickname" type="Label" parent="InfoPanel"]
-margin_left = 10.0
-margin_top = 10.0
-margin_right = 62.0
-margin_bottom = 14.0
-text = "nickname"
-max_lines_visible = 1
-
-[node name="Players" type="ItemList" parent="InfoPanel"]
-margin_left = 10.0
-margin_top = 40.0
-margin_right = 84.0
-margin_bottom = 57.0
-auto_height = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Buttons" type="VBoxContainer" parent="InfoPanel"]
-margin_left = 100.0
-margin_top = 10.0
-margin_right = 165.45
-margin_bottom = 55.2015
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Play" type="Button" parent="InfoPanel/Buttons"]
-margin_right = 65.0
-margin_bottom = 20.0
-text = "Play"
-
-[node name="TimeCycle" type="Button" parent="InfoPanel/Buttons"]
-margin_top = 24.0
-margin_right = 65.0
-margin_bottom = 44.0
-text = "Time"
-
 [node name="DrawingBorder" parent="." instance=ExtResource( 2 )]
 margin_left = 181.765
 margin_top = 199.786
@@ -182,8 +126,6 @@ margin_bottom = -57.7
 [connection signal="text_entered" from="Game/Header" to="Game" method="_on_Header_text_entered"]
 [connection signal="show_chain_part" from="Game/ScribbleChainHandler" to="Game" method="_on_ScribbleChainHandler_show_chain_part"]
 [connection signal="pressed" from="LeaveRoomButton" to="." method="_on_LeaveRoomButton_pressed"]
-[connection signal="pressed" from="InfoPanel/Buttons/Play" to="." method="_on_Play_pressed"]
-[connection signal="pressed" from="InfoPanel/Buttons/TimeCycle" to="." method="_on_TimeCycle_pressed"]
 [connection signal="color_picked" from="Pallet" to="Game" method="_on_Pallet_color_picked"]
 [connection signal="eraser_picked" from="Pallet" to="Game" method="_on_Pallet_eraser_picked"]
 [connection signal="pencil_picked" from="Pallet" to="Game" method="_on_Pallet_pencil_picked"]
