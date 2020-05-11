@@ -86,6 +86,13 @@ master func send_chat_message(message : String) -> void:
 		_play_game()
 		return
 
+	if message.to_lower().strip_edges().begins_with('/time'):
+		var command := message.split(' ', false)
+		if command.size() < 2: return
+		_change_drawing_time(int(command[1]))
+		message = 'Drawing time changed to %f.2' % Constants.get_draw_seconds(int(command[1]))
+		
+
 	for id in _clients:
 		rpc_id(id, '_receive_message', sender_id, message)
 

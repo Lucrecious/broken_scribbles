@@ -10,6 +10,12 @@ var _time_left := 10.0
 onready var _icon := $Icon
 onready var _display := $Display
 
+func hide_numbers() -> void:
+	_display.visible = false
+
+func show_numbers() -> void:
+	_display.visible = true
+
 func clear() -> void:
 	_display.text = ''
 	_icon.frame = FRAMES - 1

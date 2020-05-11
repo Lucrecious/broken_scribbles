@@ -59,7 +59,7 @@ func _update_usernames(_id := 0) -> void:
 	var nicknames := []
 	for id in _room.clients():
 		var nickname := _room.client_nickname(id)
-		nicknames.append('%s\t' % nickname)
+		nicknames.append('%s\t' % nickname.replace('_', ' '))
 
 	_players.update_list(nicknames)
 

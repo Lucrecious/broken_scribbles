@@ -36,6 +36,7 @@ func _phase_timer_started() -> void:
 
 func _phase_timeout() -> void:
 	_drawing_board.drawable = false
+	_header.editable = false
 
 	if _game.get_phase() == Game.Phase_Draw:
 		_game.rpc_id(Network.server_id, 'update_current_drawing', _drawing_board.get_image_info())
@@ -68,6 +69,8 @@ func _phase_changed(old_phase : int, new_phase : int) -> void:
 		return
 
 	if new_phase == Game.Phase_ShowScribbleChain:
+		_time_left_label.hide_numbers()
+		_time_left_label.modulate = Color.coral
 		_header.editable = false
 		_header.text = ''
 		_drawing_board.drawable = false
@@ -81,7 +84,7 @@ func _phase_changed(old_phase : int, new_phase : int) -> void:
 
 func _on_draw_guess() -> void:
 	_header.editable = false
-	_header.text = _game.get_local_guess()
+	_header.text = _game.get_local_guess().replace('_', ' ')
 
 	_drawing_board.drawable = true
 	_drawing_board.clear()
@@ -113,7 +116,7 @@ func _on_done_show_scribble_chain() -> void:
 	_scribble_chain_handler.start()
 
 	_scribble_chain.clear()
-
+	
 func _on_done_phase_guess() -> void:
 	_game.rpc_id(Network.server_id, 'done_guess', _header.text)
 
@@ -159,7 +162,7 @@ func _on_ScribbleChainHandler_show_chain_part(part) -> void:
 	if part is Dictionary:
 		_drawing_board.set_image(part)
 	if part is String:
-		_header.text = part
+		_header.text = part.replace('_', ' ')
 	
 	# This just skips the first part...
 	if not _from_arrow.visible:
