@@ -133,7 +133,8 @@ master func enter_room(room_id : String) -> void:
 	rpc('_attempt_enter_room', sender_id, room_id, name)
 
 func _create_random_name() -> String:
-	var adjective := Constants.FeelingAdjectives.keys()[randi() % Constants.FeelingAdjectives.size()] as String
+	var Constants = preload('res://src/game/constants.gd')
+	var adjective := Constants.FeelingsAdjectives.keys()[randi() % Constants.FeelingAdjectives.size()] as String
 	adjective = adjective.to_lower()
 	
 	var animal := Constants.Animals.keys()[randi() % Constants.Animals.size()] as String
