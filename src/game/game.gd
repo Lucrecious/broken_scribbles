@@ -275,7 +275,7 @@ func _finish_guessing_phase() -> void:
 		var holding_id := _holding_map[id] as int
 
 		if _guesses[holding_id].size() <= _guess_round:
-			_guesses[holding_id].append('( no guess ]= )')
+			_guesses[holding_id].append('( no guess )')
 
 		rpc_id(id, '_on_done_guessing', _guesses[holding_id][-1])
 	

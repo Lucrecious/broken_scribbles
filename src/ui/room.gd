@@ -35,7 +35,7 @@ func _ready() -> void:
 	_setup_leader()
 
 func _send_info(_id : int) -> void:
-	send_chat_message('/play to start game')
+	send_chat_message("'/play' starts")
 
 func _on_received_message(from_id : int, message : String) -> void:
 	var names := _room.client_nickname(from_id).split(' ', false)

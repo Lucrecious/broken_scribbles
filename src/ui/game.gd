@@ -24,6 +24,8 @@ func init(room : Room, game : Game) -> void:
 	_game.connect('received_scribble_chain', self, '_on_received_scribble_chain')
 	_game.connect('phase_timeout', self, '_phase_timeout')
 	_game.connect('phase_timer_started', self, '_phase_timer_started')
+
+	_player_list.select(_game.players().find(get_tree().get_network_unique_id()))
 	
 func _ready() -> void:
 	_time_left_label.clear()
@@ -55,6 +57,15 @@ func _phase_changed(old_phase : int, new_phase : int) -> void:
 		_pick_a_word.visible = false
 	
 	_header.placeholder_text = ''
+
+	if new_phase == Game.Phase_End:
+		_header.editable = true
+		_header.placeholder_text = 'Type anything...'
+		_header.text = ''
+		_drawing_board.clear()
+		_drawing_board.drawable = true
+		_player_list.select(_game.players().find(get_tree().get_network_unique_id()))
+		return
 
 	if new_phase == Game.Phase_ChooseWord:
 		_on_choose_word()
@@ -116,7 +127,7 @@ func _on_done_show_scribble_chain() -> void:
 	_scribble_chain_handler.start()
 
 	_scribble_chain.clear()
-	
+
 func _on_done_phase_guess() -> void:
 	_game.rpc_id(Network.server_id, 'done_guess', _header.text)
 

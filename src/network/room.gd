@@ -90,7 +90,7 @@ master func send_chat_message(message : String) -> void:
 		var command := message.split(' ', false)
 		if command.size() < 2: return
 		_change_drawing_time(int(command[1]))
-		message = 'Drawing time changed to %f.2' % Constants.get_draw_seconds(int(command[1]))
+		message = 'draw sec: %d' % int(Constants.get_draw_seconds(int(command[1])))
 		
 
 	for id in _clients:
