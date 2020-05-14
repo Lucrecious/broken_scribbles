@@ -3,7 +3,7 @@ extends Node2D
 #const DEFAULT_IP := '127.0.0.1'
 const DEFAULT_IP := '18.222.136.215'
 const DEFAULT_PORT := 31400
-const MAX_PLAYERS := 10
+const MAX_PLAYERS := 100
 
 const cert_location := 'user://cert.crt'
 const private_key_location := 'user://private.key'
