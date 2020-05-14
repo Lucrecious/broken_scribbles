@@ -25,8 +25,8 @@ func set_chain(scribble_chain : Array) -> void:
 	_started = false
 	_scribble_chain.clear()
 	for e in scribble_chain:
-		if not e is String && not e is Dictionary: return
-		_scribble_chain.append(e)
+		if not e.part is String && not e.part is Dictionary: return
+		_scribble_chain.append(e.part)
 
 func total_time() -> float:
 	if _scribble_chain.empty(): return 0.0

@@ -9,9 +9,13 @@ const Phase_Guess := 3
 const Phase_End := 4
 const Phase_ShowScribbleChain := 5
 
+const PartTemplate := {
+	author = -1,
+	part = null,
+}
+
 signal player_left(id)
 signal phase_changed(old_phase, new_phase)
-signal received_scribble_chain(player_id)
 signal phase_timeout
 signal phase_timer_started
 
@@ -22,8 +26,7 @@ var _disconnected := {}
 var _players := []
 var _scribble_chains := {}
 
-var _drawings := {}
-var _guesses := {}
+var _parts := {}
 var _words := {}
 
 var _holding_map := {}
@@ -33,9 +36,6 @@ var _word_choices := {}
 var _phases := []
 var _phase := 0
 
-var _draw_round := 0
-var _guess_round := 0
-
 onready var _phase_timer := $PhaseTimer as Timer
 
 var _draw_sec_index := Constants.DEFAULT_DRAW_SECOND_INDEX
@@ -43,17 +43,23 @@ var _draw_sec_index := Constants.DEFAULT_DRAW_SECOND_INDEX
 func players() -> Array:
 	return _players.duplicate()
 
+func get_parts(id : int) -> Array:
+	if not id in _players: return []
+	return _parts[id]
+
 func init(room_settings : Dictionary) -> void:
 	for i in range(room_settings.players.size()):
 		var id := room_settings.players[i] as int
 		_players.push_back(id)
 
-		_drawings[id] = []
-		_guesses[id] = []
+		_parts[id] = []
 
 		_holding_map[id] = id
 	
 	_draw_sec_index = room_settings.get('draw_sec_index', -1)
+
+func create_part(author : int, part) -> Dictionary:
+	return { author = author, part = part }
 
 func _ready():
 	get_tree().connect('network_peer_disconnected', self, '_player_left')
@@ -73,8 +79,23 @@ func phase_timer_time_wait() -> float:
 func is_phase_timer_ticking() -> bool:
 	return not _phase_timer.is_stopped()
 
+func holding_part() -> Dictionary:
+	if is_network_master(): return {}
+	var holding_id := _holding_map[get_tree().get_network_unique_id()] as int
+	if not holding_id in _parts: return {}
+	if _parts[holding_id].empty(): return {}
+
+	return _parts[holding_id][-1]
+
 func _phase_timeout() -> void:
 	emit_signal('phase_timeout')
+
+	for id in _players:
+		var next_phase = get_phase(1)
+		if next_phase == Phase_Guess:
+			_parts[id] = create_part(id, '* No Guess: Draw Anything *')
+		elif next_phase == Phase_Draw:
+			_parts[id] = create_part(id, {})
 	
 	if get_phase() == Phase_End:
 		_phase_timer.stop()
@@ -82,11 +103,8 @@ func _phase_timeout() -> void:
 
 	if not is_network_master(): return
 
-	if get_phase() == Phase_Draw:
-		_finish_drawing_phase()
-	
-	if get_phase() == Phase_Guess:
-		_finish_guessing_phase()
+	if get_phase() == Phase_Draw || get_phase() == Phase_Guess:
+		_finish_draw_or_guess_phase()
 	
 	if get_phase() == Phase_ChooseWord:
 		_finish_pick_word_phase()
@@ -110,67 +128,19 @@ func _on_phase_changed(old_phase : int, new_phase : int) -> void:
 	_phase_timer.start()
 	emit_signal('phase_timer_started')
 
-	if not is_network_master(): return
-
-	if new_phase == Phase_ShowScribbleChain:
-		_send_one_scribble_chain_in_parts()
-
 # The server waits an extra X seconds before switching phases...
 # This gives the client time to send in their data before the phase ends
 # It also ensures that the player feels like the timer and audio align perfectly
 func _get_wait_time(sec : float) -> float:
 	return sec if not is_network_master() else sec + 5
 
-func _send_one_scribble_chain_in_parts() -> void:
-	var player_id := _players[_scribble_chains.size()] as int
-
-	var parts := _interlace_guesses_and_drawings(player_id)
-
-	for i in range(parts.size()):
-		rpc_players('_add_scribble_chain_part', [parts[i], player_id, i >= parts.size() - 1])
-
-remotesync func _add_scribble_chain_part(guess_or_drawing, player_id : int, is_end : bool) -> void:
-	if not player_id in _scribble_chains:
-		_scribble_chains[player_id] = []
-	
-	_scribble_chains[player_id].append(guess_or_drawing)
-
-	if not is_end: return
-
-	emit_signal('received_scribble_chain', player_id)
-	
-func _interlace_guesses_and_drawings(player_id : int) -> Array:
-	if not player_id in _guesses: return []
-	if not player_id in _drawings: return []
-
-	var drawings_index := 0
-	var guesses_index := 0
-	var use_drawing := true
-
-	var parts := []
-
-	for _i in range(_drawings[player_id].size() + _guesses[player_id].size()):
-		use_drawing = not use_drawing
-
-		if (not use_drawing && guesses_index < _guesses.size()) || drawings_index >= _drawings.size():
-			parts.append(_guesses[player_id][guesses_index])
-			guesses_index += 1
-			continue
-
-		if (use_drawing && drawings_index < _drawings.size()) || guesses_index >= _guesses.size():
-			parts.append(_drawings[player_id][drawings_index])
-			drawings_index += 1
-			continue
-	
-	return parts
-
 func _player_left(id : int) -> void:
 	if not id in _players: return
 	_disconnected[id] = true
 	emit_signal('player_left', id)
 
-func get_phase() -> int:
-	if not _valid_phase(): return Phase_None
+func get_phase(seek := 0) -> int:
+	if not _valid_phase(seek): return Phase_None
 	return _phases[_phase]
 
 func rpc_players(method : String, args := []) -> void:
@@ -220,72 +190,38 @@ func _finish_pick_word_phase() -> void:
 	if _players.size() % 2 != 0:
 		rpc_players('_pass')
 
-master func update_current_drawing(image_info : Dictionary) -> void:
+master func update_current_part(part) -> void:
+	if part is String: part = part.strip_edges()
+	if part is String and part.empty(): return
+	if get_phase() != Phase_Draw and get_phase() != Phase_Guess: return
+	if get_phase() == Phase_Draw and not DrawingCanvas.is_valid_image_info(part): return
+	if get_phase() == Phase_Guess and not part is String: return
+
 	var sender_id := get_tree().get_rpc_sender_id()
 	if not _is_valid_request(sender_id, Phase_Draw): return
 
 	var holding_id := _holding_map[sender_id] as int
-	if _drawings[holding_id].size() <= _draw_round:
-		_drawings[holding_id].append(image_info)
-	else:
-		_drawings[holding_id][_draw_round] = image_info
+	_parts[holding_id][-1] = create_part(sender_id, part)
 
-func _finish_drawing_phase() -> void:
-	if not is_network_master(): return
 
-	rpc_players('_pass')
-	
-	for id in _players:
-		var holding_id := _holding_map[id] as int
-
-		if _drawings[holding_id].size() <= _draw_round:
-			_drawings[holding_id].append({})
-
-		rpc_id(id, '_on_done_drawing', _drawings[holding_id][-1])
-
-master func done_guess(guess : String) -> void:
-	if guess.strip_edges().empty(): return
-	var sender_id := get_tree().get_rpc_sender_id()
-	if not _is_valid_request(sender_id, Phase_Guess): return
-	
-	var holding_id := _holding_map[sender_id] as int
-	if _guesses[holding_id].size() <= _guess_round:
-		_guesses[holding_id].append(guess)
-	else:
-		_guesses[holding_id][_guess_round] = guess
-
-	if not _players_all_guessed(): return
-
-	_finish_guessing_phase()
-
-func _players_all_guessed() -> bool:
-	for id in _players:
-		var holding_id := _holding_map[id] as int
-		if _guesses[holding_id].size() <= _guess_round:
-			return false
-	
-	return true
-
-func _finish_guessing_phase() -> void:
+func _finish_draw_or_guess_phase() -> void:
 	if not is_network_master(): return
 
 	rpc_players('_pass')
 
 	for id in _players:
-		var holding_id := _holding_map[id] as int
-
-		if _guesses[holding_id].size() <= _guess_round:
-			_guesses[holding_id].append('( no guess )')
-
-		rpc_id(id, '_on_done_guessing', _guesses[holding_id][-1])
+		rpc_players('_update_part',[id, _parts[id][-1]])
+	
+remotesync func _update_part(id : int, part : Dictionary) -> void:
+	_parts[id] = part
 	
 master func done_show_scribble_chain() -> void:
 	var sender_id := get_tree().get_rpc_sender_id()
 	if not _is_valid_request(sender_id, Phase_ShowScribbleChain): return
 
 remotesync func _init_guesses() -> void:
-	for id in _words: _guesses[id].append(_words[id])
-	_guess_round = 1
+	for id in _words:
+		_parts[id].append(create_part(id, _words[id]))
 
 remotesync func _set_word_choice(id : int, word : String) -> void:
 	_words[id] = word
@@ -332,42 +268,14 @@ remotesync func _pass() -> void:
 	for i in range(ids.size()):
 		_holding_map[ids[i]] = vs[i]
 
-remotesync func _on_done_drawing(image_info : Dictionary) -> void:
-	var id := get_tree().get_network_unique_id()
-	var holding_id := _holding_map[id] as int
-	_drawings[holding_id].append(image_info)
-
-func get_local_image() -> Dictionary:
-	var holding_id := _holding_map[get_tree().get_network_unique_id()] as int
-	if _drawings[holding_id].empty(): return {}
-
-	var info := _drawings[holding_id][-1] as Dictionary
-	return info
-
-remotesync func _on_done_guessing(guess : String) -> void:
-	var id := get_tree().get_network_unique_id()
-	var holding_id := _holding_map[id] as int
-	_guesses[holding_id].append(guess)
-
-func get_local_guess() -> String:
-	var holding_id := _holding_map[get_tree().get_network_unique_id()] as int
-	if _guesses[holding_id].empty(): return ''
-	return _guesses[holding_id][-1]
-
-func _valid_phase():
-	return _phase >= 0 && _phase < _phases.size()
+func _valid_phase(seek := 0):
+	return _phase + seek >= 0 && _phase + seek < _phases.size()
 
 remotesync func _reset_game() -> void:
 	_phase = 0
 
 remotesync func _next_phase() -> void:
 	if _phase >= _phases.size() - 1: return
-
-	if get_phase() == Phase_Guess:
-		_guess_round += 1
-	elif get_phase() == Phase_Draw:
-		_draw_round += 1
-
 	_phase += 1
 	emit_signal('phase_changed', _phases[_phase - 1], _phases[_phase])
 
