@@ -114,6 +114,7 @@ func _on_phase_changed(old_phase : int, new_phase : int) -> void:
 		elif new_phase == Phase_Draw:
 			_parts[id].append(create_part(id, {}))
 
+	prints('on_phase_changed', _parts)
 	_phase_timer.wait_time = _get_wait_time(30)
 
 	if new_phase == Phase_ChooseWord: _phase_timer.wait_time = _get_wait_time(10)
