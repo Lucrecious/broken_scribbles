@@ -16,7 +16,6 @@ const PartTemplate := {
 
 signal player_left(id)
 signal phase_changed(old_phase, new_phase)
-signal received_scribble_chain(player_id)
 signal phase_timeout
 signal phase_timer_started
 
@@ -43,6 +42,10 @@ var _draw_sec_index := Constants.DEFAULT_DRAW_SECOND_INDEX
 
 func players() -> Array:
 	return _players.duplicate()
+
+func get_parts(id : int) -> Array:
+	if not id in _players: return []
+	return _parts[id]
 
 func init(room_settings : Dictionary) -> void:
 	for i in range(room_settings.players.size()):
@@ -125,34 +128,11 @@ func _on_phase_changed(old_phase : int, new_phase : int) -> void:
 	_phase_timer.start()
 	emit_signal('phase_timer_started')
 
-	if not is_network_master(): return
-
-	if new_phase == Phase_ShowScribbleChain:
-		_send_one_scribble_chain_in_parts()
-
 # The server waits an extra X seconds before switching phases...
 # This gives the client time to send in their data before the phase ends
 # It also ensures that the player feels like the timer and audio align perfectly
 func _get_wait_time(sec : float) -> float:
 	return sec if not is_network_master() else sec + 5
-
-func _send_one_scribble_chain_in_parts() -> void:
-	var player_id := _players[_scribble_chains.size()] as int
-
-	var parts :=[]# _interlace_guesses_and_drawings(player_id)
-
-	for i in range(parts.size()):
-		rpc_players('_add_scribble_chain_part', [parts[i], player_id, i >= parts.size() - 1])
-
-remotesync func _add_scribble_chain_part(guess_or_drawing, player_id : int, is_end : bool) -> void:
-	if not player_id in _scribble_chains:
-		_scribble_chains[player_id] = []
-	
-	_scribble_chains[player_id].append(guess_or_drawing)
-
-	if not is_end: return
-
-	emit_signal('received_scribble_chain', player_id)
 
 func _player_left(id : int) -> void:
 	if not id in _players: return

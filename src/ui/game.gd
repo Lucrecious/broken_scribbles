@@ -21,7 +21,6 @@ func init(room : Room, game) -> void:
 	_room = room;
 	_game = game
 	_game.connect('phase_changed', self, '_phase_changed')
-	_game.connect('received_scribble_chain', self, '_on_received_scribble_chain')
 	_game.connect('phase_timeout', self, '_phase_timeout')
 	_game.connect('phase_timer_started', self, '_phase_timer_started')
 
@@ -47,10 +46,6 @@ func _phase_timeout() -> void:
 	if _game.get_phase() == Game.Phase_Guess:
 		_game.rpc_id(Network.server_id, 'update_current_part', _header.text)
 		return
-
-func _on_received_scribble_chain(player_id : int) -> void:
-	_scribble_chain = _game._scribble_chains[player_id]
-	_scribble_chain_id = player_id
 
 func _phase_changed(old_phase : int, new_phase : int) -> void:
 	if old_phase == Game.Phase_ChooseWord:
@@ -128,16 +123,18 @@ func _on_choose_word() -> void:
 func _word_picked(index : int) -> void:
 	_game.rpc_id(Network.server_id, 'pick_word', get_tree().get_network_unique_id(), index)
 
-var _scribble_chain_id := -1
-var _scribble_chain := []
+var _show_scribble_chain_index := 0
 func _on_done_show_scribble_chain() -> void:
-	if _scribble_chain.empty(): return
-	
-	_player_list.select(_game.players().find(_scribble_chain_id))
-	_scribble_chain_handler.set_chain(_scribble_chain)
-	_scribble_chain_handler.start()
+	var parts := _game.get_parts(_show_scribble_chain_index) as Array
 
-	_scribble_chain.clear()
+	if parts.empty(): return
+
+	_player_list.select(_game.players().find(_game.players()[_show_scribble_chain_index]))
+
+	_show_scribble_chain_index += 1
+	
+	_scribble_chain_handler.set_chain(parts)
+	_scribble_chain_handler.start()
 
 func _on_DrawingCanvas_mouse_entered() -> void:
 	_drawing_board.set_cursor_as_brush()
