@@ -52,7 +52,7 @@ func init(room_settings : Dictionary) -> void:
 		var id := room_settings.players[i] as int
 		_players.push_back(id)
 
-		_parts[id] = []
+		_parts[id] = [ create_part(id, '* place holder *') ]
 
 		_holding_map[id] = id
 	
@@ -92,7 +92,7 @@ func _phase_timeout() -> void:
 
 	for id in _players:
 		var next_phase = get_phase(1)
-		if next_phase == Phase_Guess || next_phase == Phase_ChooseWord:
+		if next_phase == Phase_Guess:
 			_parts[id].append(create_part(id, '* No Guess: Draw Anything *'))
 		elif next_phase == Phase_Draw:
 			_parts[id].append(create_part(id, {}))
