@@ -213,7 +213,7 @@ func _finish_draw_or_guess_phase() -> void:
 		rpc_players('_update_part',[id, _parts[id][-1]])
 	
 remotesync func _update_part(id : int, part : Dictionary) -> void:
-	_parts[id] = part
+	_parts[id][-1] = part
 	
 master func done_show_scribble_chain() -> void:
 	var sender_id := get_tree().get_rpc_sender_id()
