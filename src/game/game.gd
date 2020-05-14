@@ -92,7 +92,7 @@ func _phase_timeout() -> void:
 
 	for id in _players:
 		var next_phase = get_phase(1)
-		if next_phase == Phase_Guess:
+		if next_phase == Phase_Guess || next_phase == Phase_ChooseWord:
 			_parts[id].append(create_part(id, '* No Guess: Draw Anything *'))
 		elif next_phase == Phase_Draw:
 			_parts[id].append(create_part(id, {}))
