@@ -28,7 +28,6 @@ func _ready() -> void:
 	_room.connect('client_left', self, '_on_client_left')
 	_room.connect('game_created', self, '_on_game_created')
 	_room.connect('received_message', self, '_on_received_message')
-	_room.connect('draw_sec_index_changed', self, '_on_draw_sec_index_changed')
 	
 	_update_usernames()
 

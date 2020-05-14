@@ -54,7 +54,7 @@ func get_image_from(info : Dictionary) -> Image:
 static func is_valid_image_info(info : Dictionary) -> bool:
 	for key in ImageInfoTemplate:
 		if not key in info: return false
-		if info[key] is ImageInfoTemplate[key].type: return false
+		#if info[key] is ImageInfoTemplate[key].type: return false
 	
 	return true
 

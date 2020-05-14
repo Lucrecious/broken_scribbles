@@ -108,13 +108,11 @@ func _on_phase_changed(old_phase : int, new_phase : int) -> void:
 	_phase_timer.stop()
 	if new_phase == Phase_End: return
 	
-	if new_phase == Phase_Draw or new_phase == Phase_Guess:
-		for id in _players:
-			var next_phase = get_phase(1)
-			if next_phase == Phase_Guess:
-				_parts[id].append(create_part(id, '* No Guess: Draw Anything *'))
-			elif next_phase == Phase_Draw:
-				_parts[id].append(create_part(id, {}))
+	for id in _players:
+		if new_phase == Phase_Guess:
+			_parts[id].append(create_part(id, '* No Guess: Draw Anything *'))
+		elif new_phase == Phase_Draw:
+			_parts[id].append(create_part(id, {}))
 
 	_phase_timer.wait_time = _get_wait_time(30)
 
