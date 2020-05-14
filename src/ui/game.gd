@@ -125,11 +125,15 @@ func _word_picked(index : int) -> void:
 
 var _show_scribble_chain_index := 0
 func _on_done_show_scribble_chain() -> void:
-	var parts := _game.get_parts(_show_scribble_chain_index) as Array
+	if _show_scribble_chain_index >= _game.players().size() or _show_scribble_chain_index < 0: return
+	
+	var id := _game.players()[_show_scribble_chain_index] as int
+	
+	var parts := _game.get_parts(id) as Array
 
 	if parts.empty(): return
 
-	_player_list.select(_game.players().find(_game.players()[_show_scribble_chain_index]))
+	_player_list.select(_game.players().find(id))
 
 	_show_scribble_chain_index += 1
 	
