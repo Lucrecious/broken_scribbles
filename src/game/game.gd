@@ -204,7 +204,7 @@ master func update_current_part(part) -> void:
 	if get_phase() == Phase_Guess and not part is String: return
 
 	var sender_id := get_tree().get_rpc_sender_id()
-	if not _is_valid_request(sender_id, Phase_Draw): return
+	if not _is_valid_request(sender_id, get_phase()): return
 
 	var holding_id := _holding_map[sender_id] as int
 	_parts[holding_id][-1] = create_part(sender_id, part)
