@@ -89,13 +89,6 @@ func holding_part() -> Dictionary:
 
 func _phase_timeout() -> void:
 	emit_signal('phase_timeout')
-
-	for id in _players:
-		var next_phase = get_phase(1)
-		if next_phase == Phase_Guess:
-			_parts[id].append(create_part(id, '* No Guess: Draw Anything *'))
-		elif next_phase == Phase_Draw:
-			_parts[id].append(create_part(id, {}))
 	
 	if get_phase() == Phase_End:
 		_phase_timer.stop()
@@ -114,6 +107,14 @@ func _phase_timeout() -> void:
 func _on_phase_changed(old_phase : int, new_phase : int) -> void:
 	_phase_timer.stop()
 	if new_phase == Phase_End: return
+	
+	if new_phase == Phase_Draw or new_phase == Phase_Guess:
+		for id in _players:
+			var next_phase = get_phase(1)
+			if next_phase == Phase_Guess:
+				_parts[id].append(create_part(id, '* No Guess: Draw Anything *'))
+			elif next_phase == Phase_Draw:
+				_parts[id].append(create_part(id, {}))
 
 	_phase_timer.wait_time = _get_wait_time(30)
 
@@ -277,6 +278,7 @@ remotesync func _reset_game() -> void:
 remotesync func _next_phase() -> void:
 	if _phase >= _phases.size() - 1: return
 	_phase += 1
+			
 	emit_signal('phase_changed', _phases[_phase - 1], _phases[_phase])
 
 remotesync func _set_word_choices(word_choices : Dictionary) -> void:
