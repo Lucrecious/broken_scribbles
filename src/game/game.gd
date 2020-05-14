@@ -115,12 +115,6 @@ func _on_phase_changed(old_phase : int, new_phase : int) -> void:
 		for id in _players:
 			_parts[id].append(create_part(id, {}))
 
-	printt("parts on", get_tree().get_network_unique_id())
-	for id in _parts:
-		prints('on_phase_changed', _parts[id])
-	
-	print('.....')
-
 	_phase_timer.wait_time = _get_wait_time(30)
 
 	if new_phase == Phase_ChooseWord: _phase_timer.wait_time = _get_wait_time(10)
