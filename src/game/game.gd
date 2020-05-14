@@ -221,7 +221,7 @@ master func done_show_scribble_chain() -> void:
 
 remotesync func _init_guesses() -> void:
 	for id in _words:
-		_parts[id].append(create_part(id, _words[id]))
+		_parts[id][-1] = create_part(id, _words[id])
 
 remotesync func _set_word_choice(id : int, word : String) -> void:
 	_words[id] = word
