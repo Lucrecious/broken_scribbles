@@ -110,7 +110,7 @@ func _on_guess_drawing() -> void:
 
 	var part := _game.holding_part() as Dictionary
 	if part.part is Dictionary:
-		_drawing_board.set_image(_game.holding_part())
+		_drawing_board.set_image(part.part)
 	else:
 		_drawing_board.clear()
 

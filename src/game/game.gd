@@ -108,10 +108,11 @@ func _on_phase_changed(old_phase : int, new_phase : int) -> void:
 	_phase_timer.stop()
 	if new_phase == Phase_End: return
 	
-	for id in _players:
-		if new_phase == Phase_Guess:
+	if new_phase == Phase_Guess:
+		for id in _players:
 			_parts[id].append(create_part(id, '* No Guess: Draw Anything *'))
-		elif new_phase == Phase_Draw:
+	elif new_phase == Phase_Draw:
+		for id in _players:
 			_parts[id].append(create_part(id, {}))
 
 	printt("parts on", get_tree().get_network_unique_id())
