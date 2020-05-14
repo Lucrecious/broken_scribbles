@@ -17,7 +17,7 @@ onready var _pick_a_word := $PickAWord
 
 onready var _scribble_chain_handler := $ScribbleChainHandler
 
-func init(room : Room, game : Game) -> void:
+func init(room : Room, game) -> void:
 	_room = room;
 	_game = game
 	_game.connect('phase_changed', self, '_phase_changed')
@@ -41,11 +41,11 @@ func _phase_timeout() -> void:
 	_header.editable = false
 
 	if _game.get_phase() == Game.Phase_Draw:
-		_game.rpc_id(Network.server_id, 'update_current_drawing', _drawing_board.get_image_info())
+		_game.rpc_id(Network.server_id, 'update_current_part', _drawing_board.get_image_info())
 		return
 	
 	if _game.get_phase() == Game.Phase_Guess:
-		_game.rpc_id(Network.server_id, 'done_guess', _header.text)
+		_game.rpc_id(Network.server_id, 'update_current_part', _header.text)
 		return
 
 func _on_received_scribble_chain(player_id : int) -> void:
@@ -95,7 +95,13 @@ func _phase_changed(old_phase : int, new_phase : int) -> void:
 
 func _on_draw_guess() -> void:
 	_header.editable = false
-	_header.text = _game.get_local_guess().replace('_', ' ')
+
+	var part := _game.holding_part() as Dictionary
+	
+	if part.part is String:
+		_header.text = part.part.replace('_', ' ')
+	else:
+		_header.text = '* Error: Draw Anything *'
 
 	_drawing_board.drawable = true
 	_drawing_board.clear()
@@ -106,7 +112,12 @@ func _on_guess_drawing() -> void:
 	_header.text = ''
 
 	_drawing_board.drawable = false
-	_drawing_board.set_image(_game.get_local_image())
+
+	var part := _game.holding_part() as Dictionary
+	if part.part is Dictionary:
+		_drawing_board.set_image(_game.holding_part())
+	else:
+		_drawing_board.clear()
 
 func _on_choose_word() -> void:
 	_pick_a_word.visible = true
@@ -128,9 +139,6 @@ func _on_done_show_scribble_chain() -> void:
 
 	_scribble_chain.clear()
 
-func _on_done_phase_guess() -> void:
-	_game.rpc_id(Network.server_id, 'done_guess', _header.text)
-
 func _on_DrawingCanvas_mouse_entered() -> void:
 	_drawing_board.set_cursor_as_brush()
 
@@ -139,7 +147,7 @@ func _on_DrawingCanvas_mouse_exited() -> void:
 
 func _on_DrawingCanvas_canvas_changed() -> void:
 	if not _game: return
-	_game.rpc_unreliable_id(Network.server_id, 'update_current_drawing', _drawing_board.get_image_info())
+	_game.rpc_unreliable_id(Network.server_id, 'update_current_part', _drawing_board.get_image_info())
 
 func _on_UpdateTimerTick_timeout() -> void:
 	if not _game: return
@@ -190,5 +198,5 @@ func _on_Header_text_entered(new_text: String) -> void:
 	if new_text.strip_edges().empty(): return
 	if not _game: return
 	if _game.get_phase() != Game.Phase_Guess: return
-	_on_done_phase_guess()
 	_header.editable = false
+	_game.rpc_id(Network.server_id, 'update_current_part', _header.text)

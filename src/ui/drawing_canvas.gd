@@ -1,6 +1,15 @@
 extends TextureRect
 
+class_name DrawingCanvas
+
 signal canvas_changed
+
+const ImageInfoTemplate := {
+	bytes = PoolByteArray(),
+	format = int(),
+	uncompressed_size = int(),
+	size = Vector2(),
+}
 
 export(float, 1, 1000, .1) var pixel_scale_factor := 2.5
 
@@ -30,10 +39,7 @@ func set_image(info : Dictionary) -> bool:
 	return true
 
 func get_image_from(info : Dictionary) -> Image:
-	if not info.get('size') is Vector2: return null
-	if not info.get('uncompressed_size') is int: return null
-	if not info.get('format') is int: return null
-	if not info.get('bytes') is PoolByteArray: return null
+	if not is_valid_image_info(info): return null
 
 	var size := info.size as Vector2
 	var uncompressed_size := info.uncompressed_size as int
@@ -44,6 +50,13 @@ func get_image_from(info : Dictionary) -> Image:
 	image.create_from_data(int(size.x), int(size.y), false, format, bytes)
 
 	return image
+
+static func is_valid_image_info(info : Dictionary) -> bool:
+	for key in ImageInfoTemplate:
+		if not key in info: return false
+		if info[key] is ImageInfoTemplate[key].type: return false
+	
+	return true
 
 func get_image_info() -> Dictionary:
 	var image := texture.get_data() as Image

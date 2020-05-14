@@ -14,6 +14,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/game/constants.gd"
 }, {
+"base": "TextureRect",
+"class": "DrawingCanvas",
+"language": "GDScript",
+"path": "res://src/ui/drawing_canvas.gd"
+}, {
 "base": "Node2D",
 "class": "Game",
 "language": "GDScript",
@@ -36,6 +41,7 @@ _global_script_classes=[ {
 } ]
 _global_script_class_icons={
 "Constants": "",
+"DrawingCanvas": "",
 "Game": "",
 "Room": "",
 "TimeLeftControl": "",
